@@ -1,6 +1,5 @@
 {
   "name": "@metorial/lodgify",
-  "version": "0.1.1",
   "description": "Manage vacation rental properties, reservations, and guest communication. Create, edit, and remove property listings. Create and update bookings with status tracking (open, booked, tentative, declined). Query and update availability calendars across connected channels. Set rates, seasonal pricing, and discounts. Generate quotes and payment links for bookings. Send and receive guest messages. Subscribe to webhooks for booking changes, availability updates, rate changes, and new guest messages.",
   "categories": [
     "e-commerce-and-retail",

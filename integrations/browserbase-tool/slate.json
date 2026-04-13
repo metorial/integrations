@@ -1,8 +1,11 @@
 {
   "name": "@metorial/browserbase",
-  "version": "0.1.1",
   "description": "Create and manage cloud-hosted headless browser sessions for web automation. Configure sessions with proxy settings, regional selection, timeouts, and stealth mode for anti-detection. Persist browser state (cookies, localStorage, authentication tokens) across sessions using contexts. Upload Chrome extensions and files to sessions, and retrieve downloaded files. Monitor and debug sessions via CDP logs, session recordings, and live debugger URLs. Retrieve project usage data including browser minutes and proxy bytes consumed.",
-  "categories": ["apis-and-http-requests", "task-and-project-management", "web-search"],
+  "categories": [
+    "apis-and-http-requests",
+    "task-and-project-management",
+    "web-search"
+  ],
   "skills": [
     "create browser sessions",
     "manage persistent browser contexts",

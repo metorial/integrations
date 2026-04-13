@@ -1,8 +1,10 @@
 {
   "name": "@metorial/bitwarden",
-  "version": "0.1.2",
   "description": "Manage organization members, groups, collections, and policies in Bitwarden. Invite, update, and remove members, assign roles and group memberships, and configure collection access permissions. Enforce organization-wide security policies such as two-step login and master password requirements. Query and export event logs to track user actions and organization activity. Store, retrieve, create, update, and delete developer secrets (API keys, database credentials) organized into projects with granular access control. Supports SCIM provisioning for automatic user and group syncing from identity providers.",
-  "categories": ["apis-and-http-requests", "security"],
+  "categories": [
+    "apis-and-http-requests",
+    "security"
+  ],
   "skills": [
     "manage organization members",
     "manage groups and collections",

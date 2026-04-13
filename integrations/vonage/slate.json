@@ -1,8 +1,10 @@
 {
   "name": "@metorial/vonage",
-  "version": "0.1.1",
   "description": "Send and receive messages across SMS, MMS, WhatsApp, Facebook Messenger, Viber, and RCS channels. Make and receive voice calls, control call flow with IVR and speech recognition, and record conversations. Host real-time video sessions with screen sharing, archiving, and captions. Verify user identity via SMS, voice, email, WhatsApp, or silent authentication with automatic channel failover. Look up phone number intelligence including carrier, type, reachability, and SIM swap detection. Purchase and manage virtual phone numbers globally. Monitor message delivery, call events, and video session activity via webhooks. Manage subaccounts, transfer balances, and track usage across accounts.",
-  "categories": ["email-and-messaging", "scheduling-and-calendars"],
+  "categories": [
+    "email-and-messaging",
+    "scheduling-and-calendars"
+  ],
   "skills": [
     "send multichannel messages",
     "make and receive voice calls",

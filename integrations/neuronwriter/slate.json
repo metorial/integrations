@@ -1,8 +1,11 @@
 {
   "name": "@metorial/neuronwriter",
-  "version": "0.1.1",
   "description": "Optimize content for SEO using semantic analysis and NLP-driven recommendations. List projects, create keyword queries, and retrieve SEO recommendations including target word counts, term suggestions for titles/headings/body, entity recommendations, content ideas, and competitor SERP data. Import and retrieve content (HTML or URL), evaluate content against SEO scoring criteria, and generate shareable collaboration URLs for editors and reviewers.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "document-processing"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools",
+    "document-processing"
+  ],
   "skills": [
     "list SEO projects",
     "create keyword queries",

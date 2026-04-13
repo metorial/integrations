@@ -1,8 +1,10 @@
 {
   "name": "@metorial/postgrid-verify",
-  "version": "0.1.1",
   "description": "Verify, standardize, and geocode postal addresses for US, Canada, and 245+ international countries. Validate single or batch addresses (up to 2,000), autocomplete partial addresses with type-ahead suggestions, perform geocoding and reverse geocoding, and detect change-of-address records via NCOA. Addresses can be submitted as structured components or freeform strings, with options for detailed parsing, residential/vacant detection, ZIP+4 lookup, and transliteration of foreign-language addresses.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "verify postal addresses",
     "batch address verification",

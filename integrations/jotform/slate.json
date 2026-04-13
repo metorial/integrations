@@ -1,6 +1,5 @@
 {
   "name": "@metorial/jotform",
-  "version": "0.1.1",
   "description": "Create, manage, and collect data through online forms. Build forms programmatically by defining questions, properties, and email notifications. Retrieve, create, update, and delete form submissions with filtering by date, status, or custom fields. Manage form fields/questions, configure form properties, and set up webhooks for submission notifications. Organize forms into folders, generate reports (Excel, CSV, charts), manage sub-user accounts, and download file uploads from submissions. Access user account details and usage statistics.",
   "categories": [
     "apis-and-http-requests",

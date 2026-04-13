@@ -1,8 +1,10 @@
 {
   "name": "@metorial/wisepops",
-  "version": "0.1.1",
   "description": "Export contacts and leads collected through website popup campaigns, including emails, phone numbers, and custom form fields. Retrieve campaign reporting metrics such as display counts, click counts, and email counts. Manage webhooks for real-time notifications on email, phone, and survey form submissions. Delete and suppress end-user data for GDPR/CCPA compliance.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "export collected contacts",
     "retrieve campaign metrics",

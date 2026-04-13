@@ -1,8 +1,10 @@
 {
   "name": "@metorial/basecamp",
-  "version": "0.1.1",
   "description": "Manage projects, to-do lists, messages, and team collaboration in Basecamp. Create and organize projects, manage to-do lists and tasks, post messages and comments, share files and documents, schedule events, and track project activity. Supports managing campfires (group chats), message boards, check-ins, and webhooks for real-time event notifications.",
-  "categories": ["email-and-messaging", "task-and-project-management"],
+  "categories": [
+    "email-and-messaging",
+    "task-and-project-management"
+  ],
   "skills": [
     "create and manage projects",
     "manage to-do lists and tasks",

@@ -1,8 +1,9 @@
 {
   "name": "@amazon/aws-s3",
-  "version": "0.1.2",
   "description": "Store, retrieve, and manage objects in Amazon S3 buckets. Upload and download files up to 5 TB, create and configure buckets, generate presigned URLs for temporary access, and manage object versions. Set access controls via bucket policies and ACLs, configure lifecycle rules to transition or expire objects, enable replication across regions, and encrypt objects at rest. Tag objects and buckets with key-value pairs, lock objects with WORM policies, enable server access logging, and host static websites. Receive event notifications when objects are created, deleted, restored, tagged, or transitioned between storage classes.",
-  "categories": ["apis-and-http-requests"],
+  "categories": [
+    "apis-and-http-requests"
+  ],
   "skills": [
     "upload and download objects",
     "create and manage buckets",

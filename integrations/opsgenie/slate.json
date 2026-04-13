@@ -1,8 +1,10 @@
 {
   "name": "@atlassian/opsgenie",
-  "version": "0.1.1",
   "description": "Create, manage, and resolve alerts and incidents with priority levels, responders, and rich metadata. Configure on-call schedules with rotations and overrides, and query who is currently on-call. Define escalation policies to notify responders in order when alerts go unacknowledged. Manage teams, users, services, and integrations. Set up per-user notification rules with contact method preferences. Receive webhook notifications for alert activity such as creation, acknowledgment, and closure.",
-  "categories": ["apis-and-http-requests", "email-and-messaging"],
+  "categories": [
+    "apis-and-http-requests",
+    "email-and-messaging"
+  ],
   "skills": [
     "create and manage alerts",
     "manage incidents",

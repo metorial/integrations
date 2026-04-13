@@ -1,8 +1,9 @@
 {
   "name": "@metorial/dbt-cloud",
-  "version": "0.1.1",
   "description": "Manage dbt Cloud projects, environments, and data transformation jobs. Create, trigger, schedule, and monitor dbt job runs. Fetch run artifacts including manifest, run results, and catalog files. Query project metadata and lineage via the Discovery API for models, sources, tests, and execution results. Define and query business metrics and dimensions through the Semantic Layer. Manage users, permissions, service tokens, and webhook subscriptions for job run events. Configure repository connections and environment settings programmatically.",
-  "categories": ["apis-and-http-requests"],
+  "categories": [
+    "apis-and-http-requests"
+  ],
   "skills": [
     "trigger and schedule jobs",
     "monitor job run status",

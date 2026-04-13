@@ -1,6 +1,5 @@
 {
   "name": "@metorial/stormboard",
-  "version": "0.1.1",
   "description": "Create, manage, and collaborate on digital whiteboard Storms (workspaces). Add, update, and organize ideas (sticky notes) within Storms. Manage sections, templates, and color legends. Create connectors between ideas to visualize relationships. Tag ideas, send and read chat messages, and invite participants to Storms. Duplicate, close, and reopen Storms. Manage user profiles and receive webhooks for idea, comment, and legend change events.",
   "categories": [
     "email-and-messaging",

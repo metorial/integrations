@@ -1,8 +1,11 @@
 {
   "name": "@metorial/pandadoc",
-  "version": "0.1.1",
   "description": "Create, send, track, and electronically sign documents such as proposals, contracts, and quotes. Generate documents programmatically from templates or file uploads, populate them with dynamic data (tokens, fields, recipients, pricing tables), and manage the full document lifecycle. Embed document editing, sending, and signing experiences directly in applications. Manage templates, content library items, contacts, and a product catalog. Link documents to external CRM objects, manage workspaces and users, handle notarization requests, and configure webhooks for real-time event notifications on document state changes, recipient completions, and template updates.",
-  "categories": ["document-processing", "legal-and-compliance", "task-and-project-management"],
+  "categories": [
+    "document-processing",
+    "legal-and-compliance",
+    "task-and-project-management"
+  ],
   "skills": [
     "create documents from templates",
     "send documents for signing",

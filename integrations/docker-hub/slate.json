@@ -1,8 +1,9 @@
 {
   "name": "@metorial/docker-hub",
-  "version": "0.1.3",
   "description": "Manage Docker container image repositories, tags, and organizations on Docker Hub. Create, list, update, and delete repositories and image tags. Search and discover public container images. Manage organization members, teams, and repository-level permissions. Create and manage webhooks for image push events. Handle personal and organization access tokens programmatically. View audit logs for organization and repository activity. Provision and de-provision users via SCIM. Categorize repositories for improved discoverability.",
-  "categories": ["apis-and-http-requests"],
+  "categories": [
+    "apis-and-http-requests"
+  ],
   "skills": [
     "manage image repositories",
     "list and delete image tags",

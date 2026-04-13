@@ -1,8 +1,10 @@
 {
   "name": "@metorial/parma",
-  "version": "0.1.1",
   "description": "Manage customer relationships, notes, and stay-in-touch reminders in Parma CRM. Create and search relationships representing customer contacts. Add notes to relationships to log interactions, touchpoints, and meeting details. Retrieve authenticated user profile information. Detect when new relationships are created to trigger downstream workflows.",
-  "categories": ["crm-and-sales-tools", "note-taking-and-knowledge-bases"],
+  "categories": [
+    "crm-and-sales-tools",
+    "note-taking-and-knowledge-bases"
+  ],
   "skills": [
     "create relationships",
     "search relationships",

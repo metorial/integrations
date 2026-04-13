@@ -1,8 +1,10 @@
 {
   "name": "@google/google-analytics",
-  "version": "0.1.1",
   "description": "Query and retrieve analytics reports on user interactions, traffic, and engagement metrics across websites and apps. Send event data to GA4 via the Measurement Protocol for tracking server-side and offline interactions. Manage GA4 accounts, properties, data streams, and user permissions. Create and manage custom dimensions, metrics, audiences, and key events. Generate real-time and funnel reports with configurable dimensions, metrics, date ranges, and filters. Link properties with Firebase, Google Ads, BigQuery, and other Google services. Audit data access and search change history.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "query analytics reports",
     "send event data",

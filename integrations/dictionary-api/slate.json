@@ -1,8 +1,10 @@
 {
   "name": "@metorial/dictionary-api",
-  "version": "0.1.1",
   "description": "Look up word definitions, phonetics, pronunciations, synonyms, antonyms, and example sentences. Retrieve detailed linguistic information for words across multiple languages, including parts of speech, IPA transcriptions, and audio pronunciation URLs. Supports querying in any available language by language code.",
-  "categories": ["education-and-learning", "language-translation"],
+  "categories": [
+    "education-and-learning",
+    "language-translation"
+  ],
   "skills": [
     "look up word definitions",
     "retrieve phonetic transcriptions",

@@ -1,8 +1,10 @@
 {
   "name": "@metorial/u301",
-  "version": "0.1.1",
   "description": "Shorten URLs with custom domains and slugs, delete short links, and generate QR codes for shortened URLs. List available domains including public system domains and private custom domains. Track link performance and manage link-in-bio pages.",
-  "categories": ["crm-and-sales-tools", "document-processing"],
+  "categories": [
+    "crm-and-sales-tools",
+    "document-processing"
+  ],
   "skills": [
     "shorten URLs",
     "delete short links",

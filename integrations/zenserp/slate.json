@@ -1,8 +1,11 @@
 {
   "name": "@metorial/zenserp",
-  "version": "0.1.1",
   "description": "Scrape and retrieve structured search engine results from Google, Bing, Yandex, and DuckDuckGo in real time. Perform web searches with geotargeting, language, and result count filters. Search Google Images with size, color, and type filters, and perform reverse image lookups. Retrieve Google News, Shopping, Maps/local business, and YouTube search results. Scrape Google Trends data including keyword popularity over time, geographic breakdowns, and related topics. Look up shopping product details by product ID. Retrieve keyword search volume and CPC data. Check account status and remaining API request quota.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "web-search"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools",
+    "web-search"
+  ],
   "skills": [
     "scrape web search results",
     "search Google Images",

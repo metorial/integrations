@@ -1,5 +1,5 @@
 {
-  "name": "@slates-integration/google-maps",
+  "name": "@slates-integrations/google-maps",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -16,5 +16,6 @@
     "@slates/test": "workspace:*",
     "typescript": "^5",
     "vitest": "^3.1.2"
-  }
+  },
+  "version": "0.2.0-rc.1"
 }

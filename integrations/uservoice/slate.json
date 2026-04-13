@@ -1,6 +1,5 @@
 {
   "name": "@metorial/uservoice",
-  "version": "0.1.1",
   "description": "Manage product feedback, feature requests, and customer ideas. Create, update, and organize suggestions across forums. Track votes and supporters on ideas. Update suggestion statuses through their lifecycle (under review, planned, completed). Manage users, accounts, and teams. Organize feedback with labels and categories. Link suggestions to features for roadmap planning. Upload file attachments to suggestions and notes. Retrieve NPS ratings data. Create and manage internal notes and public comments. Import external users and accounts in bulk. Configure webhooks for suggestion, vote, and status change events.",
   "categories": [
     "apis-and-http-requests",

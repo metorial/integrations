@@ -1,8 +1,10 @@
 {
   "name": "@metorial/icypeas",
-  "version": "0.1.1",
   "description": "Discover and verify professional email addresses, scan domains for role-based emails, scrape LinkedIn profiles and companies, search a lead database by professional and firmographic criteria, and perform reverse email lookups to enrich contacts. Supports single and bulk operations with webhook notifications for async processing. Check remaining credits and subscription status.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "discover professional emails",
     "verify email deliverability",

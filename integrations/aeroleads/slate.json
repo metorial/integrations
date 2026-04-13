@@ -1,8 +1,9 @@
 {
   "name": "@metorial/aeroleads",
-  "version": "0.1.1",
   "description": "Look up LinkedIn profiles and find business email addresses for B2B lead generation. Retrieve detailed prospect information from LinkedIn URLs including names, job titles, companies, education, skills, emails, and phone numbers. Find verified business emails by providing a prospect's first name, last name, and company domain, with confidence scoring for email accuracy.",
-  "categories": ["crm-and-sales-tools"],
+  "categories": [
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "look up LinkedIn profiles",
     "find business emails",

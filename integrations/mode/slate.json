@@ -1,8 +1,9 @@
 {
   "name": "@metorial/mode",
-  "version": "0.1.1",
   "description": "Manage collaborative analytics reports, SQL queries, and dashboards. Create, update, archive, and delete reports within collections. Execute report runs and retrieve query results, with export to CSV or PDF. Schedule recurring report executions and manage subscriptions for report distribution. Manage datasets, data source connections, and metric definitions. Organize reports into collections (spaces). Access and manage Python/R notebooks within reports. Manage workspace members and roles. Receive webhook notifications for report, run, data source, definition, and membership events.",
-  "categories": ["apis-and-http-requests"],
+  "categories": [
+    "apis-and-http-requests"
+  ],
   "skills": [
     "manage analytics reports",
     "execute SQL queries",

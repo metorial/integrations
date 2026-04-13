@@ -1,8 +1,10 @@
 {
   "name": "@metorial/zyte-api",
-  "version": "0.1.2",
   "description": "Fetch and extract web content from any website with automatic anti-bot bypassing. Perform raw HTTP requests or browser-rendered requests that execute JavaScript. Use AI-powered extraction to get structured data such as products, articles, job postings, and forum threads. Capture screenshots, execute browser actions (scroll, click, type, wait, run JavaScript), manage sessions and cookies, and configure geolocation and IP type. Monitor API usage via a stats endpoint. Supports proxy mode for integration with existing HTTP tools.",
-  "categories": ["apis-and-http-requests", "web-search"],
+  "categories": [
+    "apis-and-http-requests",
+    "web-search"
+  ],
   "skills": [
     "fetch web pages",
     "render browser JavaScript",

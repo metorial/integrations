@@ -1,8 +1,10 @@
 {
   "name": "@metorial/lemon-squeezy",
-  "version": "0.1.1",
   "description": "Manage digital product sales, subscriptions, and license keys. Create and retrieve stores, products, variants, and customers. Generate custom checkout URLs with pre-filled data, discounts, and custom metadata. Process and refund orders. Create, update, cancel, pause, resume, and upgrade/downgrade subscriptions. Issue and manage discount codes with percentage or fixed-amount rules. Generate, validate, activate, and deactivate software license keys. Manage digital file delivery. Configure webhooks to receive events for orders, subscriptions, payments, license keys, and affiliates.",
-  "categories": ["e-commerce-and-retail", "financial-data-and-stock-market"],
+  "categories": [
+    "e-commerce-and-retail",
+    "financial-data-and-stock-market"
+  ],
   "skills": [
     "create custom checkouts",
     "manage subscriptions",

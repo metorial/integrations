@@ -1,6 +1,5 @@
 {
   "name": "@metorial/dpd2",
-  "version": "0.1.1",
   "description": "Read digital product sales data from the DPD (Digital Product Delivery) e-commerce platform. View storefronts, retrieve product catalog details, list purchases and orders, access subscriber and customer records, and verify purchase notification webhooks. Supports filtering purchases by various criteria and reactivating purchases. Primarily a read-only API for monitoring and reporting on digital product sales including e-books, software, music, videos, and keycodes.",
   "categories": [
     "document-processing",

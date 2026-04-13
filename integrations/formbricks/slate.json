@@ -1,8 +1,10 @@
 {
   "name": "@metorial/formbricks",
-  "version": "0.1.1",
   "description": "Create, distribute, and manage surveys across websites, apps, email, and links. Collect and manage survey responses with metadata tracking. Manage contacts and segments for targeted survey distribution. Generate personalized survey links for contact segments. Define action classes (user behaviors) and attribute classes (custom properties) for survey triggering and targeting. Upload files for use in surveys. Configure webhooks for real-time notifications on response events (created, updated, finished).",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools"
+  ],
   "skills": [
     "create and manage surveys",
     "collect survey responses",

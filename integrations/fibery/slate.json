@@ -1,8 +1,10 @@
 {
   "name": "@metorial/fibery",
-  "version": "0.1.1",
   "description": "Manage customizable work management workspaces with interconnected databases (Types), entities, documents, and views. Create, read, update, and delete workspace schemas, entities, and fields. Query entities with filtering, ordering, and pagination, including nested relations. Read and write rich text documents in Markdown, HTML, or JSON formats. Upload, download, and attach files to entities. Add comments to entities. Create and manage views (boards, tables, timelines). Execute GraphQL queries and mutations per space. Subscribe to entity change webhooks for create, update, and collection modifications. Run automation scripts for bulk operations and external integrations.",
-  "categories": ["note-taking-and-knowledge-bases", "task-and-project-management"],
+  "categories": [
+    "note-taking-and-knowledge-bases",
+    "task-and-project-management"
+  ],
   "skills": [
     "manage workspace schemas",
     "create and query entities",

@@ -1,8 +1,10 @@
 {
   "name": "@amazon/aws-sqs",
-  "version": "0.1.2",
   "description": "Create, configure, list, and delete message queues (standard and FIFO). Send messages to queues with optional delays and custom attributes. Receive and delete messages using short or long polling. Manage visibility timeouts for in-flight messages. Configure dead-letter queues and redrive policies to handle failed message processing. Move messages between queues (e.g., from dead-letter queues back to source queues). Manage queue permissions for cross-account access. Enable server-side encryption with KMS or SQS-managed keys. Apply cost allocation tags to queues for tracking.",
-  "categories": ["apis-and-http-requests", "email-and-messaging"],
+  "categories": [
+    "apis-and-http-requests",
+    "email-and-messaging"
+  ],
   "skills": [
     "create and manage queues",
     "send messages to queues",

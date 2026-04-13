@@ -1,8 +1,10 @@
 {
   "name": "@atlassian/bitbucket",
-  "version": "0.1.1",
   "description": "Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket Cloud. Create, fork, and configure repositories within workspaces and projects. Create, review, approve, merge, and decline pull requests with inline code comments. Browse source code, list commits, and manage branches and tags. Track issues with the built-in issue tracker. Trigger, monitor, and manage Bitbucket Pipelines, deployment environments, and pipeline variables. Control workspace membership, user permissions, and group access. Create and manage webhooks for repository and workspace events. Search code across repositories and manage code snippets.",
-  "categories": ["apis-and-http-requests", "task-and-project-management"],
+  "categories": [
+    "apis-and-http-requests",
+    "task-and-project-management"
+  ],
   "skills": [
     "manage Git repositories",
     "create and merge pull requests",

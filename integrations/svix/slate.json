@@ -1,8 +1,10 @@
 {
   "name": "@metorial/svix",
-  "version": "0.1.1",
   "description": "Send, manage, and receive webhooks as a service. Create and manage consumer applications, send webhook messages with typed event payloads, and configure delivery endpoints with event type and channel filtering. Register and schema-define event types, manage endpoint subscriptions, retry failed deliveries, and bulk-recover messages. Transform webhook payloads with custom JavaScript logic before delivery. Receive and route inbound webhooks from external services via Svix Ingest with fanout and transformation support. Generate embeddable consumer portal access for customers to manage endpoints, debug delivery, and replay webhooks. Monitor operational events such as endpoint disabling and exhausted message attempts. Manage isolated environments for production, staging, and development.",
-  "categories": ["apis-and-http-requests", "task-and-project-management"],
+  "categories": [
+    "apis-and-http-requests",
+    "task-and-project-management"
+  ],
   "skills": [
     "send webhook messages",
     "manage consumer applications",

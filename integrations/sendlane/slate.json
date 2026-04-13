@@ -1,8 +1,11 @@
 {
   "name": "@metorial/sendlane",
-  "version": "0.1.1",
   "description": "Manage contacts, lists, tags, and segments for email and SMS marketing automation focused on eCommerce. Create and update contacts, subscribe/unsubscribe contacts to lists, apply tags, and manage custom fields. Retrieve campaign details and sender profiles. Track eCommerce events such as product viewed, added to cart, checkout started, placed order, and fulfilled order via server-side and client-side APIs. Configure automation-based webhooks to broadcast contact data when triggered by subscriber actions or eCommerce behaviors.",
-  "categories": ["crm-and-sales-tools", "e-commerce-and-retail", "email-and-messaging"],
+  "categories": [
+    "crm-and-sales-tools",
+    "e-commerce-and-retail",
+    "email-and-messaging"
+  ],
   "skills": [
     "manage contacts and lists",
     "apply and remove tags",

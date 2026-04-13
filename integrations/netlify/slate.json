@@ -1,8 +1,10 @@
 {
   "name": "@metorial/netlify",
-  "version": "0.1.1",
   "description": "Manage web application sites, deploys, and hosting on Netlify. Create, update, configure, list, and delete sites. Deploy sites via file digest or ZIP upload, including serverless functions. Manage environment variables with per-context values. Access and manage form submissions, including spam filtering. Configure DNS zones and records. Inject JavaScript or HTML snippets into site pages. Create and manage split tests (A/B testing) for traffic routing between branches. Set up notification hooks (webhooks, email, Slack) for deploy and form submission events. Purge CDN cached content. Manage site assets for Large Media.",
-  "categories": ["apis-and-http-requests", "document-processing"],
+  "categories": [
+    "apis-and-http-requests",
+    "document-processing"
+  ],
   "skills": [
     "create and manage sites",
     "deploy web applications",

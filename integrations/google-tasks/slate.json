@@ -1,8 +1,9 @@
 {
   "name": "@google/google-tasks",
-  "version": "0.1.1",
   "description": "Create, read, update, and delete task lists and individual tasks. Manage task properties including titles, notes, due dates, and completion status. Organize tasks with subtask hierarchies and reorder tasks within or across lists. Clear completed tasks in bulk and filter tasks by completion status or modification time for incremental sync.",
-  "categories": ["task-and-project-management"],
+  "categories": [
+    "task-and-project-management"
+  ],
   "skills": [
     "create and manage task lists",
     "create and update tasks",

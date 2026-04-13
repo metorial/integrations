@@ -1,8 +1,10 @@
 {
   "name": "@amazon/aws-lambda",
-  "version": "0.1.2",
   "description": "Create, update, configure, and delete serverless Lambda functions. Invoke functions synchronously, asynchronously, or with response streaming. Manage function code deployment via ZIP archives or container images. Publish immutable function versions and create aliases with weighted traffic shifting for canary and blue/green deployments. Create and manage layers for shared code, dependencies, and runtimes. Configure event source mappings to poll events from SQS, Kinesis, DynamoDB Streams, Kafka, and Amazon MQ. Set up function URLs as dedicated HTTPS endpoints. Manage concurrency settings including reserved and provisioned concurrency. Configure asynchronous invocation retry behavior and destination routing. Manage resource-based permissions policies, code signing configurations, tags, and durable execution workflows.",
-  "categories": ["apis-and-http-requests", "code-execution"],
+  "categories": [
+    "apis-and-http-requests",
+    "code-execution"
+  ],
   "skills": [
     "create and manage functions",
     "invoke functions",

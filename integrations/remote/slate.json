@@ -1,6 +1,5 @@
 {
   "name": "@metorial/remote",
-  "version": "0.1.1",
   "description": "Manage global employment, contractors, and payroll through Remote's Employer of Record platform. Create and onboard employees in countries worldwide with country-specific compliance handling. Manage the full employment lifecycle including onboarding, contract amendments, offboarding, and probation. Handle contractor relationships, invoices, and contract documents. Create and manage time off requests, approve or decline leave, and view balances. Access payroll calendars, payroll runs, and download payslips. Create and manage incentives, expenses, and timesheets. Estimate employment costs by country. Upload and download employment documents and files. Configure benefits, SSO, and custom fields. Manage billing documents, currency conversions, travel letters, and work authorization requests. Subscribe to webhooks for real-time notifications on employment changes, offboarding, time off, expenses, payslips, contract amendments, and more.",
   "categories": [
     "financial-data-and-stock-market",

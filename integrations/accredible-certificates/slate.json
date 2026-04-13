@@ -1,8 +1,10 @@
 {
   "name": "@metorial/accredible-certificates",
-  "version": "0.1.1",
   "description": "Create, manage, and issue digital certificates, badges, and credentials. Create credential groups and templates, issue credentials to recipients, update credential details, and retrieve credential information. Manage recipient data, track credential views, and customize certificate designs for courses, training programs, and professional achievements.",
-  "categories": ["document-processing", "education-and-learning"],
+  "categories": [
+    "document-processing",
+    "education-and-learning"
+  ],
   "skills": [
     "issue digital certificates",
     "create credential groups",

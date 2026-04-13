@@ -1,8 +1,10 @@
 {
   "name": "@metorial/scrapegraph-ai",
-  "version": "0.1.1",
   "description": "Extract structured data from webpages using natural language prompts and AI. Scrape single pages or crawl entire websites with configurable depth and rules. Perform AI-powered web searches across multiple sources with structured results. Convert webpages to clean Markdown. Fetch raw HTML with JavaScript rendering. Automate browser interactions (clicking, typing, form filling, logging in) before extracting data. Discover website sitemaps. Supports custom output schemas, stealth mode, proxy routing, geo-targeting, and webhook notifications for crawl job completion. Check API credit balance and retrieve past request history.",
-  "categories": ["apis-and-http-requests", "web-search"],
+  "categories": [
+    "apis-and-http-requests",
+    "web-search"
+  ],
   "skills": [
     "scrape webpage with AI",
     "crawl website pages",

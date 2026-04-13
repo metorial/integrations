@@ -1,8 +1,11 @@
 {
   "name": "@metorial/fraudlabs-pro",
-  "version": "0.1.1",
   "description": "Screen online transactions for payment fraud by analyzing IP geolocation, email validity, billing/shipping details, credit card info, proxy/VPN usage, blacklists, and transaction velocity. Receive a fraud risk score to approve, review, or reject orders. Update transaction statuses with feedback (approve, reject, or reject & blacklist) to improve fraud detection accuracy. Retrieve existing transaction screening results. Send SMS-based OTP verification codes to authenticate customer identities.",
-  "categories": ["e-commerce-and-retail", "financial-data-and-stock-market", "security"],
+  "categories": [
+    "e-commerce-and-retail",
+    "financial-data-and-stock-market",
+    "security"
+  ],
   "skills": [
     "screen orders for fraud",
     "calculate fraud risk score",

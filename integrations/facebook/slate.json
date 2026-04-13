@@ -1,8 +1,11 @@
 {
   "name": "@meta/facebook",
-  "version": "0.1.1",
   "description": "Manage Facebook Pages, publish posts, photos, videos, and links to user timelines or Pages. Access user profile data including name, email, and birthday. Create and manage ad campaigns, track ad performance, and retrieve marketing insights. Read and manage comments, reactions, and shares on posts. Retrieve Page analytics including reach, engagement, and demographics. Subscribe to and retrieve leads from Lead Ads. Send and receive messages via Page Messenger. Search for places, pages, and public objects. Subscribe to real-time webhooks for page feed changes, new messages, lead generation events, and permission changes.",
-  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "news-and-media"],
+  "categories": [
+    "apis-and-http-requests",
+    "crm-and-sales-tools",
+    "news-and-media"
+  ],
   "skills": [
     "publish posts and media",
     "manage Facebook Pages",

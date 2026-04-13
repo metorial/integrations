@@ -1,8 +1,10 @@
 {
   "name": "@metorial/fivetran",
-  "version": "0.1.1",
   "description": "Manage automated data pipelines that extract data from hundreds of sources and load it into data warehouses, lakes, and other destinations. Create, configure, pause, and monitor connectors (connections) for SaaS apps, databases, events, and files. Manage groups, destinations, and schema configurations including selecting which schemas, tables, and columns to sync. Trigger manual syncs and historical re-syncs. Create and schedule transformations using dbt Core, dbt Cloud, or Coalesce. Manage users, teams, roles, and permissions. Configure webhooks for sync, transformation, and dbt run events. Manage hybrid deployment agents, private links, proxy agents, certificates, log services, and system API keys.",
-  "categories": ["apis-and-http-requests", "task-and-project-management"],
+  "categories": [
+    "apis-and-http-requests",
+    "task-and-project-management"
+  ],
   "skills": [
     "create and manage connectors",
     "trigger data syncs",

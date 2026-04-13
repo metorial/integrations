@@ -1,8 +1,10 @@
 {
   "name": "@metorial/tally",
-  "version": "0.1.1",
   "description": "Create, manage, and retrieve online forms, surveys, and quizzes. List and fetch form submissions with full response data. Manage form questions, input blocks, and settings including open/closed status. Organize forms into workspaces. Manage organization users and invitations. Configure webhooks to receive real-time notifications on new form submissions. Supports a wide range of input types including text, file uploads, signatures, payments, conditional logic, and calculated fields.",
-  "categories": ["apis-and-http-requests", "document-processing"],
+  "categories": [
+    "apis-and-http-requests",
+    "document-processing"
+  ],
   "skills": [
     "create and manage forms",
     "retrieve form submissions",

@@ -1,5 +1,5 @@
 {
-  "name": "@slates-integration/zoho-inventory",
+  "name": "@slates-integrations/zoho-inventory",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -13,5 +13,6 @@
   },
   "devDependencies": {
     "typescript": "^5"
-  }
+  },
+  "version": "0.2.0-rc.1"
 }

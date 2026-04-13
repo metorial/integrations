@@ -1,5 +1,5 @@
 {
-  "name": "@slates-integration/zoho-desk",
+  "name": "@slates-integrations/zoho-desk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -13,5 +13,6 @@
   },
   "devDependencies": {
     "typescript": "^5"
-  }
+  },
+  "version": "0.2.0-rc.1"
 }

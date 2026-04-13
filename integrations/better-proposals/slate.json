@@ -1,6 +1,5 @@
 {
   "name": "@metorial/better-proposals",
-  "version": "0.1.1",
   "description": "Create, send, and track professional business proposals, contracts, and sales documents. Manage proposals by status (new, opened, sent, signed, paid) with digital signature support and payment collection. Create and assign custom cover designs, use templates for new proposals, and define document types. Manage client companies and quotes. Retrieve account settings, brand configurations, supported currencies, and custom merge tags for dynamic content personalization. Monitor proposal lifecycle events including creation, sending, opening, signing, and payment.",
   "categories": [
     "crm-and-sales-tools",

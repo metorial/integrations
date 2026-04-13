@@ -1,8 +1,9 @@
 {
   "name": "@metorial/slack",
-  "version": "0.1.1",
   "description": "Slack (Bot): OAuth uses bot tokens — messages and API actions appear as your Slack app. Send, receive, update, delete, and schedule messages in channels, DMs, and group DMs. Manage conversations (create, archive, rename, invite/remove members, set topics). Search messages and files across workspaces. Upload, share, and manage files. Add and remove emoji reactions. Pin and bookmark messages. Create and manage user groups and reminders. Retrieve user profiles, presence, and workspace info. Post ephemeral messages, open modals, and manage App Home tabs. Configure incoming webhooks for notifications. Create and edit canvases and lists. Administer workspace settings, Slack Connect shared channels, and Enterprise Grid organizations.",
-  "categories": ["email-and-messaging"],
+  "categories": [
+    "email-and-messaging"
+  ],
   "skills": [
     "send and schedule messages",
     "manage channels and conversations",
