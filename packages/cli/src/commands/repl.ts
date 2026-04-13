@@ -1,13 +1,32 @@
 import { input } from '@inquirer/prompts';
 import { print } from '../lib/prompts';
 import { WithProfile } from '../lib/types';
-import { addAuth, listAuth } from './auth';
+import { listAuth, setupAuth } from './auth';
 import { getConfig, setConfig } from './config';
 import { getProfile } from './profiles';
 import { callTool, getTool, listTools } from './tools';
 
+let printHelp = () => {
+  console.log(
+    [
+      'Available commands:',
+      '  help',
+      '  tools',
+      '  tool <toolId>',
+      '  call <toolId>',
+      '  auth list',
+      '  auth setup [authMethodId]',
+      '  config get',
+      '  config set',
+      '  profile',
+      '  quit'
+    ].join('\n')
+  );
+};
+
 export let startRepl = async (opts: WithProfile) => {
   let keepRunning = true;
+  printHelp();
 
   while (keepRunning) {
     let commandLine = await input({
@@ -24,21 +43,7 @@ export let startRepl = async (opts: WithProfile) => {
         break;
 
       case 'help':
-        console.log(
-          [
-            'Available commands:',
-            '  help',
-            '  tools',
-            '  tool <toolId>',
-            '  call <toolId>',
-            '  auth list',
-            '  auth add [authMethodId]',
-            '  config get',
-            '  config set',
-            '  profile',
-            '  quit'
-          ].join('\n')
-        );
+        printHelp();
         break;
 
       case 'tools':
@@ -59,8 +64,8 @@ export let startRepl = async (opts: WithProfile) => {
           break;
         }
 
-        if (rest[0] === 'add') {
-          print(await addAuth({ ...opts, authMethodId: rest[1] }));
+        if (rest[0] === 'setup') {
+          print(await setupAuth({ ...opts, authMethodId: rest[1] }));
           break;
         }
 
@@ -80,7 +85,7 @@ export let startRepl = async (opts: WithProfile) => {
         throw new Error(`Unsupported config command: ${rest.join(' ')}`);
 
       case 'profile':
-        print(await getProfile(opts.profile));
+        print(await getProfile(opts));
         break;
 
       default:

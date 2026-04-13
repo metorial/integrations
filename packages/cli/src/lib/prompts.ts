@@ -127,6 +127,10 @@ export let promptForObjectSchema = async (schema: any, initialValue: JsonObject 
   let keys = Object.keys(properties);
 
   if (keys.length === 0) {
+    if (Object.keys(initialValue).length === 0) {
+      return {};
+    }
+
     let raw = await input({
       message: 'Enter JSON object',
       default: Object.keys(initialValue).length > 0 ? prettyJson(initialValue) : '{}'

@@ -1,5 +1,11 @@
-import { SlatesStoredAuth } from '@slates/profiles';
-import { chooseAuthMethod, createClientContext } from '../lib/context';
+import { confirm, select } from '@inquirer/prompts';
+import { SlatesOAuthCredentialRecord, SlatesStoredAuth } from '@slates/profiles';
+import {
+  chooseAuthMethod,
+  createClientContext,
+  createIntegrationClientContext,
+  openIntegrationStore
+} from '../lib/context';
 import { chooseScopes, createOAuthCallbackListener, openBrowser } from '../lib/oauth';
 import {
   parseJsonObject,
@@ -11,29 +17,223 @@ import { JsonInput, WithProfile } from '../lib/types';
 
 type JsonObject = Record<string, any>;
 
+type AuthSetupOptions = WithProfile &
+  JsonInput & {
+    authMethodId?: string;
+    clientId?: string;
+    clientSecret?: string;
+    oauthCredential?: string;
+    scopes?: string;
+  };
+
 export let listAuth = async (opts: WithProfile) => {
-  let { store, profile } = await createClientContext(opts.profile);
+  let { store, profile } = await createClientContext(opts);
   return store.listAuth(profile.id);
 };
 
 export let getAuth = async (opts: WithProfile & { authMethodId?: string }) => {
-  let { store, profile } = await createClientContext(opts.profile);
+  let { store, profile } = await createClientContext(opts);
   return store.getAuth(profile.id, opts.authMethodId);
 };
 
-export let addAuth = async (
-  opts: WithProfile &
-    JsonInput & {
-      authMethodId?: string;
-      clientId?: string;
-      clientSecret?: string;
-      scopes?: string;
-    }
-): Promise<SlatesStoredAuth> => {
-  let { store, profile, client } = await createClientContext(opts.profile);
+export let listOAuthCredentials = async (
+  opts: Pick<WithProfile, 'integration'> & { authMethodId?: string }
+) => {
+  let { store } = await openIntegrationStore(opts.integration);
+  return store.listOAuthCredentials(opts.authMethodId).map(credential => ({
+    id: credential.id,
+    name: credential.name,
+    authMethodId: credential.authMethodId,
+    clientId: credential.clientId
+  }));
+};
+
+export let addOAuthCredentials = async (
+  opts: Pick<WithProfile, 'integration'> & {
+    authMethodId?: string;
+    name?: string;
+    clientId?: string;
+    clientSecret?: string;
+  }
+): Promise<SlatesOAuthCredentialRecord> => {
+  let { store, client } = await createIntegrationClientContext({ integration: opts.integration });
   let authMethod = await chooseAuthMethod({
     client,
-    authMethodId: opts.authMethodId
+    authMethodId: opts.authMethodId,
+    forcePrompt: !opts.authMethodId
+  });
+
+  if (authMethod.type !== 'auth.oauth') {
+    throw new Error(`Authentication method ${authMethod.id} is not OAuth.`);
+  }
+
+  let clientId = opts.clientId ?? (await promptForString({ message: 'OAuth client ID' }));
+  let clientSecret =
+    opts.clientSecret ??
+    (await promptForString({ message: 'OAuth client secret', secret: true }));
+  let name =
+    opts.name ??
+    (await promptForString({
+      message: 'Credential name',
+      defaultValue: `${authMethod.name} credentials`
+    }));
+
+  let credential = store.upsertOAuthCredential({
+    name,
+    authMethodId: authMethod.id,
+    clientId,
+    clientSecret
+  });
+  await store.save();
+  return credential;
+};
+
+let createOAuthCredentialInteractive = async (opts: {
+  store: Awaited<ReturnType<typeof createClientContext>>['store'];
+  authMethod: { id: string; name: string; type: string };
+  clientId?: string;
+  clientSecret?: string;
+}) => {
+  let clientId = opts.clientId ?? (await promptForString({ message: 'OAuth client ID' }));
+  let clientSecret =
+    opts.clientSecret ??
+    (await promptForString({ message: 'OAuth client secret', secret: true }));
+  let name = await promptForString({
+    message: 'Credential name',
+    defaultValue: `${opts.authMethod.name} credentials`
+  });
+
+  let credential = opts.store.upsertOAuthCredential({
+    name,
+    authMethodId: opts.authMethod.id,
+    clientId,
+    clientSecret
+  });
+  await opts.store.save();
+  return credential;
+};
+
+let chooseOAuthCredentialsForSetup = async (opts: {
+  store: Awaited<ReturnType<typeof createClientContext>>['store'];
+  authMethod: { id: string; name: string; type: string };
+  clientId?: string;
+  clientSecret?: string;
+  oauthCredential?: string;
+}) => {
+  if (opts.authMethod.type !== 'auth.oauth') {
+    return null;
+  }
+
+  if (opts.clientId || opts.clientSecret) {
+    let credential = await createOAuthCredentialInteractive({
+      store: opts.store,
+      authMethod: opts.authMethod,
+      clientId: opts.clientId,
+      clientSecret: opts.clientSecret
+    });
+    return {
+      credential,
+      clientId: credential.clientId,
+      clientSecret: credential.clientSecret
+    };
+  }
+
+  if (opts.oauthCredential) {
+    let credential = opts.store.getOAuthCredential(opts.oauthCredential, opts.authMethod.id);
+    if (!credential) {
+      throw new Error(`Unknown OAuth credentials: ${opts.oauthCredential}`);
+    }
+
+    return {
+      credential,
+      clientId: credential.clientId,
+      clientSecret: credential.clientSecret
+    };
+  }
+
+  let credentials = opts.store.listOAuthCredentials(opts.authMethod.id);
+  if (credentials.length === 0) {
+    let credential = await createOAuthCredentialInteractive({
+      store: opts.store,
+      authMethod: opts.authMethod
+    });
+    return {
+      credential,
+      clientId: credential.clientId,
+      clientSecret: credential.clientSecret
+    };
+  }
+
+  if (credentials.length === 1) {
+    let useExisting = await confirm({
+      message: `Use saved OAuth credentials "${credentials[0]!.name}"?`,
+      default: true
+    });
+
+    if (useExisting) {
+      let credential = credentials[0]!;
+      return {
+        credential,
+        clientId: credential.clientId,
+        clientSecret: credential.clientSecret
+      };
+    }
+
+    let credential = await createOAuthCredentialInteractive({
+      store: opts.store,
+      authMethod: opts.authMethod
+    });
+    return {
+      credential,
+      clientId: credential.clientId,
+      clientSecret: credential.clientSecret
+    };
+  }
+
+  let selected = await select({
+    message: 'Choose OAuth credentials',
+    choices: [
+      ...credentials.map(credential => ({
+        name: `${credential.name} (${credential.clientId})`,
+        value: credential.id
+      })),
+      {
+        name: 'Create new OAuth credentials',
+        value: '__new__'
+      }
+    ]
+  });
+
+  if (selected === '__new__') {
+    let credential = await createOAuthCredentialInteractive({
+      store: opts.store,
+      authMethod: opts.authMethod
+    });
+    return {
+      credential,
+      clientId: credential.clientId,
+      clientSecret: credential.clientSecret
+    };
+  }
+
+  let credential = opts.store.getOAuthCredential(selected, opts.authMethod.id);
+  if (!credential) {
+    throw new Error(`Unknown OAuth credentials: ${selected}`);
+  }
+
+  return {
+    credential,
+    clientId: credential.clientId,
+    clientSecret: credential.clientSecret
+  };
+};
+
+let runAuthSetup = async (opts: AuthSetupOptions): Promise<SlatesStoredAuth> => {
+  let { store, profile, client } = await createClientContext(opts);
+  let authMethod = await chooseAuthMethod({
+    client,
+    authMethodId: opts.authMethodId,
+    forcePrompt: !opts.authMethodId
   });
 
   let defaultInput = authMethod.capabilities.getDefaultInput?.enabled
@@ -60,13 +260,24 @@ export let addAuth = async (
   let scopes = parseList(opts.scopes);
 
   if (authMethod.type === 'auth.oauth') {
-    let clientId = opts.clientId ?? (await promptForString({ message: 'OAuth client ID' }));
-    let clientSecret =
-      opts.clientSecret ??
-      (await promptForString({ message: 'OAuth client secret', secret: true }));
+    let callback = await createOAuthCallbackListener();
+    console.log(`OAuth redirect URL: ${callback.redirectUri}`);
+
+    let resolvedOAuthCredentials = await chooseOAuthCredentialsForSetup({
+      store,
+      authMethod,
+      clientId: opts.clientId,
+      clientSecret: opts.clientSecret,
+      oauthCredential: opts.oauthCredential
+    });
+    if (!resolvedOAuthCredentials) {
+      throw new Error(`Authentication method ${authMethod.id} is not OAuth.`);
+    }
+
+    let clientId = resolvedOAuthCredentials.clientId;
+    let clientSecret = resolvedOAuthCredentials.clientSecret;
     scopes = await chooseScopes(authMethod, scopes);
 
-    let callback = await createOAuthCallbackListener();
     let authorizationUrl = await client.getAuthorizationUrl({
       authenticationMethodId: authMethod.id,
       redirectUri: callback.redirectUri,
@@ -116,6 +327,7 @@ export let addAuth = async (
       authType: authMethod.type,
       input: finalInput,
       output,
+      oauthCredentialId: resolvedOAuthCredentials.credential?.id,
       scopes,
       clientId,
       clientSecret,
@@ -157,8 +369,10 @@ export let addAuth = async (
   return stored;
 };
 
+export let setupAuth = async (opts: AuthSetupOptions) => runAuthSetup(opts);
+
 export let refreshAuth = async (opts: WithProfile & { authMethodId?: string }) => {
-  let { store, profile, client } = await createClientContext(opts.profile);
+  let { store, profile, client } = await createClientContext(opts);
   let storedAuth = store.getAuth(profile.id, opts.authMethodId);
   if (!storedAuth) {
     throw new Error('No stored authentication was found for this profile.');

@@ -3,17 +3,17 @@ import { parseJsonObject, promptForObjectSchema } from '../lib/prompts';
 import { JsonInput, WithProfile } from '../lib/types';
 
 export let getConfig = async (opts: WithProfile) => {
-  let { profile } = await createClientContext(opts.profile);
+  let { profile } = await createClientContext(opts);
   return profile.config;
 };
 
 export let getConfigSchema = async (opts: WithProfile) => {
-  let { client } = await createClientContext(opts.profile);
+  let { client } = await createClientContext(opts);
   return client.getConfigSchema();
 };
 
 export let setConfig = async (opts: WithProfile & JsonInput) => {
-  let { store, profile, client } = await createClientContext(opts.profile);
+  let { store, profile, client } = await createClientContext(opts);
   let previousConfig = profile.config;
   let schema = (await client.getConfigSchema()).schema;
   let defaultConfig = (await client.getDefaultConfig()).config ?? {};

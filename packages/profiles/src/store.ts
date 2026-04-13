@@ -4,20 +4,30 @@ import { mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import {
   SlatesCliStoreData,
+  SlatesCliStoreScope,
+  SlatesOAuthCredentialRecord,
   SlatesProfileRecord,
   SlatesProfileTarget,
   SlatesStoredAuth
 } from './types';
 
-let STORE_VERSION = 1 as const;
+type SlatesLegacyCliStoreData = {
+  version?: number;
+  currentProfileId: string | null;
+  profiles: Record<string, SlatesProfileRecord>;
+};
+
+let STORE_VERSION = 3 as const;
 let CLI_DIR_NAME = '.slates-cli';
+let PROFILES_DIR_NAME = 'profiles';
 let STORE_FILE_NAME = 'store.json';
 let GITIGNORE_FILE_NAME = '.gitignore';
 
 let createEmptyStore = (): SlatesCliStoreData => ({
   version: STORE_VERSION,
   currentProfileId: null,
-  profiles: {}
+  profiles: {},
+  oauthCredentials: {}
 });
 
 let now = () => new Date().toISOString();
@@ -49,48 +59,165 @@ export let resolveSlatesCliRoot = (cwd: string = process.cwd()) => {
 export let resolveSlatesCliDir = (cwd: string = process.cwd()) =>
   path.join(resolveSlatesCliRoot(cwd), CLI_DIR_NAME);
 
+export let resolveSlatesCliProfilesDir = (cwd: string = process.cwd()) =>
+  path.join(resolveSlatesCliDir(cwd), PROFILES_DIR_NAME);
+
+let normalizeScopeKey = (scopeKey: string) =>
+  path.posix.normalize(scopeKey.replace(/\\/g, '/')).replace(/^\.?\//, '');
+
+let splitScopeKey = (scopeKey: string) =>
+  normalizeScopeKey(scopeKey)
+    .split('/')
+    .filter(Boolean)
+    .filter(segment => segment !== '.' && segment !== '..');
+
+let resolveScopedStoreDir = (rootDir: string, scopeKey: string) =>
+  path.join(resolveSlatesCliProfilesDir(rootDir), ...splitScopeKey(scopeKey));
+
+let resolveScopedStorePath = (rootDir: string, scopeKey: string) =>
+  path.join(resolveScopedStoreDir(rootDir, scopeKey), STORE_FILE_NAME);
+
+let inferRootDirFromStorePath = (storePath: string) => {
+  let normalized = path.resolve(storePath);
+  let parts = normalized.split(path.sep).filter(Boolean);
+  let cliDirIndex = parts.lastIndexOf(CLI_DIR_NAME);
+
+  if (cliDirIndex === -1) {
+    throw new Error(`Could not infer Slates CLI root from store path: ${storePath}`);
+  }
+
+  let rootParts = parts.slice(0, cliDirIndex);
+  return path.join(path.sep, ...rootParts);
+};
+
+let resolveScopeKeyFromStorePath = (rootDir: string, storePath: string) => {
+  let profilesDir = resolveSlatesCliProfilesDir(rootDir);
+  let relativeDir = path.relative(profilesDir, path.dirname(storePath));
+  if (!relativeDir || relativeDir.startsWith('..') || path.isAbsolute(relativeDir)) {
+    return null;
+  }
+
+  return normalizeScopeKey(relativeDir);
+};
+
+let readStoreData = async <T extends { currentProfileId: string | null; profiles: Record<string, any> }>(
+  storePath: string
+): Promise<T | null> => {
+  try {
+    let raw = await readFile(storePath, 'utf-8');
+    if (!raw.trim()) {
+      return null;
+    }
+
+    return JSON.parse(raw) as T;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+let isProfileInScope = (rootDir: string, scopeKey: string, profile: SlatesProfileRecord) => {
+  if (profile.target.type !== 'local') {
+    return false;
+  }
+
+  let scopeDir = path.resolve(rootDir, ...splitScopeKey(scopeKey));
+  let entryPath = path.isAbsolute(profile.target.entry)
+    ? profile.target.entry
+    : path.resolve(rootDir, profile.target.entry);
+  let relative = path.relative(scopeDir, entryPath);
+  return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative);
+};
+
+let loadMigratedLegacyStore = async (rootDir: string, scopeKey: string): Promise<SlatesCliStoreData> => {
+  let legacyStorePath = path.join(resolveSlatesCliDir(rootDir), STORE_FILE_NAME);
+  let legacy = await readStoreData<SlatesLegacyCliStoreData>(legacyStorePath);
+  if (!legacy) {
+    return createEmptyStore();
+  }
+
+  let profiles = Object.fromEntries(
+    Object.entries(legacy.profiles ?? {}).filter(([, profile]) =>
+      isProfileInScope(rootDir, scopeKey, profile)
+    )
+  );
+
+  let currentProfileId =
+    legacy.currentProfileId && profiles[legacy.currentProfileId] ? legacy.currentProfileId : null;
+
+  return {
+    version: STORE_VERSION,
+    currentProfileId,
+    profiles,
+    oauthCredentials: {}
+  };
+};
+
 export class SlatesCliStore {
   constructor(
     readonly rootDir: string,
     readonly dirPath: string,
     readonly storePath: string,
+    readonly scope: SlatesCliStoreScope | null,
     readonly data: SlatesCliStoreData
   ) {}
 
-  static async open(opts: { cwd?: string } = {}) {
-    let rootDir = resolveSlatesCliRoot(opts.cwd);
-    let dirPath = path.join(rootDir, CLI_DIR_NAME);
-    let storePath = path.join(dirPath, STORE_FILE_NAME);
+  static async open(opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}) {
+    let rootDir = opts.storePath
+      ? inferRootDirFromStorePath(opts.storePath)
+      : resolveSlatesCliRoot(opts.cwd);
+    let cliDir = resolveSlatesCliDir(rootDir);
+    let scopeKey = opts.storePath
+      ? resolveScopeKeyFromStorePath(rootDir, opts.storePath)
+      : opts.scope?.key
+        ? normalizeScopeKey(opts.scope.key)
+        : null;
+    let dirPath =
+      opts.storePath
+        ? path.dirname(opts.storePath)
+        : scopeKey
+          ? resolveScopedStoreDir(rootDir, scopeKey)
+          : cliDir;
+    let storePath =
+      opts.storePath ?? (scopeKey ? resolveScopedStorePath(rootDir, scopeKey) : path.join(cliDir, STORE_FILE_NAME));
 
+    await ensureDir(cliDir);
+    await ensureGitIgnore(cliDir);
     await ensureDir(dirPath);
-    await ensureGitIgnore(dirPath);
 
-    let data = createEmptyStore();
+    let parsed = await readStoreData<SlatesCliStoreData>(storePath);
+    let data =
+      parsed
+        ? {
+            version: STORE_VERSION,
+            currentProfileId: parsed.currentProfileId ?? null,
+            profiles: parsed.profiles ?? {},
+            oauthCredentials: parsed.oauthCredentials ?? {}
+          }
+        : scopeKey
+          ? await loadMigratedLegacyStore(rootDir, scopeKey)
+          : createEmptyStore();
 
-    try {
-      let raw = await readFile(storePath, 'utf-8');
-      if (raw.trim()) {
-        let parsed = JSON.parse(raw) as SlatesCliStoreData;
-        data = {
-          version: STORE_VERSION,
-          currentProfileId: parsed.currentProfileId ?? null,
-          profiles: parsed.profiles ?? {}
-        };
-      }
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        throw error;
-      }
-
+    if (!parsed) {
       await writeFile(storePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
     }
 
-    return new SlatesCliStore(rootDir, dirPath, storePath, data);
+    return new SlatesCliStore(
+      rootDir,
+      dirPath,
+      storePath,
+      scopeKey ? { key: scopeKey, name: opts.scope?.name } : null,
+      data
+    );
   }
 
   async save() {
     await ensureDir(this.dirPath);
-    await ensureGitIgnore(this.dirPath);
+    await ensureDir(resolveSlatesCliDir(this.rootDir));
+    await ensureGitIgnore(resolveSlatesCliDir(this.rootDir));
     await writeFile(this.storePath, JSON.stringify(this.data, null, 2) + '\n', 'utf-8');
   }
 
@@ -98,8 +225,42 @@ export class SlatesCliStore {
     return Object.values(this.data.profiles).sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  listOAuthCredentials(authMethodId?: string) {
+    return Object.values(this.data.oauthCredentials)
+      .filter(credential => !authMethodId || credential.authMethodId === authMethodId)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  getOAuthCredential(credentialId?: string | null, authMethodId?: string | null) {
+    if (credentialId) {
+      let direct = this.data.oauthCredentials[credentialId];
+      if (direct && (!authMethodId || direct.authMethodId === authMethodId)) {
+        return direct;
+      }
+
+      let matches = this.listOAuthCredentials(authMethodId ?? undefined).filter(
+        credential => credential.name === credentialId
+      );
+      if (matches.length === 1) {
+        return matches[0]!;
+      }
+    }
+
+    return this.listOAuthCredentials(authMethodId ?? undefined)[0] ?? null;
+  }
+
   getProfile(profileId?: string | null) {
-    if (profileId) return this.data.profiles[profileId] ?? null;
+    if (profileId) {
+      if (this.data.profiles[profileId]) {
+        return this.data.profiles[profileId] ?? null;
+      }
+
+      let matches = this.listProfiles().filter(profile => profile.name === profileId);
+      if (matches.length === 1) {
+        return matches[0]!;
+      }
+    }
+
     if (this.data.currentProfileId && this.data.profiles[this.data.currentProfileId]) {
       return this.data.profiles[this.data.currentProfileId]!;
     }
@@ -110,7 +271,7 @@ export class SlatesCliStore {
   requireProfile(profileId?: string | null) {
     let profile = this.getProfile(profileId);
     if (!profile) {
-      throw new Error('No Slates profile found. Create one with `slates profiles add`.');
+      throw new Error('No Slates profile found for this integration.');
     }
 
     return profile;
@@ -149,6 +310,29 @@ export class SlatesCliStore {
     }
 
     return profile;
+  }
+
+  upsertOAuthCredential(d: {
+    credentialId?: string;
+    name: string;
+    authMethodId: string;
+    clientId: string;
+    clientSecret: string;
+  }) {
+    let existing = d.credentialId ? this.data.oauthCredentials[d.credentialId] : undefined;
+    let id = existing?.id ?? d.credentialId ?? randomUUID();
+    let credential: SlatesOAuthCredentialRecord = {
+      id,
+      name: d.name,
+      authMethodId: d.authMethodId,
+      clientId: d.clientId,
+      clientSecret: d.clientSecret,
+      createdAt: existing?.createdAt ?? now(),
+      updatedAt: now()
+    };
+
+    this.data.oauthCredentials[id] = credential;
+    return credential;
   }
 
   setCurrentProfile(profileId: string) {
@@ -223,5 +407,7 @@ export class SlatesCliStore {
   }
 }
 
-export let openSlatesCliStore = async (opts: { cwd?: string } = {}) =>
+export let openSlatesCliStore = async (
+  opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
+) =>
   SlatesCliStore.open(opts);

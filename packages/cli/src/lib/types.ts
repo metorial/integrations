@@ -1,6 +1,7 @@
 export type JsonObject = Record<string, any>;
 
 export type WithProfile = {
+  integration: string;
   profile?: string;
 };
 

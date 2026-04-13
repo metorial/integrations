@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import { promisify } from 'util';
 
 let execFileAsync = promisify(execFile);
+let DEFAULT_OAUTH_CALLBACK_PORT = 45873;
 
 export let chooseScopes = async (
   authMethod: any,
@@ -51,6 +52,7 @@ export let createOAuthCallbackListener = async () => {
   }>((resolve, reject) => {
     let expectedState = randomUUID();
     let settled = false;
+    let callbackPort = Number(process.env.SLATES_OAUTH_PORT ?? DEFAULT_OAUTH_CALLBACK_PORT);
 
     let server = createServer((req, res) => {
       try {
@@ -100,8 +102,24 @@ export let createOAuthCallbackListener = async () => {
     );
 
     server.on('close', () => clearTimeout(timeout));
+    server.on('error', error => {
+      if (settled) return;
+      settled = true;
 
-    server.listen(0, '127.0.0.1', () => {
+      let errno = error as NodeJS.ErrnoException;
+      if (errno.code === 'EADDRINUSE') {
+        reject(
+          new Error(
+            `OAuth callback port ${callbackPort} is already in use. Free that port or set SLATES_OAUTH_PORT to a different fixed port.`
+          )
+        );
+        return;
+      }
+
+      reject(error);
+    });
+
+    server.listen(callbackPort, '127.0.0.1', () => {
       let address = server.address();
       if (!address || typeof address === 'string') {
         reject(new Error('Could not determine OAuth callback address.'));

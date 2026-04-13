@@ -14,7 +14,9 @@ let createTempDir = async () => {
 };
 
 afterEach(async () => {
+  delete process.env.SLATES_INTEGRATION;
   delete process.env.SLATES_PROFILE_ID;
+  delete process.env.SLATES_STORE_PATH;
   delete process.env.SLATES_TEST_CONTEXT_PATH;
   await Promise.all(tempDirs.splice(0).map(dir => rm(dir, { recursive: true, force: true })));
 });
@@ -22,7 +24,13 @@ afterEach(async () => {
 describe('@slates/test', () => {
   it('loads runtime context from the CLI handoff file', async () => {
     let cwd = await createTempDir();
-    let store = await openSlatesCliStore({ cwd });
+    let store = await openSlatesCliStore({
+      cwd,
+      scope: {
+        key: 'integrations/demo',
+        name: 'demo'
+      }
+    });
     let profile = store.upsertProfile({
       name: 'Demo',
       target: {
@@ -37,6 +45,7 @@ describe('@slates/test', () => {
     await writeFile(
       runtimeContextPath,
       JSON.stringify({
+        integration: 'integrations/demo',
         profileId: profile.id,
         storePath: store.storePath,
         cliDir: store.dirPath
@@ -47,6 +56,7 @@ describe('@slates/test', () => {
     process.env.SLATES_TEST_CONTEXT_PATH = runtimeContextPath;
 
     let context = await loadSlatesRuntimeContext({ cwd });
+    expect(context.integration).toBe('integrations/demo');
     expect(context.profileId).toBe(profile.id);
     expect(context.profile?.target.type).toBe('local');
     expect(context.storePath).toBe(store.storePath);

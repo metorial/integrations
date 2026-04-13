@@ -3,14 +3,37 @@ import { SlatesProtocolClient } from '@slates/client';
 import {
   createSlatesClientFromProfile,
   openSlatesCliStore,
-  SlatesProfileRecord
+  SlatesProfileRecord,
+  type SlatesCliStore
 } from '@slates/profiles';
+import { resolveIntegration } from './integration';
 import { promptForObjectSchema } from './prompts';
 
-export let chooseProfile = async (d: { profile?: string; message?: string }) => {
-  let store = await openSlatesCliStore();
+export let openIntegrationStore = async (integration: string) => {
+  let resolved = await resolveIntegration(integration);
+  let store = await openSlatesCliStore({
+    cwd: resolved.rootDir,
+    scope: {
+      key: resolved.relativeDir,
+      name: resolved.name
+    }
+  });
+
+  return {
+    integration: resolved,
+    store
+  };
+};
+
+export let chooseProfile = async (d: {
+  integration: string;
+  profile?: string;
+  message?: string;
+}) => {
+  let { integration, store } = await openIntegrationStore(d.integration);
   if (d.profile) {
     return {
+      integration,
       store,
       profile: store.requireProfile(d.profile)
     };
@@ -18,12 +41,15 @@ export let chooseProfile = async (d: { profile?: string; message?: string }) => 
 
   let profiles = store.listProfiles();
   if (profiles.length === 0) {
-    throw new Error('No Slates profiles found. Create one with `slates profiles add`.');
+    throw new Error(
+      `No Slates profiles found for ${integration.name}. Create one with \`slates ${d.integration} setup\`.`
+    );
   }
 
   let current = store.getProfile();
   if (profiles.length === 1) {
     return {
+      integration,
       store,
       profile: profiles[0]!
     };
@@ -39,19 +65,47 @@ export let chooseProfile = async (d: { profile?: string; message?: string }) => 
   });
 
   return {
+    integration,
     store,
     profile: store.requireProfile(profileId)
   };
 };
 
-export let createClientContext = async (profileId?: string) => {
-  let { store, profile } = await chooseProfile({ profile: profileId });
-  let client = await createSlatesClientFromProfile(profile);
-  return { store, profile, client };
+export let createClientContext = async (opts: { integration: string; profile?: string }) => {
+  let { integration, store, profile } = await chooseProfile(opts);
+  let client = await createSlatesClientFromProfile(profile, { store });
+  return { integration, store, profile, client };
+};
+
+export let createIntegrationClientContext = async (opts: { integration: string }) => {
+  let { integration, store } = await openIntegrationStore(opts.integration);
+  let client = await createSlatesClientFromProfile(
+    {
+      id: `integration-${integration.name}`,
+      name: integration.name,
+      target: {
+        type: 'local',
+        entry: integration.entry,
+        exportName: 'provider'
+      },
+      config: null,
+      auth: {},
+      session: null,
+      metadata: {
+        provider: null,
+        actions: null
+      },
+      createdAt: new Date(0).toISOString(),
+      updatedAt: new Date(0).toISOString()
+    },
+    { store }
+  );
+
+  return { integration, store, client };
 };
 
 export let syncProfileMetadata = async (d: {
-  store: Awaited<ReturnType<typeof openSlatesCliStore>>;
+  store: SlatesCliStore;
   profile: SlatesProfileRecord;
   client: SlatesProtocolClient;
 }) => {
@@ -64,7 +118,7 @@ export let syncProfileMetadata = async (d: {
 };
 
 export let ensureProfileConfig = async (d: {
-  store: Awaited<ReturnType<typeof openSlatesCliStore>>;
+  store: SlatesCliStore;
   profile: SlatesProfileRecord;
   client: SlatesProtocolClient;
 }) => {
@@ -106,6 +160,7 @@ export let chooseTool = async (d: { client: SlatesProtocolClient; toolId?: strin
 export let chooseAuthMethod = async (d: {
   client: SlatesProtocolClient;
   authMethodId?: string;
+  forcePrompt?: boolean;
 }) => {
   let methods = (await d.client.listAuthMethods()).authenticationMethods;
   if (methods.length === 0) {
@@ -121,7 +176,7 @@ export let chooseAuthMethod = async (d: {
     return method;
   }
 
-  if (methods.length === 1) {
+  if (methods.length === 1 && !d.forcePrompt) {
     return methods[0]!;
   }
 

@@ -8,6 +8,7 @@ import { readFile } from 'fs/promises';
 import { expect } from 'vitest';
 
 export interface SlatesRuntimeContext {
+  integration: string | null;
   profileId: string | null;
   profile: SlatesProfileRecord | null;
   storePath: string;
@@ -24,14 +25,16 @@ export let loadSlatesRuntimeContext = async (
   if (runtimeContextPath) {
     let raw = await readFile(runtimeContextPath, 'utf-8');
     let parsed = JSON.parse(raw) as {
+      integration?: string | null;
       profileId: string | null;
       storePath: string;
       cliDir: string;
     };
-    let store = await openSlatesCliStore({ cwd: opts.cwd });
+    let store = await openSlatesCliStore({ storePath: parsed.storePath });
     let profile = store.getProfile(opts.profile ?? parsed.profileId ?? null);
 
     return {
+      integration: parsed.integration ?? store.scope?.key ?? null,
       profileId: profile?.id ?? parsed.profileId ?? null,
       profile,
       storePath: parsed.storePath,
@@ -39,11 +42,14 @@ export let loadSlatesRuntimeContext = async (
     };
   }
 
-  let store = await openSlatesCliStore({ cwd: opts.cwd });
+  let store = process.env.SLATES_STORE_PATH
+    ? await openSlatesCliStore({ storePath: process.env.SLATES_STORE_PATH })
+    : await openSlatesCliStore({ cwd: opts.cwd });
   let profileId = opts.profile ?? process.env.SLATES_PROFILE_ID ?? null;
   let profile = store.getProfile(profileId);
 
   return {
+    integration: process.env.SLATES_INTEGRATION ?? store.scope?.key ?? null,
     profileId: profile?.id ?? null,
     profile,
     storePath: store.storePath,

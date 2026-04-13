@@ -9,10 +9,21 @@ export interface SlatesStoredAuth {
   input: SlatesJsonObject;
   output: SlatesJsonObject;
   scopes: string[];
+  oauthCredentialId?: string;
   clientId?: string;
   clientSecret?: string;
   callbackState?: SlatesJsonObject | null;
   profile?: SlatesJsonObject | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SlatesOAuthCredentialRecord {
+  id: string;
+  name: string;
+  authMethodId: string;
+  clientId: string;
+  clientSecret: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +35,11 @@ export interface SlatesLocalProfileTarget {
 }
 
 export type SlatesProfileTarget = SlatesLocalProfileTarget;
+
+export interface SlatesCliStoreScope {
+  key: string;
+  name?: string;
+}
 
 export interface SlatesProfileRecord {
   id: string;
@@ -44,7 +60,8 @@ export interface SlatesProfileRecord {
 }
 
 export interface SlatesCliStoreData {
-  version: 1;
+  version: 3;
   currentProfileId: string | null;
   profiles: Record<string, SlatesProfileRecord>;
+  oauthCredentials: Record<string, SlatesOAuthCredentialRecord>;
 }

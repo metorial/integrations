@@ -1,7 +1,8 @@
 import { input } from '@inquirer/prompts';
 import { createSlatesClientFromProfile, openSlatesCliStore } from '@slates/profiles';
 import path from 'path';
-import { chooseProfile, syncProfileMetadata } from '../lib/context';
+import { chooseProfile, openIntegrationStore, syncProfileMetadata } from '../lib/context';
+import { WithProfile } from '../lib/types';
 
 let normalizeEntry = (rootDir: string, entry: string) => {
   let absolute = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
@@ -11,24 +12,51 @@ let normalizeEntry = (rootDir: string, entry: string) => {
     : absolute;
 };
 
-export let addProfile = async (opts: {
-  name?: string;
-  entry?: string;
-  exportName?: string;
-  useAsDefault?: boolean;
-}) => {
-  let store = await openSlatesCliStore();
+let getNextSetupProfileName = async (store: Awaited<ReturnType<typeof openSlatesCliStore>>) => {
+  let names = new Set(store.listProfiles().map(profile => profile.name));
+  if (!names.has('default')) {
+    return 'default';
+  }
 
-  let name = opts.name ?? (await input({ message: 'Profile name' }));
+  let suffix = 2;
+  while (names.has(`default-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `default-${suffix}`;
+};
+
+let createProfile = async (
+  opts: WithProfile & {
+    name?: string;
+    entry?: string;
+    exportName?: string;
+    useAsDefault?: boolean;
+    initializeConfig?: boolean;
+    interactive?: boolean;
+  }
+) => {
+  let { integration, store } = await openIntegrationStore(opts.integration);
+  let interactive = opts.interactive ?? true;
+
+  let defaultName =
+    opts.name ??
+    (opts.initializeConfig ? await getNextSetupProfileName(store) : `profile-${store.listProfiles().length + 1}`);
+  let name =
+    opts.name ??
+    (interactive ? await input({ message: 'Profile name', default: defaultName }) : defaultName);
+  let defaultEntry = opts.entry ?? integration.entry;
   let entry =
     opts.entry ??
-    (await input({
-      message: 'Local slate entry file',
-      default: 'packages/slates/example/google-sheets/index.ts'
-    }));
+    (interactive
+      ? await input({
+          message: 'Local slate entry file',
+          default: defaultEntry
+        })
+      : defaultEntry);
   let exportName =
     opts.exportName ??
-    (await input({ message: 'Export name (optional)', default: 'provider' }));
+    (interactive ? await input({ message: 'Export name (optional)', default: 'provider' }) : 'provider');
 
   let profile = store.upsertProfile({
     name,
@@ -42,6 +70,12 @@ export let addProfile = async (opts: {
   let client = await createSlatesClientFromProfile(profile);
   await syncProfileMetadata({ store, profile, client });
 
+  if (opts.initializeConfig) {
+    let defaultConfig = (await client.getDefaultConfig()).config ?? {};
+    let result = await client.updateConfig(null, defaultConfig);
+    store.setProfileConfig(profile.id, result.config ?? defaultConfig);
+  }
+
   if (opts.useAsDefault ?? store.listProfiles().length === 1) {
     store.setCurrentProfile(profile.id);
   }
@@ -51,25 +85,58 @@ export let addProfile = async (opts: {
   return profile;
 };
 
-export let listProfiles = async () => {
-  let store = await openSlatesCliStore();
-  return store.listProfiles();
+export let addProfile = async (
+  opts: WithProfile & {
+    name?: string;
+    entry?: string;
+    exportName?: string;
+    useAsDefault?: boolean;
+  }
+) =>
+  createProfile({
+    ...opts,
+    interactive: true
+  });
+
+export let setupIntegration = async (
+  opts: WithProfile & {
+    name?: string;
+    exportName?: string;
+  }
+) =>
+  createProfile({
+    ...opts,
+    useAsDefault: true,
+    initializeConfig: true,
+    interactive: false
+  });
+
+export let listProfiles = async (opts: Pick<WithProfile, 'integration'>) => {
+  let { store } = await openIntegrationStore(opts.integration);
+  let current = store.getProfile();
+  return store.listProfiles().map(profile => ({
+    name: profile.name,
+    id: profile.id,
+    current: profile.id === current?.id,
+    entry: profile.target.type === 'local' ? profile.target.entry : null,
+    authMethods: Object.keys(profile.auth)
+  }));
 };
 
-export let getProfile = async (profileId?: string) => {
-  let store = await openSlatesCliStore();
-  return store.requireProfile(profileId);
+export let getProfile = async (opts: WithProfile) => {
+  let { store } = await openIntegrationStore(opts.integration);
+  return store.requireProfile(opts.profile);
 };
 
-export let useProfile = async (profileId?: string) => {
-  let { store, profile } = await chooseProfile({ profile: profileId });
+export let useProfile = async (opts: WithProfile) => {
+  let { store, profile } = await chooseProfile(opts);
   store.setCurrentProfile(profile.id);
   await store.save();
   return profile;
 };
 
-export let removeProfile = async (profileId?: string) => {
-  let { store, profile } = await chooseProfile({ profile: profileId });
+export let removeProfile = async (opts: WithProfile) => {
+  let { store, profile } = await chooseProfile(opts);
   store.removeProfile(profile.id);
   await store.save();
   return profile;
