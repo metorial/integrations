@@ -5,7 +5,7 @@
     "lint:fix": "biome lint --write .",
     "format": "prettier --write .",
     "packages:build": "turbo run build --filter=./packages/*",
-    "integrations:build:inner": "turbo run build --filter=./integrations/*",
+    "integrations:build:inner": "turbo run build --concurrency=5 --ui=stream --filter=./integrations/*",
     "integrations:build": "bun run packages:build && bun run integrations:build:inner"
   },
   "devDependencies": {
