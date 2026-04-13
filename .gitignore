@@ -95,6 +95,8 @@ dist
 .temp
 .cache
 
+.ncc-dist
+
 # Sveltekit cache directory
 .svelte-kit/
 

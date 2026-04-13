@@ -10,7 +10,9 @@ function parseSubscription(
   let parts = st.split('.');
   if (parts.length < 2) return null;
   let objectType = parts[0];
-  let tail = parts[1]?.toLowerCase() ?? '';
+  let tail = parts[1];
+  if (!objectType || !tail) return null;
+  tail = tail.toLowerCase();
   if (tail === 'creation' || tail === 'create') return { objectType, changeType: 'created' };
   if (
     tail === 'deletion' ||

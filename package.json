@@ -22,7 +22,7 @@
   "packageManager": "bun@1.2.15",
   "workspaces": [
     "packages/*",
-    "output/*"
+    "integrations/*"
   ],
   "dependencies": {}
 }
