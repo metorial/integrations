@@ -1,0 +1,99 @@
+name: Publish integrations
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'integrations/**/package.json'
+  #     - 'scripts/get-updated-integrations.ts'
+  #     - '.github/workflows/publish-integrations.yml'
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'Optional package filter, for example "@slates-integrations/google-*"'
+        required: false
+        type: string
+
+jobs:
+  detect-unpublished-integrations:
+    name: Detect unpublished integrations
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
+      count: ${{ steps.discover.outputs.count }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.15
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Discover unpublished integration versions
+        id: discover
+        shell: bash
+        env:
+          FILTER: ${{ github.event.inputs.filter || '' }}
+        run: |
+          cmd=(bun scripts/get-updated-integrations.ts)
+          if [[ -n "$FILTER" ]]; then
+            cmd+=(--filter "$FILTER")
+          fi
+
+          matrix="$("${cmd[@]}")"
+          count="$(printf '%s' "$matrix" | bun -e 'const input = await Bun.stdin.text(); const data = JSON.parse(input); console.log(data.include.length);')"
+
+          {
+            echo 'matrix<<EOF'
+            echo "$matrix"
+            echo 'EOF'
+            echo "count=$count"
+          } >> "$GITHUB_OUTPUT"
+
+  publish-integration:
+    name: Publish ${{ matrix.name }}
+    needs: detect-unpublished-integrations
+    if: ${{ needs.detect-unpublished-integrations.outputs.count != '0' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix: ${{ fromJSON(needs.detect-unpublished-integrations.outputs.matrix) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.15
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build integration package
+        run: bunx turbo run build --filter="${{ matrix.name }}"
+
+      - name: Publish integration to npm
+        working-directory: ${{ matrix.directory }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
