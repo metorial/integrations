@@ -23,11 +23,11 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
   "types": "dist/index.d.ts",
-  "unpkg": "./dist/index.umd.js",
+  "unpkg": "./dist/index.module.js",
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "lint": "prettier src/**/*.ts --check",
-    "build": "microbundle --external async_hooks",
+    "build": "tsup --config ../../tsup.packages.config.ts --external async_hooks",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

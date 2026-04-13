@@ -5,11 +5,13 @@
     "lint:fix": "biome lint --write .",
     "format": "prettier --write .",
     "packages:build": "turbo run build --filter=./packages/*",
-    "integrations:build": "turbo run build --filter=integration-"
+    "integrations:build:inner": "turbo run build --filter=./integrations/*",
+    "integrations:build": "bun run packages:build && bun run integrations:build:inner"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "prettier": "^3.7.4",
+    "tsup": "^8.5.1",
     "turbo": "^2.5.5",
     "typescript": "5.8.2"
   },
