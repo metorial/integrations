@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AuthClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let listUsers = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(firebaseActionScopes.listUsers)
   .input(
     z.object({
       maxResults: z

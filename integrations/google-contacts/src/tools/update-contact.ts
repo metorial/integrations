@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { contactInputSchema, contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let updateContact = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.updateContact)
   .input(
     z.object({
       resourceName: z

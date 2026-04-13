@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleSlidesScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,50 +19,50 @@ export let auth = SlateAuth.create()
       {
         title: 'Presentations',
         description: 'See, edit, create, and delete all Google Slides presentations.',
-        scope: 'https://www.googleapis.com/auth/presentations'
+        scope: googleSlidesScopes.presentations
       },
       {
         title: 'Presentations (Read-only)',
         description: 'See all Google Slides presentations.',
-        scope: 'https://www.googleapis.com/auth/presentations.readonly'
+        scope: googleSlidesScopes.presentationsReadonly
       },
       {
         title: 'Drive File',
         description:
           'See, edit, create, and delete only the specific Google Drive files used with the app. (Recommended)',
-        scope: 'https://www.googleapis.com/auth/drive.file'
+        scope: googleSlidesScopes.driveFile
       },
       {
         title: 'Drive',
         description: 'See, edit, create, and delete all Google Drive files.',
-        scope: 'https://www.googleapis.com/auth/drive'
+        scope: googleSlidesScopes.drive
       },
       {
         title: 'Drive (Read-only)',
         description: 'See and download all Google Drive files.',
-        scope: 'https://www.googleapis.com/auth/drive.readonly'
+        scope: googleSlidesScopes.driveReadonly
       },
       {
         title: 'Spreadsheets (Read-only)',
         description:
           'See all Google Sheets spreadsheets. Required for refreshing linked charts.',
-        scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        scope: googleSlidesScopes.spreadsheetsReadonly
       },
       {
         title: 'Spreadsheets',
         description: 'See, edit, create, and delete all Google Sheets spreadsheets.',
-        scope: 'https://www.googleapis.com/auth/spreadsheets'
+        scope: googleSlidesScopes.spreadsheets
       },
       {
         title: 'User Profile',
         description:
           "See your personal info, including any personal info you've made publicly available.",
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleSlidesScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'See your primary Google Account email address.',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleSlidesScopes.userInfoEmail
       }
     ],
 
@@ -106,13 +107,16 @@ export let auth = SlateAuth.create()
       if (data.expires_in) {
         expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
       }
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

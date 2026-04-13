@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GtmClient } from '../lib/client';
+import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -35,6 +36,7 @@ export let manageEnvironment = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleTagManagerActionScopes.manageEnvironment)
   .input(
     z.object({
       action: z

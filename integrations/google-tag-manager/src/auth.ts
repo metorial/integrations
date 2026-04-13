@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleTagManagerScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,48 +27,48 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Only',
         description: 'View your Google Tag Manager container and its subcomponents',
-        scope: 'https://www.googleapis.com/auth/tagmanager.readonly'
+        scope: googleTagManagerScopes.readonly
       },
       {
         title: 'Edit Containers',
         description:
           'Manage your container and its subcomponents, excluding versioning and publishing',
-        scope: 'https://www.googleapis.com/auth/tagmanager.edit.containers'
+        scope: googleTagManagerScopes.editContainers
       },
       {
         title: 'Edit Versions',
         description: 'Manage your container versions',
-        scope: 'https://www.googleapis.com/auth/tagmanager.edit.containerversions'
+        scope: googleTagManagerScopes.editContainerVersions
       },
       {
         title: 'Delete Containers',
         description: 'Delete your Google Tag Manager containers',
-        scope: 'https://www.googleapis.com/auth/tagmanager.delete.containers'
+        scope: googleTagManagerScopes.deleteContainers
       },
       {
         title: 'Manage Accounts',
         description: 'View and manage your Google Tag Manager accounts',
-        scope: 'https://www.googleapis.com/auth/tagmanager.manage.accounts'
+        scope: googleTagManagerScopes.manageAccounts
       },
       {
         title: 'Manage Users',
         description: 'Manage user permissions of your account and container',
-        scope: 'https://www.googleapis.com/auth/tagmanager.manage.users'
+        scope: googleTagManagerScopes.manageUsers
       },
       {
         title: 'Publish',
         description: 'Publish your Google Tag Manager container versions',
-        scope: 'https://www.googleapis.com/auth/tagmanager.publish'
+        scope: googleTagManagerScopes.publish
       },
       {
         title: 'User Profile',
         description: 'View your basic profile info',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleTagManagerScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View your email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleTagManagerScopes.userInfoEmail
       }
     ],
 
@@ -108,13 +109,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

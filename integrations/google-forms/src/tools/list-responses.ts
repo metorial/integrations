@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -56,6 +57,7 @@ Supports pagination and timestamp filtering to retrieve only recent submissions.
     readOnly: true
   }
 })
+  .scopes(googleFormsActionScopes.listResponses)
   .input(
     z.object({
       formId: z.string().describe('The ID of the Google Form'),

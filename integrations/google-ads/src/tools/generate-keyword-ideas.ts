@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ Similar to the Keyword Planner tool in the Google Ads UI. Useful for keyword res
     readOnly: true
   }
 })
+  .scopes(googleAdsActionScopes.generateKeywordIdeas)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -108,4 +110,5 @@ Similar to the Keyword Planner tool in the Google Ads UI. Useful for keyword res
       },
       message: `Generated **${keywordIdeas.length}** keyword idea(s).`
     };
-  });
+  })
+  .build();

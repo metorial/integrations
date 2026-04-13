@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let taskChanges = SlateTrigger.create(spec, {
   description:
     'Detects new, updated, completed, and deleted tasks across all task lists by polling the Google Tasks API.'
 })
+  .scopes(googleTasksActionScopes.taskChanges)
   .input(
     z.object({
       changeType: z

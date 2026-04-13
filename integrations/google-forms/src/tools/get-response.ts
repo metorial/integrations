@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -41,6 +42,7 @@ Useful for inspecting a specific submission in detail.`,
     readOnly: true
   }
 })
+  .scopes(googleFormsActionScopes.getResponse)
   .input(
     z.object({
       formId: z.string().describe('The ID of the Google Form'),

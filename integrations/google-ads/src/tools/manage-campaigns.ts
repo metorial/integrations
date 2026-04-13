@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -36,6 +37,7 @@ When creating a campaign, a campaign budget is automatically created if \`dailyB
   ],
   constraints: ['Campaign type cannot be changed after creation.']
 })
+  .scopes(googleAdsActionScopes.manageCampaigns)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID (without hyphens)'),
@@ -269,4 +271,5 @@ When creating a campaign, a campaign budget is automatically created if \`dailyB
       },
       message: `Campaign **${ctx.input.campaignId}** updated (fields: ${updateMaskFields.join(', ')}).`
     };
-  });
+  })
+  .build();

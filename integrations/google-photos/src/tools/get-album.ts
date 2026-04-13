@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getAlbum = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let getAlbum = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.getAlbum)
   .input(
     z.object({
       albumId: z.string().describe('The ID of the album to retrieve')

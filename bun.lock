@@ -4144,7 +4144,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/fireberry": {
@@ -4771,7 +4773,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/godial": {
@@ -4826,7 +4830,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-admin": {
@@ -4837,7 +4843,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-ads": {
@@ -4848,7 +4856,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-analytics": {
@@ -4859,7 +4869,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-calendar": {
@@ -4883,7 +4895,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-cloud-functions": {
@@ -4894,7 +4908,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-cloud-speech": {
@@ -4905,7 +4921,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-cloud-storage": {
@@ -4916,7 +4934,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-cloud-vision": {
@@ -4927,7 +4947,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-contacts": {
@@ -4938,7 +4960,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-docs": {
@@ -4949,7 +4973,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-drive": {
@@ -4960,7 +4986,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-forms": {
@@ -4971,7 +4999,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-maps": {
@@ -4982,7 +5012,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-meet": {
@@ -4993,7 +5025,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-photos": {
@@ -5004,7 +5038,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-search-console": {
@@ -5015,7 +5051,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-sheets": {
@@ -5026,7 +5064,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-slides": {
@@ -5037,7 +5077,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-tag-manager": {
@@ -5048,7 +5090,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/google-tasks": {
@@ -5059,7 +5103,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/gorgias": {
@@ -12077,7 +12123,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/youtube-analytics": {
@@ -12088,7 +12136,9 @@
         "zod": "^4.2",
       },
       "devDependencies": {
+        "@slates/test": "workspace:*",
         "typescript": "^5",
+        "vitest": "^3.1.2",
       },
     },
     "integrations/zapier": {
@@ -12420,7 +12470,7 @@
       "name": "slates",
       "version": "1.0.0-rc.6",
       "dependencies": {
-        "@slates/provider": "^1.0.0-rc.6",
+        "@slates/provider": "workspace:*",
       },
       "devDependencies": {
         "@slates/tsconfig": "^1.0.0",

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleMeetScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -27,37 +28,37 @@ export let auth = SlateAuth.create()
         title: 'Spaces (Created)',
         description:
           'Create, modify, and read metadata about meeting spaces created by your app.',
-        scope: 'https://www.googleapis.com/auth/meetings.space.created'
+        scope: googleMeetScopes.spaceCreated
       },
       {
         title: 'Spaces (Read)',
         description: 'Read metadata about any meeting space the user has access to.',
-        scope: 'https://www.googleapis.com/auth/meetings.space.readonly'
+        scope: googleMeetScopes.spaceReadonly
       },
       {
         title: 'Space Settings',
         description: 'Edit and see the settings for all Google Meet calls.',
-        scope: 'https://www.googleapis.com/auth/meetings.space.settings'
+        scope: googleMeetScopes.spaceSettings
       },
       {
         title: 'Drive (Read)',
         description: 'Download recording and transcript files from Google Drive.',
-        scope: 'https://www.googleapis.com/auth/drive.readonly'
+        scope: googleMeetScopes.driveReadonly
       },
       {
         title: 'Drive Meet (Read)',
         description: 'View Drive files created or edited by Google Meet.',
-        scope: 'https://www.googleapis.com/auth/drive.meet.readonly'
+        scope: googleMeetScopes.driveMeetReadonly
       },
       {
         title: 'User Profile',
         description: 'View basic profile information.',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleMeetScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View email address.',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleMeetScopes.userInfoEmail
       }
     ],
 
@@ -98,13 +99,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

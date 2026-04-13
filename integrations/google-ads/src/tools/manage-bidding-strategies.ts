@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ For campaign-level bidding, use the Manage Campaigns tool instead. This tool is 
     'Monetary values use micros (1 currency unit = 1,000,000 micros).'
   ]
 })
+  .scopes(googleAdsActionScopes.manageBiddingStrategies)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -147,4 +149,5 @@ For campaign-level bidding, use the Manage Campaigns tool instead. This tool is 
       output: { biddingStrategyResourceName: resourceName, mutateResults: result },
       message: `Bidding strategy **${ctx.input.biddingStrategyId}** updated.`
     };
-  });
+  })
+  .build();

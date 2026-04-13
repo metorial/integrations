@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ This helps with compliance and security monitoring by tracking API and UI data a
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.auditDataAccess)
   .input(
     z.object({
       startDate: z.string().describe('Start date in YYYY-MM-DD format.'),

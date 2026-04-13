@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RemoteConfigClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let updateRemoteConfig = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.updateRemoteConfig)
   .input(
     z.object({
       operation: z

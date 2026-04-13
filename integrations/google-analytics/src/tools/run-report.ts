@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsDataClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -89,6 +90,7 @@ Common metrics: \`activeUsers\`, \`sessions\`, \`screenPageViews\`, \`conversion
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.runReport)
   .input(
     z.object({
       dateRanges: z

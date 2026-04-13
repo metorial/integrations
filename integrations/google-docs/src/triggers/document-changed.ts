@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GoogleDocsClient, DriveChange } from '../lib/client';
+import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let documentChanged = SlateTrigger.create(spec, {
   description:
     'Triggers when a Google Docs document is created, modified, or deleted. Uses the Google Drive API to monitor changes to documents.'
 })
+  .scopes(googleDocsActionScopes.documentChanged)
   .input(
     z.object({
       changeType: z.enum(['file', 'user']).describe('Type of change detected'),

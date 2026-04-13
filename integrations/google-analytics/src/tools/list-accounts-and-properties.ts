@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let listAccountsAndProperties = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.listAccountsAndProperties)
   .input(
     z.object({
       accountId: z

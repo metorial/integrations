@@ -1,11 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleCloudVisionScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
     z.object({
       token: z.string(),
-      authMethod: z.enum(['api_key', 'oauth'])
+      authMethod: z.enum(['api_key', 'oauth']),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
     })
   )
   .addOauth({
@@ -17,12 +20,12 @@ export let auth = SlateAuth.create()
       {
         title: 'Cloud Platform',
         description: 'Full access to Google Cloud Platform resources including Cloud Vision',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: googleCloudVisionScopes.cloudPlatform
       },
       {
         title: 'Cloud Vision',
         description: 'Access to Google Cloud Vision API',
-        scope: 'https://www.googleapis.com/auth/cloud-vision'
+        scope: googleCloudVisionScopes.cloudVision
       }
     ],
 
@@ -60,16 +63,28 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
           token: data.access_token,
-          authMethod: 'oauth' as const
-        }
+          authMethod: 'oauth' as const,
+          refreshToken: data.refresh_token,
+          expiresAt
+        },
+        scopes: grantedScopes
       };
     },
 
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
       let axios = createAxios();
 
       let response = await axios.post(
@@ -77,7 +92,7 @@ export let auth = SlateAuth.create()
         {
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          refresh_token: ctx.output.token,
+          refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token'
         },
         {
@@ -86,11 +101,16 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
           token: data.access_token,
-          authMethod: 'oauth' as const
+          authMethod: 'oauth' as const,
+          refreshToken: ctx.output.refreshToken,
+          expiresAt
         }
       };
     }

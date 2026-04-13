@@ -1,5 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleSearchConsoleScopes } from './scopes';
+
+let googleOAuthAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,22 +27,22 @@ export let auth = SlateAuth.create()
       {
         title: 'Read & Write',
         description: 'Full read and write access to Google Search Console properties',
-        scope: 'https://www.googleapis.com/auth/webmasters'
+        scope: googleSearchConsoleScopes.webmasters
       },
       {
         title: 'Read Only',
         description: 'Read-only access to Google Search Console properties',
-        scope: 'https://www.googleapis.com/auth/webmasters.readonly'
+        scope: googleSearchConsoleScopes.webmastersReadonly
       },
       {
         title: 'Email',
         description: 'View your email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleSearchConsoleScopes.userInfoEmail
       },
       {
         title: 'Profile',
         description: 'View your basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleSearchConsoleScopes.userInfoProfile
       }
     ],
 
@@ -54,11 +63,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios({
-        baseURL: 'https://oauth2.googleapis.com'
-      });
-
-      let response = await http.post(
+      let response = await googleOAuthAxios.post(
         '/token',
         new URLSearchParams({
           code: ctx.code,
@@ -74,16 +79,20 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let expiresAt = response.data.expires_in
-        ? new Date(Date.now() + response.data.expires_in * 1000).toISOString()
+      let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
-          token: response.data.access_token,
-          refreshToken: response.data.refresh_token,
+          token: data.access_token,
+          refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -92,11 +101,7 @@ export let auth = SlateAuth.create()
         return { output: ctx.output };
       }
 
-      let http = createAxios({
-        baseURL: 'https://oauth2.googleapis.com'
-      });
-
-      let response = await http.post(
+      let response = await googleOAuthAxios.post(
         '/token',
         new URLSearchParams({
           refresh_token: ctx.output.refreshToken,
@@ -111,13 +116,14 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let expiresAt = response.data.expires_in
-        ? new Date(Date.now() + response.data.expires_in * 1000).toISOString()
+      let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
 
       return {
         output: {
-          token: response.data.access_token,
+          token: data.access_token,
           refreshToken: ctx.output.refreshToken,
           expiresAt
         }
@@ -129,11 +135,7 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let http = createAxios({
-        baseURL: 'https://www.googleapis.com'
-      });
-
-      let response = await http.get('/oauth2/v2/userinfo', {
+      let response = await profileAxios.get('/oauth2/v2/userinfo', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
         }

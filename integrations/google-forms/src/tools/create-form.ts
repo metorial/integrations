@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ Returns the new form's ID, responder URL, and metadata.`,
     readOnly: false
   }
 })
+  .scopes(googleFormsActionScopes.createForm)
   .input(
     z.object({
       title: z.string().describe('The visible title of the form shown to respondents'),

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -21,6 +22,7 @@ export let manageSettings = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(gmailActionScopes.manageSettings)
   .input(
     z.object({
       action: z

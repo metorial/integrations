@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let topicSchema = z.object({
@@ -18,6 +19,7 @@ export let manageTopics = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.manageTopics)
   .input(
     z.object({
       courseId: z.string().describe('ID of the course'),

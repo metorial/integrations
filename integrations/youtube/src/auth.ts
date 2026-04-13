@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { youtubeScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,40 +27,40 @@ export let auth = SlateAuth.create()
       {
         title: 'Manage Account',
         description: 'Manage your YouTube account',
-        scope: 'https://www.googleapis.com/auth/youtube'
+        scope: youtubeScopes.youtube
       },
       {
         title: 'Read Only',
         description: 'View your YouTube account',
-        scope: 'https://www.googleapis.com/auth/youtube.readonly'
+        scope: youtubeScopes.youtubeReadonly
       },
       {
         title: 'Force SSL',
         description:
           'See, edit, and permanently delete your YouTube videos, ratings, comments, and captions',
-        scope: 'https://www.googleapis.com/auth/youtube.force-ssl'
+        scope: youtubeScopes.youtubeForceSsl
       },
       {
         title: 'Upload Videos',
         description: 'Manage your YouTube videos',
-        scope: 'https://www.googleapis.com/auth/youtube.upload'
+        scope: youtubeScopes.youtubeUpload
       },
       {
         title: 'Memberships',
         description:
           'See a list of your current active channel members, their current level, and when they became a member',
-        scope: 'https://www.googleapis.com/auth/youtube.channel-memberships.creator'
+        scope: youtubeScopes.youtubeChannelMembershipsCreator
       },
       {
         title: 'Partner',
         description: 'View and manage your assets and associated content on YouTube',
-        scope: 'https://www.googleapis.com/auth/youtubepartner'
+        scope: youtubeScopes.youtubepartner
       },
       {
         title: 'Partner Audit',
         description:
           'View private information of your YouTube channel relevant during the audit process with a YouTube partner',
-        scope: 'https://www.googleapis.com/auth/youtubepartner-channel-audit'
+        scope: youtubeScopes.youtubepartnerChannelAudit
       }
     ],
 
@@ -100,13 +101,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleAddressValidationScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
@@ -35,7 +36,7 @@ export let auth = SlateAuth.create()
         title: 'Cloud Platform',
         description:
           'Full access to Google Cloud Platform services including Address Validation',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: googleAddressValidationScopes.cloudPlatform
       }
     ],
     inputSchema: z.object({
@@ -68,17 +69,26 @@ export let auth = SlateAuth.create()
         grant_type: 'authorization_code'
       });
 
+      let data = response.data;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
+
       return {
         output: {
-          token: response.data.access_token,
-          refreshToken: response.data.refresh_token,
-          expiresAt: response.data.expires_in
-            ? new Date(Date.now() + response.data.expires_in * 1000).toISOString()
+          token: data.access_token,
+          refreshToken: data.refresh_token,
+          expiresAt: data.expires_in
+            ? new Date(Date.now() + data.expires_in * 1000).toISOString()
             : undefined
-        }
+        },
+        scopes: grantedScopes
       };
     },
     handleTokenRefresh: async ctx => {
+      if (!ctx.output.refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
       let axiosInstance = createAxios();
 
       let response = await axiosInstance.post('https://oauth2.googleapis.com/token', {

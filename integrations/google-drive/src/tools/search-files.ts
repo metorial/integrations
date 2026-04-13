@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -45,6 +46,7 @@ export let searchFilesTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.searchFiles)
   .input(
     z.object({
       query: z

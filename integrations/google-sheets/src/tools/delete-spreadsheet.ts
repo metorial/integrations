@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { DriveClient } from '../lib/drive-client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let deleteSpreadsheet = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSheetsActionScopes.deleteSpreadsheet)
   .input(
     z.object({
       spreadsheetId: z.string().describe('Unique ID of the spreadsheet to delete')

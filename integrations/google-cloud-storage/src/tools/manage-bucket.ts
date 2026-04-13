@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let manageBucket = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleCloudStorageActionScopes.manageBucket)
   .input(
     z.object({
       action: z

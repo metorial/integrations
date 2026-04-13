@@ -1,5 +1,14 @@
-import { SlateAuth, axios } from 'slates';
+import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleAdminScopes } from './scopes';
+
+let googleAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -15,190 +24,170 @@ export let auth = SlateAuth.create()
     key: 'google_oauth',
 
     scopes: [
-      // User scopes
       {
         title: 'Users (Read/Write)',
         description: 'Full access to manage users',
-        scope: 'https://www.googleapis.com/auth/admin.directory.user'
+        scope: googleAdminScopes.adminDirectoryUser
       },
       {
         title: 'Users (Read Only)',
         description: 'View user information',
-        scope: 'https://www.googleapis.com/auth/admin.directory.user.readonly'
+        scope: googleAdminScopes.adminDirectoryUserReadonly
       },
       {
         title: 'User Aliases (Read/Write)',
         description: 'Manage user email aliases',
-        scope: 'https://www.googleapis.com/auth/admin.directory.user.alias'
+        scope: googleAdminScopes.adminDirectoryUserAlias
       },
       {
         title: 'User Aliases (Read Only)',
         description: 'View user email aliases',
-        scope: 'https://www.googleapis.com/auth/admin.directory.user.alias.readonly'
+        scope: googleAdminScopes.adminDirectoryUserAliasReadonly
       },
       {
         title: 'User Security',
         description: 'Manage user security settings, tokens, and verification codes',
-        scope: 'https://www.googleapis.com/auth/admin.directory.user.security'
+        scope: googleAdminScopes.adminDirectoryUserSecurity
       },
-
-      // Group scopes
       {
         title: 'Groups (Read/Write)',
         description: 'Full access to manage groups',
-        scope: 'https://www.googleapis.com/auth/admin.directory.group'
+        scope: googleAdminScopes.adminDirectoryGroup
       },
       {
         title: 'Groups (Read Only)',
         description: 'View group information',
-        scope: 'https://www.googleapis.com/auth/admin.directory.group.readonly'
+        scope: googleAdminScopes.adminDirectoryGroupReadonly
       },
       {
         title: 'Group Members (Read/Write)',
         description: 'Manage group membership',
-        scope: 'https://www.googleapis.com/auth/admin.directory.group.member'
+        scope: googleAdminScopes.adminDirectoryGroupMember
       },
       {
         title: 'Group Members (Read Only)',
         description: 'View group membership',
-        scope: 'https://www.googleapis.com/auth/admin.directory.group.member.readonly'
+        scope: googleAdminScopes.adminDirectoryGroupMemberReadonly
       },
       {
         title: 'Groups Settings',
         description: 'Manage group settings and policies',
-        scope: 'https://www.googleapis.com/auth/apps.groups.settings'
+        scope: googleAdminScopes.appsGroupsSettings
       },
-
-      // Org unit scopes
       {
         title: 'Org Units (Read/Write)',
         description: 'Manage organizational units',
-        scope: 'https://www.googleapis.com/auth/admin.directory.orgunit'
+        scope: googleAdminScopes.adminDirectoryOrgunit
       },
       {
         title: 'Org Units (Read Only)',
         description: 'View organizational units',
-        scope: 'https://www.googleapis.com/auth/admin.directory.orgunit.readonly'
+        scope: googleAdminScopes.adminDirectoryOrgunitReadonly
       },
-
-      // Role scopes
       {
         title: 'Roles (Read/Write)',
         description: 'Manage admin roles and assignments',
-        scope: 'https://www.googleapis.com/auth/admin.directory.rolemanagement'
+        scope: googleAdminScopes.adminDirectoryRolemanagement
       },
       {
         title: 'Roles (Read Only)',
         description: 'View admin roles and assignments',
-        scope: 'https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly'
+        scope: googleAdminScopes.adminDirectoryRolemanagementReadonly
       },
-
-      // Device scopes
       {
         title: 'ChromeOS Devices (Read/Write)',
         description: 'Manage ChromeOS devices',
-        scope: 'https://www.googleapis.com/auth/admin.directory.device.chromeos'
+        scope: googleAdminScopes.adminDirectoryDeviceChromeos
       },
       {
         title: 'ChromeOS Devices (Read Only)',
         description: 'View ChromeOS devices',
-        scope: 'https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'
+        scope: googleAdminScopes.adminDirectoryDeviceChromeosReadonly
       },
       {
         title: 'Mobile Devices (Read/Write)',
         description: 'Manage mobile devices',
-        scope: 'https://www.googleapis.com/auth/admin.directory.device.mobile'
+        scope: googleAdminScopes.adminDirectoryDeviceMobile
       },
       {
         title: 'Mobile Devices (Read Only)',
         description: 'View mobile devices',
-        scope: 'https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'
+        scope: googleAdminScopes.adminDirectoryDeviceMobileReadonly
       },
-
-      // Domain scopes
       {
         title: 'Domains (Read/Write)',
         description: 'Manage domains and domain aliases',
-        scope: 'https://www.googleapis.com/auth/admin.directory.domain'
+        scope: googleAdminScopes.adminDirectoryDomain
       },
       {
         title: 'Domains (Read Only)',
         description: 'View domains and domain aliases',
-        scope: 'https://www.googleapis.com/auth/admin.directory.domain.readonly'
+        scope: googleAdminScopes.adminDirectoryDomainReadonly
       },
-
-      // Customer scopes
       {
         title: 'Customers (Read/Write)',
         description: 'Manage customer account information',
-        scope: 'https://www.googleapis.com/auth/admin.directory.customer'
+        scope: googleAdminScopes.adminDirectoryCustomer
       },
       {
         title: 'Customers (Read Only)',
         description: 'View customer account information',
-        scope: 'https://www.googleapis.com/auth/admin.directory.customer.readonly'
+        scope: googleAdminScopes.adminDirectoryCustomerReadonly
       },
-
-      // Calendar resource scopes
       {
         title: 'Calendar Resources (Read/Write)',
         description: 'Manage calendar resources such as rooms and equipment',
-        scope: 'https://www.googleapis.com/auth/admin.directory.resource.calendar'
+        scope: googleAdminScopes.adminDirectoryResourceCalendar
       },
       {
         title: 'Calendar Resources (Read Only)',
         description: 'View calendar resources',
-        scope: 'https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly'
+        scope: googleAdminScopes.adminDirectoryResourceCalendarReadonly
       },
-
-      // Custom schema scopes
       {
         title: 'User Schemas (Read/Write)',
         description: 'Manage custom user schemas',
-        scope: 'https://www.googleapis.com/auth/admin.directory.userschema'
+        scope: googleAdminScopes.adminDirectoryUserschema
       },
       {
         title: 'User Schemas (Read Only)',
         description: 'View custom user schemas',
-        scope: 'https://www.googleapis.com/auth/admin.directory.userschema.readonly'
+        scope: googleAdminScopes.adminDirectoryUserschemaReadonly
       },
-
-      // Reports scopes
       {
         title: 'Audit Reports (Read Only)',
         description: 'View admin audit logs and activity reports',
-        scope: 'https://www.googleapis.com/auth/admin.reports.audit.readonly'
+        scope: googleAdminScopes.adminReportsAuditReadonly
       },
       {
         title: 'Usage Reports (Read Only)',
         description: 'View usage reports for apps and entities',
-        scope: 'https://www.googleapis.com/auth/admin.reports.usage.readonly'
+        scope: googleAdminScopes.adminReportsUsageReadonly
       },
-
-      // Alert Center
       {
         title: 'Alert Center',
         description: 'Manage security alerts and alert feedback',
-        scope: 'https://www.googleapis.com/auth/apps.alerts'
+        scope: googleAdminScopes.appsAlerts
       },
-
-      // Licensing
       {
         title: 'Licensing',
         description: 'Manage Google Workspace product licenses',
-        scope: 'https://www.googleapis.com/auth/apps.licensing'
+        scope: googleAdminScopes.appsLicensing
       },
-
-      // Profile scope for getProfile
+      {
+        title: 'Data Transfer',
+        description: 'Manage ownership transfers of user data between Workspace users',
+        scope: googleAdminScopes.adminDatatransfer
+      },
       {
         title: 'User Profile',
         description: 'View basic profile info of the authenticated user',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleAdminScopes.userInfoEmail
       },
       {
         title: 'User Profile Name',
         description: 'View the name of the authenticated user',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleAdminScopes.userInfoProfile
       }
     ],
 
@@ -219,24 +208,34 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await axios.post('https://oauth2.googleapis.com/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      });
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt: data.expires_in
-            ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined
-        }
+          expiresAt
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -245,31 +244,40 @@ export let auth = SlateAuth.create()
         throw new Error('No refresh token available');
       }
 
-      let response = await axios.post('https://oauth2.googleapis.com/token', {
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token'
-      });
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt: data.expires_in
-            ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined
+          expiresAt
         }
       };
     },
 
-    getProfile: async (ctx: any) => {
-      let response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
+      let response = await profileAxios.get('/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let data = response.data;

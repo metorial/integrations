@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SearchConsoleClient } from '../lib/client';
+import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let listSites = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleSearchConsoleActionScopes.listSites)
   .input(z.object({}))
   .output(
     z.object({

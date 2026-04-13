@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let updateUser = SlateTool.create(spec, {
@@ -16,6 +17,7 @@ export let updateUser = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.updateUser)
   .input(
     z.object({
       userKey: z.string().describe('Email address or unique user ID of the user to update'),

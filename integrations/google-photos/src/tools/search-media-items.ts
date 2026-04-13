@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let dateSchema = z.object({
@@ -38,6 +39,7 @@ export let searchMediaItems = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.searchMediaItems)
   .input(
     z.object({
       albumId: z

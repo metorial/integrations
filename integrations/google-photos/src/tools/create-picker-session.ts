@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosPickerClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let createPickerSession = SlateTool.create(spec, {
@@ -17,6 +18,7 @@ export let createPickerSession = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googlePhotosActionScopes.createPickerSession)
   .input(
     z.object({
       maxItemCount: z

@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client, parseMessage } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let mailboxChanges = SlateTrigger.create(spec, {
   description:
     'Triggers when new messages arrive, messages are deleted, or labels change in the Gmail mailbox. Uses the Gmail history API for efficient incremental sync.'
 })
+  .scopes(gmailActionScopes.mailboxChanges)
   .input(
     z.object({
       changeType: z

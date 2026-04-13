@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let rateVideo = SlateTool.create(spec, {
     'Use action "rate" to set a rating and "getRating" to check existing ratings.'
   ]
 })
+  .scopes(youtubeActionScopes.rateVideo)
   .input(
     z.object({
       action: z

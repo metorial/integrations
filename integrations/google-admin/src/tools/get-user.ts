@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getUser = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let getUser = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.getUser)
   .input(
     z.object({
       userKey: z.string().describe('Email address or unique user ID of the user to retrieve')

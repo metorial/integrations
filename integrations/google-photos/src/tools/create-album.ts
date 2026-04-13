@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let createAlbum = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let createAlbum = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googlePhotosActionScopes.createAlbum)
   .input(
     z.object({
       title: z.string().max(500).describe('Title for the new album (max 500 characters)')

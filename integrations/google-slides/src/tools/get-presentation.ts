@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlidesClient } from '../lib/client';
+import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -46,6 +47,7 @@ export let getPresentation = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleSlidesActionScopes.getPresentation)
   .input(
     z.object({
       presentationId: z.string().describe('ID of the presentation to retrieve')

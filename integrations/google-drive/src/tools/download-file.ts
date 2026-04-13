@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient, MAX_DRIVE_DOWNLOAD_BYTES } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ export let downloadFileTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.downloadFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file to download')

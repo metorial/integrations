@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ Supports setting the ad group name, status, type, CPC bid, and targeting URL.`,
     'Ad group resource names follow: customers/{customerId}/adGroups/{adGroupId}'
   ]
 })
+  .scopes(googleAdsActionScopes.manageAdGroups)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -119,4 +121,5 @@ Supports setting the ad group name, status, type, CPC bid, and targeting URL.`,
       output: { adGroupResourceName: resourceName, mutateResults: result },
       message: `Ad group **${ctx.input.adGroupId}** updated (fields: ${maskFields.join(', ')}).`
     };
-  });
+  })
+  .build();

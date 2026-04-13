@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlidesClient } from '../lib/client';
+import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let createPresentation = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSlidesActionScopes.createPresentation)
   .input(
     z.object({
       title: z.string().describe('Title for the new presentation')

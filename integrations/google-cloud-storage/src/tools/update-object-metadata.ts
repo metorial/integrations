@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -8,6 +9,7 @@ export let updateObjectMetadata = SlateTool.create(spec, {
   key: 'update_object_metadata',
   description: `Update metadata on an existing object in a Cloud Storage bucket. Supports changing content type, content disposition, cache control, custom metadata, and object holds.`
 })
+  .scopes(googleCloudStorageActionScopes.updateObjectMetadata)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket containing the object'),

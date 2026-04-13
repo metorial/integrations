@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { AuthClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let userChanges = SlateTrigger.create(spec, {
   description:
     'Monitors Firebase Authentication for new user accounts and detects when users are created or removed by comparing user lists between polls.'
 })
+  .scopes(firebaseActionScopes.userChanges)
   .input(
     z.object({
       changeType: z.enum(['created', 'deleted']).describe('Type of user change detected'),

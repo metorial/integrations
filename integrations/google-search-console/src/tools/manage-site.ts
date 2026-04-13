@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SearchConsoleClient } from '../lib/client';
+import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ export let manageSite = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleSearchConsoleActionScopes.manageSite)
   .input(
     z.object({
       action: z

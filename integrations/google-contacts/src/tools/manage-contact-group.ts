@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { contactGroupSchema, customFieldSchema, formatContactGroup } from '../lib/schemas';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let createContactGroup = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.createContactGroup)
   .input(
     z.object({
       name: z.string().describe('Name of the contact group (must be unique)'),
@@ -44,6 +46,7 @@ export let updateContactGroup = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.updateContactGroup)
   .input(
     z.object({
       resourceName: z
@@ -82,6 +85,7 @@ export let deleteContactGroup = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.deleteContactGroup)
   .input(
     z.object({
       resourceName: z

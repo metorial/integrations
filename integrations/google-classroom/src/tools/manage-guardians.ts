@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let guardianSchema = z.object({
@@ -47,6 +48,7 @@ export let manageGuardians = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.manageGuardians)
   .input(
     z.object({
       studentId: z

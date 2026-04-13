@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleAddressValidationActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -204,6 +205,7 @@ When re-validating a previously validated address, provide the \`previousRespons
     readOnly: true
   }
 })
+  .scopes(googleAddressValidationActionScopes.validateAddress)
   .input(
     z.object({
       addressLines: z

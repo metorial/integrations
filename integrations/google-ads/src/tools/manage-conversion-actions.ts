@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ Supports configuring conversion counting, attribution models, value settings, an
     'Categories: DEFAULT, PAGE_VIEW, PURCHASE, SIGNUP, LEAD, DOWNLOAD, ADD_TO_CART, BEGIN_CHECKOUT, SUBSCRIBE_PAID, PHONE_CALL_LEAD, IMPORTED_LEAD, SUBMIT_LEAD_FORM, BOOK_APPOINTMENT, REQUEST_QUOTE, GET_DIRECTIONS, OUTBOUND_CLICK, CONTACT, ENGAGEMENT, STORE_VISIT, STORE_SALE'
   ]
 })
+  .scopes(googleAdsActionScopes.manageConversionActions)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -218,4 +220,5 @@ Supports configuring conversion counting, attribution models, value settings, an
       output: { conversionActionResourceName: resourceName, mutateResults: result },
       message: `Conversion action **${ctx.input.conversionActionId}** updated (fields: ${maskFields.join(', ')}).`
     };
-  });
+  })
+  .build();

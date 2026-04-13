@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let deleteFileTool = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleDriveActionScopes.deleteFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder to permanently delete')

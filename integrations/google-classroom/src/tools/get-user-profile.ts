@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getUserProfile = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let getUserProfile = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleClassroomActionScopes.getUserProfile)
   .input(
     z.object({
       userId: z.string().describe('User ID, email address, or "me" for the current user')

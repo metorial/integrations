@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ export let functionChanges = SlateTrigger.create(spec, {
   description:
     'Detects changes to Cloud Functions in a project, including new functions, updates, deletions, and state changes.'
 })
+  .scopes(googleCloudFunctionsActionScopes.functionChanges)
   .input(functionEventSchema)
   .output(
     z.object({

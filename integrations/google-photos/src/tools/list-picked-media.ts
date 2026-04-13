@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosPickerClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let listPickedMedia = SlateTool.create(spec, {
@@ -15,6 +16,7 @@ export let listPickedMedia = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.listPickedMedia)
   .input(
     z.object({
       sessionId: z.string().describe('The picker session ID to retrieve selected media from'),

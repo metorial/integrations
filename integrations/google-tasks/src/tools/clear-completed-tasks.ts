@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let clearCompletedTasks = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleTasksActionScopes.clearCompletedTasks)
   .input(
     z.object({
       taskListId: z.string().describe('ID of the task list to clear completed tasks from')

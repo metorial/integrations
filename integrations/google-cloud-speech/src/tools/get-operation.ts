@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SpeechToTextClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ Returns the current status, and when complete, the full transcription results or
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.getOperation)
   .input(
     z.object({
       operationName: z

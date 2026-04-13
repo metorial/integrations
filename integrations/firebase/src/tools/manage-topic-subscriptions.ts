@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MessagingClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let manageTopicSubscriptions = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.manageTopicSubscriptions)
   .input(
     z.object({
       operation: z

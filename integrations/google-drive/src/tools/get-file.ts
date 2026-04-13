@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ export let getFileTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.getFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder to retrieve')

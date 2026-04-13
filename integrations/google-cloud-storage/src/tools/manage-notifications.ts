@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let manageNotifications = SlateTool.create(spec, {
   ],
   constraints: ['Maximum 100 notification configurations per bucket.']
 })
+  .scopes(googleCloudStorageActionScopes.manageNotifications)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket'),

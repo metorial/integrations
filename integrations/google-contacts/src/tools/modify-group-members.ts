@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let modifyGroupMembers = SlateTool.create(spec, {
@@ -15,6 +16,7 @@ export let modifyGroupMembers = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.modifyGroupMembers)
   .input(
     z.object({
       groupResourceName: z

@@ -5,6 +5,7 @@ import {
   StructuralElement,
   ParagraphElement
 } from '../lib/client';
+import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -49,6 +50,7 @@ export let getDocument = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDocsActionScopes.getDocument)
   .input(
     z.object({
       documentId: z.string().describe('ID of the document to retrieve'),

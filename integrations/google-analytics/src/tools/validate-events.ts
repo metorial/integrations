@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeasurementProtocolClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ Returns validation messages indicating any issues with the event data format, pa
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.validateEvents)
   .input(
     z.object({
       clientId: z

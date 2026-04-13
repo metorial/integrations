@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GtmClient } from '../lib/client';
+import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let versionPublished = SlateTrigger.create(spec, {
   description:
     'Triggers when a new container version is published (made live). Polls for changes by checking the latest version header for each monitored container.'
 })
+  .scopes(googleTagManagerActionScopes.versionPublished)
   .input(
     z.object({
       accountId: z.string().describe('GTM account ID'),

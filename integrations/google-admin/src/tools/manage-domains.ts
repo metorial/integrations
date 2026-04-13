@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let manageDomains = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let manageDomains = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.manageDomains)
   .input(
     z.object({
       action: z.enum(['list', 'get', 'add', 'delete']).describe('Action to perform'),

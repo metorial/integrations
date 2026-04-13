@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { DriveClient } from '../lib/drive-client';
+import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let presentationChanged = SlateTrigger.create(spec, {
   description:
     'Triggers when a Google Slides presentation is created or modified. Uses the Google Drive API to detect file changes by polling for recently modified presentations.'
 })
+  .scopes(googleSlidesActionScopes.presentationChanged)
   .input(
     z.object({
       presentationId: z.string().describe('ID of the modified presentation'),

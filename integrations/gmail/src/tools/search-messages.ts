@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client, parseMessage } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -41,6 +42,7 @@ Use the same search operators available in the Gmail search bar: \`from:\`, \`to
     readOnly: true
   }
 })
+  .scopes(gmailActionScopes.searchMessages)
   .input(
     z.object({
       query: z

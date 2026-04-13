@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -26,6 +27,7 @@ export let listPermissionsTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.listPermissions)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder'),
@@ -62,6 +64,7 @@ export let shareFileTool = SlateTool.create(spec, {
     'For type "anyone", set allowFileDiscovery to false to restrict access to only those with the link.'
   ]
 })
+  .scopes(googleDriveActionScopes.shareFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder to share'),
@@ -119,6 +122,7 @@ export let updatePermissionTool = SlateTool.create(spec, {
   key: 'update_permission',
   description: `Change the role of an existing permission on a file or folder. Use **List Permissions** to find the permission ID.`
 })
+  .scopes(googleDriveActionScopes.updatePermission)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder'),
@@ -155,6 +159,7 @@ export let removePermissionTool = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleDriveActionScopes.removePermission)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file or folder'),

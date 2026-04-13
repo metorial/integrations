@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsDataClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ Common real-time metrics: \`activeUsers\`, \`screenPageViews\`, \`eventCount\`, 
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.runRealtimeReport)
   .input(
     z.object({
       dimensions: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let updateChannel = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(youtubeActionScopes.updateChannel)
   .input(
     z.object({
       channelId: z.string().describe('ID of the channel to update'),

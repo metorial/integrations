@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -25,6 +26,7 @@ Use \`channelId\` to specify which channel to query, or leave blank to query the
     readOnly: true
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.queryAnalytics)
   .input(
     z.object({
       channelId: z

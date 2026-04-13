@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -8,6 +9,7 @@ export let copyFileTool = SlateTool.create(spec, {
   key: 'copy_file',
   description: `Create a copy of an existing file in Google Drive. Optionally provide a new name and destination folder for the copy.`
 })
+  .scopes(googleDriveActionScopes.copyFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file to copy'),

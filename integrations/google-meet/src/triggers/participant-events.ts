@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let participantEventsTrigger = SlateTrigger.create(spec, {
   description:
     'Triggers when participants join or leave an active conference. Polls for participant changes across conference records.'
 })
+  .scopes(googleMeetActionScopes.participantEvents)
   .input(
     z.object({
       eventType: z.enum(['joined', 'left']).describe('Whether the participant joined or left'),

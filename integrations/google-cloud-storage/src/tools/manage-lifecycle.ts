@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -47,6 +48,7 @@ export let manageLifecycle = SlateTool.create(spec, {
     'SetStorageClass transitions: STANDARD → NEARLINE → COLDLINE → ARCHIVE (downgrade only).'
   ]
 })
+  .scopes(googleCloudStorageActionScopes.manageLifecycle)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket'),

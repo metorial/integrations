@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let listAlbums = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let listAlbums = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.listAlbums)
   .input(
     z.object({
       pageSize: z

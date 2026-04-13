@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ export let createTaskList = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleTasksActionScopes.createTaskList)
   .input(
     z.object({
       title: z.string().describe('Title for the new task list (max 1024 characters)')

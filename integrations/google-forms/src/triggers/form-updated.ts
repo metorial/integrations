@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let formUpdated = SlateTrigger.create(spec, {
   description:
     "Triggers when a Google Form's content or settings are changed. Detects changes to the form title, description, items, quiz settings, and revision ID by polling the form periodically."
 })
+  .scopes(googleFormsActionScopes.formUpdated)
   .input(
     z.object({
       formId: z.string().describe('ID of the form that was updated'),

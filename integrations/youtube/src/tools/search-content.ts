@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -27,6 +28,7 @@ export let searchContent = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(youtubeActionScopes.searchContent)
   .input(
     z.object({
       query: z.string().optional().describe('Search query string'),

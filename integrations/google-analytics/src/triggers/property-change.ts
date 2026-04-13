@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let propertyChange = SlateTrigger.create(spec, {
   description:
     'Polls for configuration changes on a GA4 property, including updates to data streams, custom dimensions, custom metrics, key events, audiences, and other property settings.'
 })
+  .scopes(googleAnalyticsActionScopes.propertyChange)
   .input(
     z.object({
       changeId: z.string().describe('Unique ID for this change history event.'),

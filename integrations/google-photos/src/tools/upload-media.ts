@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let uploadMedia = SlateTool.create(spec, {
@@ -20,6 +21,7 @@ export let uploadMedia = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googlePhotosActionScopes.uploadMedia)
   .input(
     z.object({
       items: z

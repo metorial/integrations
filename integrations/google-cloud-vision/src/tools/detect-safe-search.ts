@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { VisionClient } from '../lib/client';
 import { imageSourceSchema, likelihoodSchema } from '../lib/schemas';
+import { googleCloudVisionActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let detectSafeSearch = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleCloudVisionActionScopes.detectSafeSearch)
   .input(
     z.object({
       image: imageSourceSchema

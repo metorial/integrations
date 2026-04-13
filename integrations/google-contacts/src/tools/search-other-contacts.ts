@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let otherContactSchema = z.object({
@@ -41,6 +42,7 @@ export let searchOtherContacts = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleContactsActionScopes.searchOtherContacts)
   .input(
     z.object({
       query: z.string().describe('Search query to match against other contacts'),

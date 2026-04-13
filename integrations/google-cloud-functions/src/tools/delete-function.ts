@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudFunctionsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let deleteFunction = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleCloudFunctionsActionScopes.deleteFunction)
   .input(
     z.object({
       functionName: z

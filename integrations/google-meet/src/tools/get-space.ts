@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let getSpaceTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleMeetActionScopes.getSpace)
   .input(
     z.object({
       spaceNameOrCode: z

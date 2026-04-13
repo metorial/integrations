@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleSheetsScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,38 +19,38 @@ export let auth = SlateAuth.create()
       {
         title: 'Spreadsheets (Full)',
         description: 'Full read/write access to all spreadsheets',
-        scope: 'https://www.googleapis.com/auth/spreadsheets'
+        scope: googleSheetsScopes.spreadsheets
       },
       {
         title: 'Spreadsheets (Read)',
         description: 'Read-only access to all spreadsheets',
-        scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        scope: googleSheetsScopes.spreadsheetsReadonly
       },
       {
         title: 'Drive (Full)',
         description:
           'Full access to Google Drive, needed for creating/deleting spreadsheets and push notifications',
-        scope: 'https://www.googleapis.com/auth/drive'
+        scope: googleSheetsScopes.drive
       },
       {
         title: 'Drive (Read)',
         description: 'Read-only access to Google Drive files',
-        scope: 'https://www.googleapis.com/auth/drive.readonly'
+        scope: googleSheetsScopes.driveReadonly
       },
       {
         title: 'Drive (App Files)',
         description: 'Access only to files created or opened by the app',
-        scope: 'https://www.googleapis.com/auth/drive.file'
+        scope: googleSheetsScopes.driveFile
       },
       {
         title: 'User Profile',
         description: 'View basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleSheetsScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleSheetsScopes.userInfoEmail
       }
     ],
 
@@ -93,13 +94,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

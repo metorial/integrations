@@ -1,4 +1,5 @@
 import { SlateTrigger } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ The webhook URL must be configured in the lead form extension settings within Go
     'The is_test field indicates whether the lead was submitted using the "Test" button in Google Ads.'
   ]
 })
+  .scopes(googleAdsActionScopes.leadFormSubmit)
   .input(
     z.object({
       leadId: z.string().describe('Unique lead identifier for deduplication'),
@@ -129,4 +131,5 @@ The webhook URL must be configured in the lead form extension settings within Go
         }
       };
     }
-  });
+  })
+  .build();

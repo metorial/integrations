@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ Keywords determine when ads are shown based on user search queries. Each keyword
     'Set isNegative to true and provide campaignId (for campaign-level) or adGroupId (for ad group-level) negative keywords.'
   ]
 })
+  .scopes(googleAdsActionScopes.manageKeywords)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -161,4 +163,5 @@ Keywords determine when ads are shown based on user search queries. Each keyword
       output: { criterionResourceName: resourceName, mutateResults: result },
       message: `Keyword criterion updated (fields: ${maskFields.join(', ')}).`
     };
-  });
+  })
+  .build();

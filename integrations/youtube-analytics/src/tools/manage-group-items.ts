@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ Use **list** to see current items, **add** to add a resource, or **remove** to d
     destructive: false
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.manageGroupItems)
   .input(
     z.object({
       action: z.enum(['list', 'add', 'remove']).describe('Action to perform on group items.'),

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ Previously known as "conversion events" in Google Analytics.`,
     destructive: false
   }
 })
+  .scopes(googleAnalyticsActionScopes.manageKeyEvents)
   .input(
     z.object({
       action: z

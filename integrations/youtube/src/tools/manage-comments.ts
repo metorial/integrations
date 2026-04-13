@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ export let manageComments = SlateTool.create(spec, {
     'For moderating: set action to "moderate" with commentIds and moderationStatus.'
   ]
 })
+  .scopes(youtubeActionScopes.manageComments)
   .input(
     z.object({
       action: z

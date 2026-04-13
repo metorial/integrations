@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let addMemberTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleMeetActionScopes.addMember)
   .input(
     z.object({
       spaceName: z.string().describe('Space resource name (e.g., "spaces/abc123")'),
@@ -63,6 +65,7 @@ export let listMembersTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleMeetActionScopes.listMembers)
   .input(
     z.object({
       spaceName: z.string().describe('Space resource name (e.g., "spaces/abc123")'),
@@ -121,6 +124,7 @@ export let removeMemberTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleMeetActionScopes.removeMember)
   .input(
     z.object({
       memberName: z

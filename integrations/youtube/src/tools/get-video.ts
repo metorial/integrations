@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ export let getVideo = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(youtubeActionScopes.getVideo)
   .input(
     z.object({
       videoId: z.string().describe('Video ID or comma-separated list of video IDs (up to 50)')

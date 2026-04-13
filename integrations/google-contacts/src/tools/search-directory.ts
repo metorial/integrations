@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let searchDirectory = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleContactsActionScopes.searchDirectory)
   .input(
     z.object({
       query: z.string().describe('Search query to match against directory people'),

@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let channelActivity = SlateTrigger.create(spec, {
   description:
     'Triggers when a YouTube channel has new activity such as video uploads, likes, favorites, comments, subscriptions, and playlist additions.'
 })
+  .scopes(youtubeActionScopes.channelActivity)
   .input(
     z.object({
       activityId: z.string().describe('Unique activity ID'),

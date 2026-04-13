@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let updateCourse = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let updateCourse = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.updateCourse)
   .input(
     z.object({
       courseId: z.string().describe('ID of the course to update'),

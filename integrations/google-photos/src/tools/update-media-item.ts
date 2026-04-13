@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let updateMediaItem = SlateTool.create(spec, {
@@ -16,6 +17,7 @@ export let updateMediaItem = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googlePhotosActionScopes.updateMediaItem)
   .input(
     z.object({
       mediaItemId: z.string().describe('The ID of the media item to update'),

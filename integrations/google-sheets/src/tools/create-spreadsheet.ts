@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SheetsClient } from '../lib/client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let createSpreadsheet = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSheetsActionScopes.createSpreadsheet)
   .input(
     z.object({
       title: z.string().describe('Title of the new spreadsheet'),

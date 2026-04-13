@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let otherContactSchema = z.object({
@@ -41,6 +42,7 @@ export let listOtherContacts = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleContactsActionScopes.listOtherContacts)
   .input(
     z.object({
       pageSize: z

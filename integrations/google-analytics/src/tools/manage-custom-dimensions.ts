@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ Use **list** to see all custom dimensions, **create** to add new ones, **update*
     destructive: false
   }
 })
+  .scopes(googleAnalyticsActionScopes.manageCustomDimensions)
   .input(
     z.object({
       action: z

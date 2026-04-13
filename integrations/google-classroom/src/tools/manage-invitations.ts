@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let invitationSchema = z.object({
@@ -18,6 +19,7 @@ export let manageInvitations = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.manageInvitations)
   .input(
     z.object({
       action: z

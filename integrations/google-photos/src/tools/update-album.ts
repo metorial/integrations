@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let updateAlbum = SlateTool.create(spec, {
@@ -15,6 +16,7 @@ export let updateAlbum = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googlePhotosActionScopes.updateAlbum)
   .input(
     z.object({
       albumId: z.string().describe('The ID of the album to update'),

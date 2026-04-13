@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let newVideo = SlateTrigger.create(spec, {
   description:
     "Triggers when a new video is published on a specific YouTube channel. Polls the channel's uploads playlist for new videos."
 })
+  .scopes(youtubeActionScopes.newVideo)
   .input(
     z.object({
       videoId: z.string().describe('ID of the new video'),

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let sendEmail = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(gmailActionScopes.sendEmail)
   .input(
     z.object({
       to: z.array(z.string()).describe('List of recipient email addresses.'),

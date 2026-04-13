@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SheetsClient } from '../lib/client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -36,6 +37,7 @@ export let formatCells = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSheetsActionScopes.formatCells)
   .input(
     z.object({
       spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),

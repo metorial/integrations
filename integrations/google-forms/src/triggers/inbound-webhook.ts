@@ -1,4 +1,5 @@
 import { SlateTrigger } from 'slates';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let inboundWebhook = SlateTrigger.create(spec, {
   description:
     'Receives HTTP POST at the Slates webhook URL. Parses JSON into payload (or stores raw body if not JSON). Configure your provider to POST here when supported.'
 })
+  .scopes(googleFormsActionScopes.inboundWebhook)
   .input(
     z.object({
       payload: z

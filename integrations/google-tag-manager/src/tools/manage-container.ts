@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GtmClient } from '../lib/client';
+import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -38,6 +39,7 @@ export let manageContainer = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleTagManagerActionScopes.manageContainer)
   .input(
     z.object({
       action: z.enum(['create', 'get', 'update', 'delete']).describe('Operation to perform'),

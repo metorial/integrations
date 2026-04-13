@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -21,6 +22,7 @@ export let createTask = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleTasksActionScopes.createTask)
   .input(
     z.object({
       taskListId: z.string().describe('ID of the task list to create the task in'),

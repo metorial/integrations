@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -35,6 +36,7 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
     readOnly: false
   }
 })
+  .scopes(googleFormsActionScopes.manageWatches)
   .input(
     z.object({
       formId: z.string().describe('The ID of the Google Form'),

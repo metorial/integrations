@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleDriveScopes } from './scopes';
 
 let oauthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,47 +27,47 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full read and write access to all Google Drive files',
-        scope: 'https://www.googleapis.com/auth/drive'
+        scope: googleDriveScopes.drive
       },
       {
         title: 'Read Only',
         description: 'Read-only access to all Google Drive files',
-        scope: 'https://www.googleapis.com/auth/drive.readonly'
+        scope: googleDriveScopes.driveReadonly
       },
       {
         title: 'File Access',
         description: 'Access only to files created or opened by the app',
-        scope: 'https://www.googleapis.com/auth/drive.file'
+        scope: googleDriveScopes.driveFile
       },
       {
         title: 'App Data',
         description: 'Access to app-specific data folder',
-        scope: 'https://www.googleapis.com/auth/drive.appdata'
+        scope: googleDriveScopes.driveAppdata
       },
       {
         title: 'Metadata',
         description: 'Read and write access to file metadata only',
-        scope: 'https://www.googleapis.com/auth/drive.metadata'
+        scope: googleDriveScopes.driveMetadata
       },
       {
         title: 'Metadata Read Only',
         description: 'Read-only access to file metadata',
-        scope: 'https://www.googleapis.com/auth/drive.metadata.readonly'
+        scope: googleDriveScopes.driveMetadataReadonly
       },
       {
         title: 'Photos Read Only',
         description: 'Read-only access to photos and videos in Google Photos',
-        scope: 'https://www.googleapis.com/auth/drive.photos.readonly'
+        scope: googleDriveScopes.drivePhotosReadonly
       },
       {
         title: 'User Profile',
         description: 'View your basic profile info (name, email, photo)',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleDriveScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View your email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleDriveScopes.userInfoEmail
       }
     ],
 
@@ -107,13 +108,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

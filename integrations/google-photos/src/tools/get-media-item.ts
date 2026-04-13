@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let mediaMetadataSchema = z
@@ -44,6 +45,7 @@ export let getMediaItem = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.getMediaItem)
   .input(
     z.object({
       mediaItemIds: z

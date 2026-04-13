@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ export let exportFileTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.exportFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the Google Workspace file to export'),

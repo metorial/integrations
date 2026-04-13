@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let rubricLevelSchema = z.object({
@@ -41,6 +42,7 @@ export let manageRubrics = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.manageRubrics)
   .input(
     z.object({
       courseId: z.string().describe('ID of the course'),

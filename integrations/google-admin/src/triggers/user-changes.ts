@@ -1,6 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let userChanges = SlateTrigger.create(spec, {
@@ -9,6 +10,7 @@ export let userChanges = SlateTrigger.create(spec, {
   description:
     'Receive real-time notifications when user accounts are created, updated, deleted, restored, or have their admin status changed in the Google Workspace domain.'
 })
+  .scopes(googleAdminActionScopes.userChanges)
   .input(
     z.object({
       eventType: z.string().describe('Type of user change event'),

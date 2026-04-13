@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let listTaskLists = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleTasksActionScopes.listTaskLists)
   .input(z.object({}))
   .output(
     z.object({

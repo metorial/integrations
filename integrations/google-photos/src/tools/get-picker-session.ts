@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { GooglePhotosPickerClient } from '../lib/client';
 import { spec } from '../spec';
+import { googlePhotosActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getPickerSession = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let getPickerSession = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googlePhotosActionScopes.getPickerSession)
   .input(
     z.object({
       sessionId: z.string().describe('The ID of the picker session to check')

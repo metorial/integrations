@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlidesClient } from '../lib/client';
+import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ export let editText = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSlidesActionScopes.editText)
   .input(
     z.object({
       presentationId: z.string().describe('ID of the presentation'),

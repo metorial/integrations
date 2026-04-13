@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { FirestoreClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let manageFirestoreDocument = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.manageFirestoreDocument)
   .input(
     z.object({
       operation: z

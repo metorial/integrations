@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { StorageClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -32,6 +33,7 @@ export let manageStorage = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.manageStorage)
   .input(
     z.object({
       operation: z.enum(['list', 'get', 'delete', 'copy']).describe('Operation to perform'),

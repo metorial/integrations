@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ Use the **list** action to view existing groups, **create** to make a new group,
     destructive: false
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.manageGroups)
   .input(
     z.object({
       action: z

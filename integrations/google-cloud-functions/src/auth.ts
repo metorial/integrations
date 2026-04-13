@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleCloudFunctionsScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,22 +27,22 @@ export let auth = SlateAuth.create()
       {
         title: 'Cloud Platform',
         description: 'Full access to all Google Cloud resources including Cloud Functions',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: googleCloudFunctionsScopes.cloudPlatform
       },
       {
         title: 'Cloud Platform Read-Only',
         description: 'Read-only access to Google Cloud resources',
-        scope: 'https://www.googleapis.com/auth/cloud-platform.read-only'
+        scope: googleCloudFunctionsScopes.cloudPlatformReadonly
       },
       {
         title: 'User Profile',
         description: 'View your basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleCloudFunctionsScopes.userinfoProfile
       },
       {
         title: 'User Email',
         description: 'View your email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleCloudFunctionsScopes.userinfoEmail
       }
     ],
 
@@ -82,13 +83,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -167,7 +171,7 @@ export let auth = SlateAuth.create()
       let now = Math.floor(Date.now() / 1000);
       let claimSet = {
         iss: serviceAccount.client_email,
-        scope: 'https://www.googleapis.com/auth/cloud-platform',
+        scope: googleCloudFunctionsScopes.cloudPlatform,
         aud: 'https://oauth2.googleapis.com/token',
         iat: now,
         exp: now + 3600

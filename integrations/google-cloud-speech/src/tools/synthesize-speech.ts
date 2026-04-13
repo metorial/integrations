@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TextToSpeechClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ Supports multiple voice types including Standard, WaveNet, Neural2, Studio, and 
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.synthesizeSpeech)
   .input(
     z.object({
       text: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -8,6 +9,7 @@ export let copyObject = SlateTool.create(spec, {
   key: 'copy_object',
   description: `Copy an object within or between Cloud Storage buckets. The source object remains unchanged. Can also be used to rename or move an object by setting **deleteSource** to true.`
 })
+  .scopes(googleCloudStorageActionScopes.copyObject)
   .input(
     z.object({
       sourceBucket: z.string().describe('Name of the source bucket'),

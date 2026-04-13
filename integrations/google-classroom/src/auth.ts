@@ -1,5 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleClassroomScopes } from './scopes';
+
+let googleAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,133 +27,132 @@ export let auth = SlateAuth.create()
       {
         title: 'Manage Courses',
         description: 'Create, edit, and delete classes',
-        scope: 'https://www.googleapis.com/auth/classroom.courses'
+        scope: googleClassroomScopes.classroomCourses
       },
       {
         title: 'View Courses',
         description: 'View classes',
-        scope: 'https://www.googleapis.com/auth/classroom.courses.readonly'
+        scope: googleClassroomScopes.classroomCoursesReadonly
       },
       {
         title: 'Manage Rosters',
         description: 'Manage class rosters',
-        scope: 'https://www.googleapis.com/auth/classroom.rosters'
+        scope: googleClassroomScopes.classroomRosters
       },
       {
         title: 'View Rosters',
         description: 'View class rosters',
-        scope: 'https://www.googleapis.com/auth/classroom.rosters.readonly'
+        scope: googleClassroomScopes.classroomRostersReadonly
       },
       {
         title: 'Manage Own Coursework',
         description: 'Manage own coursework and grades',
-        scope: 'https://www.googleapis.com/auth/classroom.coursework.me'
+        scope: googleClassroomScopes.classroomCourseworkMe
       },
       {
         title: 'View Own Coursework',
         description: 'View own coursework and grades',
-        scope: 'https://www.googleapis.com/auth/classroom.coursework.me.readonly'
+        scope: googleClassroomScopes.classroomCourseworkMeReadonly
       },
       {
         title: 'Manage Student Coursework',
         description: 'Manage coursework and grades for students in classes you teach',
-        scope: 'https://www.googleapis.com/auth/classroom.coursework.students'
+        scope: googleClassroomScopes.classroomCourseworkStudents
       },
       {
         title: 'View Student Coursework',
         description: 'View coursework and grades for students in classes you teach',
-        scope: 'https://www.googleapis.com/auth/classroom.coursework.students.readonly'
+        scope: googleClassroomScopes.classroomCourseworkStudentsReadonly
       },
       {
         title: 'Manage Coursework Materials',
         description: 'Manage classwork materials',
-        scope: 'https://www.googleapis.com/auth/classroom.courseworkmaterials'
+        scope: googleClassroomScopes.classroomCourseworkmaterials
       },
       {
         title: 'View Coursework Materials',
         description: 'View classwork materials',
-        scope: 'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly'
+        scope: googleClassroomScopes.classroomCourseworkmaterialsReadonly
       },
       {
         title: 'Manage Announcements',
         description: 'Manage announcements',
-        scope: 'https://www.googleapis.com/auth/classroom.announcements'
+        scope: googleClassroomScopes.classroomAnnouncements
       },
       {
         title: 'View Announcements',
         description: 'View announcements',
-        scope: 'https://www.googleapis.com/auth/classroom.announcements.readonly'
+        scope: googleClassroomScopes.classroomAnnouncementsReadonly
       },
       {
         title: 'Manage Topics',
         description: 'Manage topics',
-        scope: 'https://www.googleapis.com/auth/classroom.topics'
+        scope: googleClassroomScopes.classroomTopics
       },
       {
         title: 'View Topics',
         description: 'View topics',
-        scope: 'https://www.googleapis.com/auth/classroom.topics.readonly'
+        scope: googleClassroomScopes.classroomTopicsReadonly
       },
       {
         title: 'Manage Guardians',
         description: 'Manage guardians for students',
-        scope: 'https://www.googleapis.com/auth/classroom.guardianlinks.students'
+        scope: googleClassroomScopes.classroomGuardianlinksStudents
       },
       {
         title: 'View Guardians',
         description: 'View guardians for students',
-        scope: 'https://www.googleapis.com/auth/classroom.guardianlinks.students.readonly'
+        scope: googleClassroomScopes.classroomGuardianlinksStudentsReadonly
       },
       {
         title: 'View Own Guardians',
         description: 'View own guardians',
-        scope: 'https://www.googleapis.com/auth/classroom.guardianlinks.me.readonly'
+        scope: googleClassroomScopes.classroomGuardianlinksMeReadonly
       },
       {
         title: 'View Profile Emails',
         description: 'View email addresses of people in classes',
-        scope: 'https://www.googleapis.com/auth/classroom.profile.emails'
+        scope: googleClassroomScopes.classroomProfileEmails
       },
       {
         title: 'View Profile Photos',
         description: 'View profile photos of people in classes',
-        scope: 'https://www.googleapis.com/auth/classroom.profile.photos'
+        scope: googleClassroomScopes.classroomProfilePhotos
       },
       {
         title: 'Push Notifications',
         description: 'Receive notifications about Classroom data changes',
-        scope: 'https://www.googleapis.com/auth/classroom.push-notifications'
+        scope: googleClassroomScopes.classroomPushNotifications
       },
       {
         title: 'Manage Add-ons (Teacher)',
         description: 'Manage add-on attachments as a teacher',
-        scope: 'https://www.googleapis.com/auth/classroom.addons.teacher'
+        scope: googleClassroomScopes.classroomAddonsTeacher
       },
       {
         title: 'View Add-ons (Student)',
         description: 'View/update add-on attachments as a student',
-        scope: 'https://www.googleapis.com/auth/classroom.addons.student'
+        scope: googleClassroomScopes.classroomAddonsStudent
       },
       {
         title: 'View Own Submissions',
         description: 'View own submissions and grades',
-        scope: 'https://www.googleapis.com/auth/classroom.student-submissions.me.readonly'
+        scope: googleClassroomScopes.classroomStudentSubmissionsMeReadonly
       },
       {
         title: 'View Student Submissions',
         description: 'View student submissions in classes you teach',
-        scope:
-          'https://www.googleapis.com/auth/classroom.student-submissions.students.readonly'
+        scope: googleClassroomScopes.classroomStudentSubmissionsStudentsReadonly
       },
       {
         title: 'User Profile Info',
         description: 'View basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleClassroomScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleClassroomScopes.userInfoEmail
       }
     ],
 
@@ -165,43 +173,56 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios();
-
-      let response = await http.post('https://oauth2.googleapis.com/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      });
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
-
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
     handleTokenRefresh: async ctx => {
-      let http = createAxios();
+      if (!ctx.output.refreshToken) {
+        throw new Error('No refresh token available');
+      }
 
-      let response = await http.post('https://oauth2.googleapis.com/token', {
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
-        grant_type: 'refresh_token'
-      });
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
-
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -220,14 +241,10 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let http = createAxios({
-        baseURL: 'https://www.googleapis.com',
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
+      let response = await profileAxios.get('/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
-      let response = await http.get('/oauth2/v2/userinfo');
       let data = response.data;
 
       return {

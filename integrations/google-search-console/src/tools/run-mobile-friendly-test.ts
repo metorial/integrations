@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MobileFriendlyTestClient } from '../lib/client';
+import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ export let runMobileFriendlyTest = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleSearchConsoleActionScopes.runMobileFriendlyTest)
   .input(
     z.object({
       url: z.string().describe('The fully-qualified URL to test for mobile-friendliness')

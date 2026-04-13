@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleFormsScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,44 +19,44 @@ export let auth = SlateAuth.create()
       {
         title: 'Forms (Full)',
         description: 'See, edit, create, and delete all your Google Forms forms',
-        scope: 'https://www.googleapis.com/auth/forms.body'
+        scope: googleFormsScopes.formsBody
       },
       {
         title: 'Forms (Read-only)',
         description: 'See all your Google Forms forms',
-        scope: 'https://www.googleapis.com/auth/forms.body.readonly'
+        scope: googleFormsScopes.formsBodyReadonly
       },
       {
         title: 'Responses (Read-only)',
         description: 'See all responses to your Google Forms forms',
-        scope: 'https://www.googleapis.com/auth/forms.responses.readonly'
+        scope: googleFormsScopes.formsResponsesReadonly
       },
       {
         title: 'Drive (Full)',
         description:
           'See, edit, create, and delete all of your Google Drive files (broader scope that also grants Forms access)',
-        scope: 'https://www.googleapis.com/auth/drive'
+        scope: googleFormsScopes.drive
       },
       {
         title: 'Drive (App files)',
         description:
           'See, edit, create, and delete only the specific Google Drive files you use with this app',
-        scope: 'https://www.googleapis.com/auth/drive.file'
+        scope: googleFormsScopes.driveFile
       },
       {
         title: 'Drive (Read-only)',
         description: 'See and download all your Google Drive files',
-        scope: 'https://www.googleapis.com/auth/drive.readonly'
+        scope: googleFormsScopes.driveReadonly
       },
       {
         title: 'User Profile',
         description: 'View your basic profile info (email, name, photo)',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleFormsScopes.userInfoProfile
       },
       {
         title: 'User Email',
         description: 'View your email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: googleFormsScopes.userInfoEmail
       }
     ],
 
@@ -97,6 +98,7 @@ export let auth = SlateAuth.create()
         refresh_token?: string;
         expires_in?: number;
         token_type?: string;
+        scope?: string;
       };
 
       if (!data.access_token) {
@@ -107,13 +109,16 @@ export let auth = SlateAuth.create()
       if (data.expires_in) {
         expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
       }
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

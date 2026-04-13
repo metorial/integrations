@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { FirestoreClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let firestoreDocumentChanges = SlateTrigger.create(spec, {
   description:
     'Monitors a Firestore collection for new or updated documents by polling for changes. Detects documents that have been created or modified since the last poll.'
 })
+  .scopes(firebaseActionScopes.firestoreDocumentChanges)
   .input(
     z.object({
       changeType: z.enum(['created', 'updated']).describe('Type of change detected'),

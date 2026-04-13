@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { VisionClient } from '../lib/client';
 import { imageSourceSchema, boundingPolySchema, likelihoodSchema } from '../lib/schemas';
+import { googleCloudVisionActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let analyzeImage = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleCloudVisionActionScopes.analyzeImage)
   .input(
     z.object({
       image: imageSourceSchema,

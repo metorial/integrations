@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GoogleFormsClient } from '../lib/client';
+import { googleFormsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -31,6 +32,7 @@ export let newResponse = SlateTrigger.create(spec, {
   description:
     'Triggers when a new response is submitted to a Google Form. Polls for new responses periodically and returns each new submission with its full answer data.'
 })
+  .scopes(googleFormsActionScopes.newResponse)
   .input(
     z.object({
       formId: z.string().describe('ID of the form'),

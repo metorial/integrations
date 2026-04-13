@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client, parseMessage } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let getMessage = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(gmailActionScopes.getMessage)
   .input(
     z.object({
       messageId: z.string().describe('The ID of the message to retrieve.')

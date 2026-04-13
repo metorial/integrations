@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsAdminClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ Also supports listing and creating Measurement Protocol secrets for a specific d
     destructive: false
   }
 })
+  .scopes(googleAnalyticsActionScopes.manageDataStreams)
   .input(
     z.object({
       action: z

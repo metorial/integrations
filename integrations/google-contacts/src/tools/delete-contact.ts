@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let deleteContact = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let deleteContact = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.deleteContact)
   .input(
     z.object({
       resourceName: z

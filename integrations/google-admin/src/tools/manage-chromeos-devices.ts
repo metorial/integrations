@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let manageChromeOsDevices = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let manageChromeOsDevices = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.manageChromeosDevices)
   .input(
     z.object({
       action: z.enum(['list', 'get', 'update', 'device_action']).describe('Action to perform'),

@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GtmClient } from '../lib/client';
+import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let workspaceChanged = SlateTrigger.create(spec, {
   description:
     'Triggers when changes are detected in a GTM workspace, such as modified tags, triggers, or variables. Polls workspace status to detect pending changes.'
 })
+  .scopes(googleTagManagerActionScopes.workspaceChanged)
   .input(
     z.object({
       accountId: z.string().describe('GTM account ID'),

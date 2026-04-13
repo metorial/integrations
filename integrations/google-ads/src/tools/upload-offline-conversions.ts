@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ Each conversion requires a Google Click ID (gclid) to link the offline event bac
     'Duplicate conversions (same gclid + conversion action + conversion date) are rejected.'
   ]
 })
+  .scopes(googleAdsActionScopes.uploadOfflineConversions)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -87,4 +89,5 @@ Each conversion requires a Google Click ID (gclid) to link the offline event bac
       },
       message: `Uploaded **${conversions.length}** offline conversion(s).${result.partialFailureError ? ' Some conversions had errors.' : ''}`
     };
-  });
+  })
+  .build();

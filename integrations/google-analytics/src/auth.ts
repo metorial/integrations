@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleAnalyticsScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -44,28 +45,28 @@ export let auth = SlateAuth.create()
       {
         title: 'Analytics Read-Only',
         description: 'Read-only access to Google Analytics data and configuration.',
-        scope: 'https://www.googleapis.com/auth/analytics.readonly'
+        scope: googleAnalyticsScopes.analyticsReadonly
       },
       {
         title: 'Analytics Edit',
         description:
           'Edit access to Google Analytics configuration (also grants read access).',
-        scope: 'https://www.googleapis.com/auth/analytics.edit'
+        scope: googleAnalyticsScopes.analyticsEdit
       },
       {
         title: 'Manage Users',
         description: 'Manage user permissions on Analytics accounts and properties.',
-        scope: 'https://www.googleapis.com/auth/analytics.manage.users'
+        scope: googleAnalyticsScopes.analyticsManageUsers
       },
       {
         title: 'View User Permissions',
         description: 'View user permissions on Analytics accounts and properties.',
-        scope: 'https://www.googleapis.com/auth/analytics.manage.users.readonly'
+        scope: googleAnalyticsScopes.analyticsManageUsersReadonly
       },
       {
         title: 'User Profile',
         description: 'View basic profile information including email.',
-        scope: 'openid email profile'
+        scope: googleAnalyticsScopes.openIdEmailProfile
       }
     ],
 
@@ -117,7 +118,11 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
@@ -127,7 +132,8 @@ export let auth = SlateAuth.create()
           measurementId: ctx.input.measurementId,
           apiSecret: ctx.input.apiSecret
         },
-        input: ctx.input
+        input: ctx.input,
+        scopes: grantedScopes
       };
     },
 
@@ -152,7 +158,9 @@ export let auth = SlateAuth.create()
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {

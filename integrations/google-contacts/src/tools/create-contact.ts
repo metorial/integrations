@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { contactInputSchema, contactOutputSchema, formatContact } from '../lib/schemas';
 
 export let createContact = SlateTool.create(spec, {
@@ -12,6 +13,7 @@ export let createContact = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleContactsActionScopes.createContact)
   .input(contactInputSchema)
   .output(contactOutputSchema)
   .handleInvocation(async ctx => {

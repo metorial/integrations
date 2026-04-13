@@ -1,5 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googlePhotosScopes } from './scopes';
+
+let googleAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -19,24 +28,34 @@ export let auth = SlateAuth.create()
         title: 'Picker Read',
         description:
           'Create, get, and delete picker sessions, and list media items for sessions.',
-        scope: 'https://www.googleapis.com/auth/photospicker.mediaitems.readonly'
+        scope: googlePhotosScopes.photospickerMediaitemsReadonly
       },
       {
         title: 'Library Upload',
         description:
           "Upload media items and create albums. Only allows new media to be created in the user's library and in albums created by the app.",
-        scope: 'https://www.googleapis.com/auth/photoslibrary.appendonly'
+        scope: googlePhotosScopes.photoslibraryAppendonly
       },
       {
         title: 'Library Read',
         description: 'Read access to media items and albums created by the app.',
-        scope: 'https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata'
+        scope: googlePhotosScopes.photoslibraryReadonlyAppcreateddata
       },
       {
         title: 'Library Edit',
         description:
           'Edit albums and media items created by the app, including organizing items, changing album titles/cover photos, and media descriptions.',
-        scope: 'https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata'
+        scope: googlePhotosScopes.photoslibraryEditAppcreateddata
+      },
+      {
+        title: 'User Profile',
+        description: 'View basic profile information.',
+        scope: googlePhotosScopes.userInfoProfile
+      },
+      {
+        title: 'User Email',
+        description: 'View email address.',
+        scope: googlePhotosScopes.userInfoEmail
       }
     ],
 
@@ -57,10 +76,8 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let axios = createAxios();
-
-      let response = await axios.post(
-        'https://oauth2.googleapis.com/token',
+      let response = await googleAxios.post(
+        '/token',
         new URLSearchParams({
           code: ctx.code,
           client_id: ctx.clientId,
@@ -69,25 +86,24 @@ export let auth = SlateAuth.create()
           grant_type: 'authorization_code'
         }).toString(),
         {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
       let data = response.data;
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -96,10 +112,8 @@ export let auth = SlateAuth.create()
         throw new Error('No refresh token available');
       }
 
-      let axios = createAxios();
-
-      let response = await axios.post(
-        'https://oauth2.googleapis.com/token',
+      let response = await googleAxios.post(
+        '/token',
         new URLSearchParams({
           refresh_token: ctx.output.refreshToken,
           client_id: ctx.clientId,
@@ -107,18 +121,14 @@ export let auth = SlateAuth.create()
           grant_type: 'refresh_token'
         }).toString(),
         {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
       let data = response.data;
-
-      let expiresAt: string | undefined;
-      if (data.expires_in) {
-        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
-      }
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
@@ -134,12 +144,8 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let axios = createAxios();
-
-      let response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${ctx.output.token}`
-        }
+      let response = await profileAxios.get('/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let data = response.data;

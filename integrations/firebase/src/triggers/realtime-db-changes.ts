@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { RealtimeDbClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let realtimeDbChanges = SlateTrigger.create(spec, {
   description:
     'Monitors a path in the Firebase Realtime Database for data changes by polling. Detects when new child keys are added or existing values are modified at the monitored path.'
 })
+  .scopes(firebaseActionScopes.realtimeDbChanges)
   .input(
     z.object({
       changeType: z.enum(['created', 'updated']).describe('Type of change detected'),

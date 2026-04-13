@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SearchConsoleClient } from '../lib/client';
+import { googleSearchConsoleActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let inspectUrl = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleSearchConsoleActionScopes.inspectUrl)
   .input(
     z.object({
       inspectionUrl: z.string().describe('The fully-qualified URL to inspect'),

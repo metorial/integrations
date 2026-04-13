@@ -1,7 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleAdsScopes } from './scopes';
 
-let httpClient = createAxios();
+let googleOAuthAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -22,7 +29,7 @@ export let auth = SlateAuth.create()
         title: 'Google Ads',
         description:
           'Full access to manage Google Ads accounts, campaigns, ads, and reporting',
-        scope: 'https://www.googleapis.com/auth/adwords'
+        scope: googleAdsScopes.adwords
       }
     ],
 
@@ -52,18 +59,26 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let response = await httpClient.post('https://oauth2.googleapis.com/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      });
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
@@ -72,7 +87,8 @@ export let auth = SlateAuth.create()
           expiresAt,
           developerToken: ctx.input.developerToken
         },
-        input: ctx.input
+        input: ctx.input,
+        scopes: grantedScopes
       };
     },
 
@@ -81,12 +97,18 @@ export let auth = SlateAuth.create()
         throw new Error('No refresh token available');
       }
 
-      let response = await httpClient.post('https://oauth2.googleapis.com/token', {
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token'
-      });
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -103,8 +125,12 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: any) => {
-      let response = await httpClient.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string; developerToken: string };
+      input: { developerToken: string };
+      scopes: string[];
+    }) => {
+      let response = await profileAxios.get('/oauth2/v2/userinfo', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
         }

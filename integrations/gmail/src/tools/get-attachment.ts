@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let getAttachment = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(gmailActionScopes.getAttachment)
   .input(
     z.object({
       messageId: z.string().describe('ID of the message containing the attachment.'),

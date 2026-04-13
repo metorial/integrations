@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let deleteVideo = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(youtubeActionScopes.deleteVideo)
   .input(
     z.object({
       videoId: z.string().describe('ID of the video to delete')

@@ -1,6 +1,7 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleContactsActionScopes } from '../scopes';
 import { contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
 
@@ -10,6 +11,7 @@ export let contactChanged = SlateTrigger.create(spec, {
   description:
     'Triggers when contacts are created, updated, or deleted. Uses sync tokens to efficiently detect incremental changes.'
 })
+  .scopes(googleContactsActionScopes.contactChanged)
   .input(
     z.object({
       resourceName: z.string().describe('Resource name of the changed contact'),

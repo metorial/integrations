@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ export let listAccounts = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleAdsActionScopes.listAccounts)
   .input(
     z.object({
       includeDetails: z
@@ -84,4 +86,5 @@ export let listAccounts = SlateTool.create(spec, {
       output: { accounts },
       message: `Found **${accounts.length}** accessible Google Ads account(s).`
     };
-  });
+  })
+  .build();

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDocsClient } from '../lib/client';
+import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let listDocuments = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDocsActionScopes.listDocuments)
   .input(
     z.object({
       searchQuery: z.string().optional().describe('Search term to filter documents by name'),

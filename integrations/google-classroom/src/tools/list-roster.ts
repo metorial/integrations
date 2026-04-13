@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let userProfileSchema = z
@@ -33,6 +34,7 @@ export let listRoster = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleClassroomActionScopes.listRoster)
   .input(
     z.object({
       courseId: z.string().describe('ID of the course'),

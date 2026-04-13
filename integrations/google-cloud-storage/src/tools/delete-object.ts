@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let deleteObject = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleCloudStorageActionScopes.deleteObject)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket containing the object'),

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SheetsClient } from '../lib/client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ Use this for complex updates that need to be applied together, or when you need 
     readOnly: false
   }
 })
+  .scopes(googleSheetsActionScopes.batchUpdate)
   .input(
     z.object({
       spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),

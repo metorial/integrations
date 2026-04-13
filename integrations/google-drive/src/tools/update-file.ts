@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let updateFileTool = SlateTool.create(spec, {
     'To trash a file, set trashed to true. To restore, set trashed to false.'
   ]
 })
+  .scopes(googleDriveActionScopes.updateFile)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file to update'),

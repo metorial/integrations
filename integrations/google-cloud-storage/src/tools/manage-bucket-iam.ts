@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,6 +23,7 @@ export let manageBucketIam = SlateTool.create(spec, {
   ],
   constraints: ['Requires full-control or cloud-platform scope.']
 })
+  .scopes(googleCloudStorageActionScopes.manageBucketIam)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket'),

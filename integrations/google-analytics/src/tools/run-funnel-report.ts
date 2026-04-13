@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsDataClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -68,6 +69,7 @@ Use this to analyze conversion funnels like checkout flows, onboarding sequences
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.runFunnelReport)
   .input(
     z.object({
       dateRanges: z

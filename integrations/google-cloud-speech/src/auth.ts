@@ -1,5 +1,14 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleCloudSpeechScopes } from './scopes';
+
+let googleAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let profileAxios = createAxios({
+  baseURL: 'https://www.googleapis.com'
+});
 
 export let auth = SlateAuth.create()
   .output(
@@ -19,7 +28,7 @@ export let auth = SlateAuth.create()
         title: 'Cloud Platform',
         description:
           'Full access to Google Cloud Platform resources including Speech-to-Text and Text-to-Speech APIs',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: googleCloudSpeechScopes.cloudPlatform
       }
     ],
 
@@ -40,11 +49,7 @@ export let auth = SlateAuth.create()
     },
 
     handleCallback: async ctx => {
-      let http = createAxios({
-        baseURL: 'https://oauth2.googleapis.com'
-      });
-
-      let response = await http.post(
+      let response = await googleAxios.post(
         '/token',
         new URLSearchParams({
           grant_type: 'authorization_code',
@@ -65,18 +70,22 @@ export let auth = SlateAuth.create()
         refresh_token?: string;
         expires_in?: number;
         token_type: string;
+        scope?: string;
       };
 
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -85,11 +94,7 @@ export let auth = SlateAuth.create()
         throw new Error('No refresh token available');
       }
 
-      let http = createAxios({
-        baseURL: 'https://oauth2.googleapis.com'
-      });
-
-      let response = await http.post(
+      let response = await googleAxios.post(
         '/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
@@ -128,11 +133,7 @@ export let auth = SlateAuth.create()
       input: Record<string, never>;
       scopes: string[];
     }) => {
-      let http = createAxios({
-        baseURL: 'https://www.googleapis.com'
-      });
-
-      let response = await http.get('/oauth2/v3/userinfo', {
+      let response = await profileAxios.get('/oauth2/v3/userinfo', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
         }

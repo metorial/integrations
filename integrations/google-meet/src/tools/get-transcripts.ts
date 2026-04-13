@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -21,6 +22,7 @@ export let listTranscriptsTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleMeetActionScopes.listTranscripts)
   .input(
     z.object({
       conferenceRecordName: z
@@ -73,6 +75,7 @@ export let getTranscriptTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleMeetActionScopes.getTranscript)
   .input(
     z.object({
       transcriptName: z
@@ -110,6 +113,7 @@ export let listTranscriptEntriesTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleMeetActionScopes.listTranscriptEntries)
   .input(
     z.object({
       transcriptName: z

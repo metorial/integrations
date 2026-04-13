@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AnalyticsDataClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ Returns the full catalog of available dimensions and metrics with their descript
     readOnly: true
   }
 })
+  .scopes(googleAnalyticsActionScopes.getMetadata)
   .input(z.object({}))
   .output(
     z.object({

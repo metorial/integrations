@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,6 +23,7 @@ Use **list** to view existing jobs, **get** to fetch a specific job, **create** 
     destructive: false
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.manageReportingJobs)
   .input(
     z.object({
       action: z

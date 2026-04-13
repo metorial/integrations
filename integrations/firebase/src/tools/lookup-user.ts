@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AuthClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let lookupUser = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(firebaseActionScopes.lookupUser)
   .input(
     z.object({
       email: z.string().optional().describe('Email address to look up'),

@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let manageLicenses = SlateTool.create(spec, {
@@ -16,6 +17,7 @@ export let manageLicenses = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.manageLicenses)
   .input(
     z.object({
       action: z.enum(['list', 'get', 'assign', 'revoke']).describe('Action to perform'),

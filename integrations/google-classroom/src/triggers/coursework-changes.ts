@@ -1,6 +1,7 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let courseWorkOutputSchema = z.object({
@@ -25,6 +26,7 @@ export let courseworkChanges = SlateTrigger.create(spec, {
   description:
     'Triggers when coursework (assignments, questions) is created or updated in courses you teach. Detects new and modified coursework items by polling the API.'
 })
+  .scopes(googleClassroomActionScopes.courseworkChanges)
   .input(
     z.object({
       changeType: z

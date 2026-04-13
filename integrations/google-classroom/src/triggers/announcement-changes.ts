@@ -1,6 +1,7 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let announcementOutputSchema = z.object({
@@ -20,6 +21,7 @@ export let announcementChanges = SlateTrigger.create(spec, {
   description:
     'Triggers when announcements are created or updated in courses you teach. Detects new and modified announcements by polling the API.'
 })
+  .scopes(googleClassroomActionScopes.announcementChanges)
   .input(
     z.object({
       changeType: z

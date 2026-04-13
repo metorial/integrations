@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let recordingEventsTrigger = SlateTrigger.create(spec, {
   description:
     'Triggers when a recording file is generated for a conference. Polls conference records for new recordings with FILE_GENERATED state.'
 })
+  .scopes(googleMeetActionScopes.recordingEvents)
   .input(
     z.object({
       conferenceRecordName: z.string().describe('Conference record resource name'),

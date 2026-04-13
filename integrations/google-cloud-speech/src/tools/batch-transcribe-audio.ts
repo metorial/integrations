@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SpeechToTextClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,6 +23,7 @@ Suitable for audio files longer than 1 minute (up to 8 hours). Results can be wr
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.batchTranscribeAudio)
   .input(
     z.object({
       fileUris: z

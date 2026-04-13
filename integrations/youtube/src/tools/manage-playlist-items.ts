@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ export let managePlaylistItems = SlateTool.create(spec, {
     'For removing: set action to "remove" with playlistItemId.'
   ]
 })
+  .scopes(youtubeActionScopes.managePlaylistItems)
   .input(
     z.object({
       action: z.enum(['list', 'add', 'update', 'remove']).describe('Action to perform'),

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDocsClient, Request } from '../lib/client';
+import { googleDocsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -135,6 +136,7 @@ export let editDocument = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleDocsActionScopes.editDocument)
   .input(
     z.object({
       documentId: z.string().describe('ID of the document to edit'),

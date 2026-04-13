@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -19,6 +20,7 @@ export let listPlaylists = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(youtubeActionScopes.listPlaylists)
   .input(
     z.object({
       playlistId: z

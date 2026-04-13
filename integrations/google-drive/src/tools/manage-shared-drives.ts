@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -23,6 +24,7 @@ export let listSharedDrivesTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.listSharedDrives)
   .input(
     z.object({
       query: z
@@ -59,6 +61,7 @@ export let createSharedDriveTool = SlateTool.create(spec, {
   key: 'create_shared_drive',
   description: `Create a new shared drive for team collaboration. Requires Google Workspace admin privileges.`
 })
+  .scopes(googleDriveActionScopes.createSharedDrive)
   .input(
     z.object({
       name: z.string().describe('Name for the shared drive'),
@@ -84,6 +87,7 @@ export let updateSharedDriveTool = SlateTool.create(spec, {
   key: 'update_shared_drive',
   description: `Update a shared drive's name or restrictions.`
 })
+  .scopes(googleDriveActionScopes.updateSharedDrive)
   .input(
     z.object({
       driveId: z.string().describe('ID of the shared drive'),
@@ -119,6 +123,7 @@ export let deleteSharedDriveTool = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleDriveActionScopes.deleteSharedDrive)
   .input(
     z.object({
       driveId: z.string().describe('ID of the shared drive to delete')

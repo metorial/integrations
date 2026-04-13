@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { youtubeAnalyticsScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,28 +27,28 @@ export let auth = SlateAuth.create()
       {
         title: 'Analytics Read-Only',
         description: 'View YouTube Analytics reports for your YouTube content',
-        scope: 'https://www.googleapis.com/auth/yt-analytics.readonly'
+        scope: youtubeAnalyticsScopes.ytAnalyticsReadonly
       },
       {
         title: 'Analytics Monetary',
         description:
           'View monetary and non-monetary YouTube Analytics reports for your YouTube content',
-        scope: 'https://www.googleapis.com/auth/yt-analytics-monetary.readonly'
+        scope: youtubeAnalyticsScopes.ytAnalyticsMonetaryReadonly
       },
       {
         title: 'YouTube Manage',
         description: 'Manage your YouTube account (required for group management)',
-        scope: 'https://www.googleapis.com/auth/youtube'
+        scope: youtubeAnalyticsScopes.youtube
       },
       {
         title: 'YouTube Read-Only',
         description: 'View your YouTube account (required for reports.query)',
-        scope: 'https://www.googleapis.com/auth/youtube.readonly'
+        scope: youtubeAnalyticsScopes.youtubeReadonly
       },
       {
         title: 'YouTube Partner',
         description: 'View and manage your assets and associated content on YouTube',
-        scope: 'https://www.googleapis.com/auth/youtubepartner'
+        scope: youtubeAnalyticsScopes.youtubepartner
       }
     ],
 
@@ -88,13 +89,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

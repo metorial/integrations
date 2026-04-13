@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ Use "List Bulk Reports" to find available reports and their download URLs.`,
     readOnly: true
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.downloadBulkReport)
   .input(
     z.object({
       jobId: z.string().describe('ID of the reporting job that generated the report.'),

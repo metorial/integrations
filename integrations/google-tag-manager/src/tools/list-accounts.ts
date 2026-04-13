@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GtmClient } from '../lib/client';
+import { googleTagManagerActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -34,6 +35,7 @@ export let listAccounts = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleTagManagerActionScopes.listAccounts)
   .input(
     z.object({
       includeContainers: z

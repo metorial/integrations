@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleTasksClient } from '../lib/client';
+import { googleTasksActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -16,6 +17,7 @@ export let listTasks = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleTasksActionScopes.listTasks)
   .input(
     z.object({
       taskListId: z.string().describe('ID of the task list to retrieve tasks from'),

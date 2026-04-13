@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { RealtimeDbClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -21,6 +22,7 @@ Requires the **databaseUrl** to be configured in the project settings.`,
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.manageRealtimeData)
   .input(
     z.object({
       operation: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ export let manageSubscriptions = SlateTool.create(spec, {
     'For unsubscribing: set action to "unsubscribe" with subscriptionId.'
   ]
 })
+  .scopes(youtubeActionScopes.manageSubscriptions)
   .input(
     z.object({
       action: z.enum(['list', 'subscribe', 'unsubscribe']).describe('Action to perform'),

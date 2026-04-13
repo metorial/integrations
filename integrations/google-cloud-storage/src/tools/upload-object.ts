@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let uploadObject = SlateTool.create(spec, {
     'The object name can include "/" characters to simulate folder structure (e.g., "images/photo.jpg").'
   ]
 })
+  .scopes(googleCloudStorageActionScopes.uploadObject)
   .input(
     z.object({
       bucketName: z.string().describe('Name of the bucket to upload to'),

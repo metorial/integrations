@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ export let listActivities = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(youtubeActionScopes.listActivities)
   .input(
     z.object({
       channelId: z.string().optional().describe('Channel ID to get activities for'),

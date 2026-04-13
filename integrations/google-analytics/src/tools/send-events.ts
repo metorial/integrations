@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { MeasurementProtocolClient } from '../lib/client';
+import { googleAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -24,6 +25,7 @@ The Measurement Protocol supplements automatic data collection — it does not r
     destructive: false
   }
 })
+  .scopes(googleAnalyticsActionScopes.sendEvents)
   .input(
     z.object({
       clientId: z

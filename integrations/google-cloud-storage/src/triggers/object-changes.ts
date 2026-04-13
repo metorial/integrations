@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
+import { googleCloudStorageActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let objectChanges = SlateTrigger.create(spec, {
   description:
     'Detects new or updated objects in a Cloud Storage bucket by polling. Triggers when objects are created or overwritten.'
 })
+  .scopes(googleCloudStorageActionScopes.objectChanges)
   .input(
     z.object({
       eventType: z

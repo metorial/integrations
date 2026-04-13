@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ User lists can be applied to campaigns or ad groups for audience targeting, bid 
     'Membership status can be OPEN (accepting new members) or CLOSED (not accepting).'
   ]
 })
+  .scopes(googleAdsActionScopes.manageAudienceLists)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -128,4 +130,5 @@ User lists can be applied to campaigns or ad groups for audience targeting, bid 
       output: { userListResourceName: resourceName, mutateResults: result },
       message: `User list **${ctx.input.userListId}** updated.`
     };
-  });
+  })
+  .build();

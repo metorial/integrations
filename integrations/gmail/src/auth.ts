@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { gmailScopes } from './scopes';
 
 let googleAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,65 +27,65 @@ export let auth = SlateAuth.create()
       {
         title: 'Read-Only',
         description: 'Read all resources and their metadata—no modifications.',
-        scope: 'https://www.googleapis.com/auth/gmail.readonly'
+        scope: gmailScopes.gmailReadonly
       },
       {
         title: 'Send',
         description: 'Send messages only. No read or modify access.',
-        scope: 'https://www.googleapis.com/auth/gmail.send'
+        scope: gmailScopes.gmailSend
       },
       {
         title: 'Compose',
         description: 'Create, read, update, and delete drafts. Send messages and drafts.',
-        scope: 'https://www.googleapis.com/auth/gmail.compose'
+        scope: gmailScopes.gmailCompose
       },
       {
         title: 'Modify',
         description: 'All read/write operations except permanent deletion bypassing Trash.',
-        scope: 'https://www.googleapis.com/auth/gmail.modify'
+        scope: gmailScopes.gmailModify
       },
       {
         title: 'Labels',
         description: 'Create, read, update, and delete labels only.',
-        scope: 'https://www.googleapis.com/auth/gmail.labels'
+        scope: gmailScopes.gmailLabels
       },
       {
         title: 'Insert',
         description: 'Insert and import messages only.',
-        scope: 'https://www.googleapis.com/auth/gmail.insert'
+        scope: gmailScopes.gmailInsert
       },
       {
         title: 'Metadata',
         description:
           'Read metadata including labels, history records, and email headers, but not the body or attachments.',
-        scope: 'https://www.googleapis.com/auth/gmail.metadata'
+        scope: gmailScopes.gmailMetadata
       },
       {
         title: 'Basic Settings',
         description: 'Manage basic mail settings.',
-        scope: 'https://www.googleapis.com/auth/gmail.settings.basic'
+        scope: gmailScopes.gmailSettingsBasic
       },
       {
         title: 'Sharing Settings',
         description:
           'Manage sensitive mail settings including forwarding rules and aliases. Restricted to service accounts with domain-wide delegation.',
-        scope: 'https://www.googleapis.com/auth/gmail.settings.sharing'
+        scope: gmailScopes.gmailSettingsSharing
       },
       {
         title: 'Full Access',
         description:
           'Full access to the Gmail account including permanent deletion of threads and messages.',
-        scope: 'https://mail.google.com/'
+        scope: gmailScopes.fullMail
       },
       {
         title: 'User Profile',
         description: 'View your basic profile info including your email address.',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: gmailScopes.userInfoEmail
       },
       {
         title: 'User Profile Info',
         description: 'View your name and profile picture.',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: gmailScopes.userInfoProfile
       }
     ],
 
@@ -125,13 +126,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleTasksScopes } from './scopes';
 
 export let auth = SlateAuth.create()
   .output(
@@ -18,12 +19,12 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Create, edit, organize, and delete all your tasks.',
-        scope: 'https://www.googleapis.com/auth/tasks'
+        scope: googleTasksScopes.tasks
       },
       {
         title: 'Read Only',
         description: 'View your tasks.',
-        scope: 'https://www.googleapis.com/auth/tasks.readonly'
+        scope: googleTasksScopes.tasksReadonly
       }
     ],
 
@@ -66,13 +67,16 @@ export let auth = SlateAuth.create()
       if (data.expires_in) {
         expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
       }
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 

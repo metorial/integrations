@@ -1,6 +1,7 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 import { getAccessTokenFromServiceAccount } from './lib/jwt';
+import { firebaseScopes } from './scopes';
 
 let googleOAuthAxios = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -28,22 +29,22 @@ export let auth = SlateAuth.create()
         title: 'Cloud Platform',
         description:
           'Full access to Google Cloud Platform resources including Firestore, Cloud Messaging, Cloud Storage, Cloud Functions, and Remote Config',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: firebaseScopes.cloudPlatform
       },
       {
         title: 'Realtime Database',
         description: 'Read and write access to Firebase Realtime Database',
-        scope: 'https://www.googleapis.com/auth/firebase.database'
+        scope: firebaseScopes.firebaseDatabase
       },
       {
         title: 'User Email',
         description: 'View your email address (required for Realtime Database authentication)',
-        scope: 'https://www.googleapis.com/auth/userinfo.email'
+        scope: firebaseScopes.userInfoEmail
       },
       {
         title: 'User Profile',
         description: 'View your basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: firebaseScopes.userInfoProfile
       }
     ],
 
@@ -80,14 +81,20 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
+      let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
-          token: response.data.access_token,
-          refreshToken: response.data.refresh_token,
+          token: data.access_token,
+          refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -111,11 +118,14 @@ export let auth = SlateAuth.create()
         }
       );
 
-      let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
+      let data = response.data;
+      let expiresAt = data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
+        : undefined;
 
       return {
         output: {
-          token: response.data.access_token,
+          token: data.access_token,
           refreshToken: ctx.output.refreshToken,
           expiresAt
         }
@@ -163,9 +173,9 @@ export let auth = SlateAuth.create()
       }
 
       let scopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-        'https://www.googleapis.com/auth/firebase.database',
-        'https://www.googleapis.com/auth/userinfo.email'
+        firebaseScopes.cloudPlatform,
+        firebaseScopes.firebaseDatabase,
+        firebaseScopes.userInfoEmail
       ];
 
       let result = await getAccessTokenFromServiceAccount({

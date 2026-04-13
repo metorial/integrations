@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ export let modifyMessage = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(gmailActionScopes.modifyMessage)
   .input(
     z.object({
       messageIds: z.array(z.string()).describe('One or more message IDs to modify.'),

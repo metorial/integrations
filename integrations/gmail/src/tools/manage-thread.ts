@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client, parseMessage } from '../lib/client';
+import { gmailActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let manageThread = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(gmailActionScopes.manageThread)
   .input(
     z.object({
       action: z

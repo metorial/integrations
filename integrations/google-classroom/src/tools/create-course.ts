@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let createCourse = SlateTool.create(spec, {
@@ -11,6 +12,7 @@ export let createCourse = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.createCourse)
   .input(
     z.object({
       name: z.string().describe('Name of the course (required)'),

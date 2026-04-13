@@ -1,6 +1,7 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let activityEvents = SlateTrigger.create(spec, {
@@ -9,6 +10,7 @@ export let activityEvents = SlateTrigger.create(spec, {
   description:
     '[Polling fallback] Poll for new audit activity events including admin actions, user logins, Drive activity, mobile device events, OAuth token grants, and other application activities.'
 })
+  .scopes(googleAdminActionScopes.activityEvents)
   .input(
     z.object({
       activityId: z.string().describe('Unique identifier for the activity event'),

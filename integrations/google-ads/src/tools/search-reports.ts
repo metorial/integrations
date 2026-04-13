@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -19,6 +20,7 @@ Use this tool to build custom reports, fetch performance metrics, or look up spe
     readOnly: true
   }
 })
+  .scopes(googleAdsActionScopes.searchReports)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID (without hyphens)'),
@@ -65,4 +67,5 @@ Use this tool to build custom reports, fetch performance metrics, or look up spe
       },
       message: `Query returned **${resultCount}** result(s)${response.nextPageToken ? ' (more pages available)' : ''}.`
     };
-  });
+  })
+  .build();

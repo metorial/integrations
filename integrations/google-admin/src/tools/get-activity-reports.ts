@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getActivityReports = SlateTool.create(spec, {
@@ -17,6 +18,7 @@ export let getActivityReports = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.getActivityReports)
   .input(
     z.object({
       userKey: z.string().describe('Email or "all" to retrieve activities for all users'),

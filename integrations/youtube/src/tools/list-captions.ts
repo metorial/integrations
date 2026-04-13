@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { youtubeActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let listCaptions = SlateTool.create(spec, {
     'For deleting: set action to "delete" with captionId. Requires the youtube.force-ssl scope.'
   ]
 })
+  .scopes(youtubeActionScopes.listCaptions)
   .input(
     z.object({
       action: z.enum(['list', 'delete']).describe('Action to perform'),

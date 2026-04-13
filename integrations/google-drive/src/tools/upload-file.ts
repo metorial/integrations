@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ export let uploadFileTool = SlateTool.create(spec, {
     'File content must be provided as a string. For binary content, encode as base64 first.'
   ]
 })
+  .scopes(googleDriveActionScopes.uploadFile)
   .input(
     z.object({
       name: z.string().describe('File name including extension'),

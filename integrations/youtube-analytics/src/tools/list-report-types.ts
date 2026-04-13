@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -13,6 +14,7 @@ Optionally include system-managed report types for content owners.`,
     readOnly: true
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.listReportTypes)
   .input(
     z.object({
       includeSystemManaged: z

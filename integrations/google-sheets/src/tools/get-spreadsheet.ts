@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SheetsClient } from '../lib/client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let getSpreadsheet = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleSheetsActionScopes.getSpreadsheet)
   .input(
     z.object({
       spreadsheetId: z

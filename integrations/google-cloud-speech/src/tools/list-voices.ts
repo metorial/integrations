@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { TextToSpeechClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let listVoices = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.listVoices)
   .input(
     z.object({
       languageCode: z

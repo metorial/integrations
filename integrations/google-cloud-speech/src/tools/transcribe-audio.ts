@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SpeechToTextClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,6 +23,7 @@ Configure language, model, punctuation, word-level details, speaker diarization,
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.transcribeAudio)
   .input(
     z.object({
       audioContent: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ Returns report metadata including download URLs for retrieving the report conten
     readOnly: true
   }
 })
+  .scopes(youtubeAnalyticsActionScopes.listBulkReports)
   .input(
     z.object({
       jobId: z.string().describe('ID of the reporting job to list reports for.'),

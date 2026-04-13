@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SlidesClient } from '../lib/client';
+import { googleSlidesActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -17,6 +18,7 @@ export let replaceText = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(googleSlidesActionScopes.replaceText)
   .input(
     z.object({
       presentationId: z.string().describe('ID of the presentation'),

@@ -1,5 +1,6 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleCloudStorageScopes } from './scopes';
 
 let googleAuth = createAxios({
   baseURL: 'https://oauth2.googleapis.com'
@@ -26,22 +27,22 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Only',
         description: 'Read data and list buckets',
-        scope: 'https://www.googleapis.com/auth/devstorage.read_only'
+        scope: googleCloudStorageScopes.devstorageReadOnly
       },
       {
         title: 'Read Write',
         description: 'Read and modify data, but not metadata like IAM policies',
-        scope: 'https://www.googleapis.com/auth/devstorage.read_write'
+        scope: googleCloudStorageScopes.devstorageReadWrite
       },
       {
         title: 'Full Control',
         description: 'Full control over data, including modifying IAM policies',
-        scope: 'https://www.googleapis.com/auth/devstorage.full_control'
+        scope: googleCloudStorageScopes.devstorageFullControl
       },
       {
         title: 'Cloud Platform',
         description: 'View and manage data across all Google Cloud services',
-        scope: 'https://www.googleapis.com/auth/cloud-platform'
+        scope: googleCloudStorageScopes.cloudPlatform
       }
     ],
 
@@ -81,13 +82,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -158,7 +162,7 @@ export let auth = SlateAuth.create()
     getOutput: async ctx => {
       let scopes = ctx.input.scopes
         ? ctx.input.scopes.split(',').map(s => s.trim())
-        : ['https://www.googleapis.com/auth/devstorage.full_control'];
+        : [googleCloudStorageScopes.devstorageFullControl];
 
       let now = Math.floor(Date.now() / 1000);
       let expiry = now + 3600;

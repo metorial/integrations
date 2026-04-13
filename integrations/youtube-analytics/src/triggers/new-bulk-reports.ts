@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { YouTubeAnalyticsClient } from '../lib/client';
+import { youtubeAnalyticsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let newBulkReports = SlateTrigger.create(spec, {
   description:
     'Polls for newly generated bulk reports across your YouTube Reporting API jobs. Triggers when new daily reports become available for download.'
 })
+  .scopes(youtubeAnalyticsActionScopes.newBulkReports)
   .input(
     z.object({
       reportId: z.string().describe('ID of the newly generated report.'),

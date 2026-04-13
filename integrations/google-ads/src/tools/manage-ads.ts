@@ -1,4 +1,5 @@
 import { SlateTool } from 'slates';
+import { googleAdsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ For responsive search ads, provide headlines and descriptions. Google will autom
     'Use pinnedField to pin a headline/description to a specific position (HEADLINE_1, HEADLINE_2, HEADLINE_3, DESCRIPTION_1, DESCRIPTION_2).'
   ]
 })
+  .scopes(googleAdsActionScopes.manageAds)
   .input(
     z.object({
       customerId: z.string().describe('The Google Ads customer account ID'),
@@ -156,4 +158,5 @@ For responsive search ads, provide headlines and descriptions. Google will autom
       },
       message: `Ad updated (fields: ${maskFields.join(', ')}).`
     };
-  });
+  })
+  .build();

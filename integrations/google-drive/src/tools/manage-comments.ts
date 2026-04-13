@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -46,6 +47,7 @@ export let listCommentsTool = SlateTool.create(spec, {
     readOnly: true
   }
 })
+  .scopes(googleDriveActionScopes.listComments)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file'),
@@ -80,6 +82,7 @@ export let createCommentTool = SlateTool.create(spec, {
   key: 'create_comment',
   description: `Add a comment to a file. Optionally quote specific content from the file that the comment relates to.`
 })
+  .scopes(googleDriveActionScopes.createComment)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file to comment on'),
@@ -121,6 +124,7 @@ export let replyToCommentTool = SlateTool.create(spec, {
     'Set action to "resolve" to resolve the comment thread, or "reopen" to reopen it. Include a content message with the action.'
   ]
 })
+  .scopes(googleDriveActionScopes.replyToComment)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file'),
@@ -161,6 +165,7 @@ export let deleteCommentTool = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleDriveActionScopes.deleteComment)
   .input(
     z.object({
       fileId: z.string().describe('ID of the file'),

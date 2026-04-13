@@ -1,7 +1,12 @@
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
+import { googleContactsScopes } from './scopes';
 
 let googleAxios = createAxios({
+  baseURL: 'https://oauth2.googleapis.com'
+});
+
+let peopleAxios = createAxios({
   baseURL: 'https://people.googleapis.com/v1/'
 });
 
@@ -22,28 +27,28 @@ export let auth = SlateAuth.create()
       {
         title: 'Contacts',
         description: 'See, edit, download, and permanently delete your contacts.',
-        scope: 'https://www.googleapis.com/auth/contacts'
+        scope: googleContactsScopes.contacts
       },
       {
         title: 'Contacts (Read-only)',
         description: 'See and download your contacts.',
-        scope: 'https://www.googleapis.com/auth/contacts.readonly'
+        scope: googleContactsScopes.contactsReadonly
       },
       {
         title: 'Other Contacts (Read-only)',
         description: 'See and download contact info automatically saved in "Other contacts".',
-        scope: 'https://www.googleapis.com/auth/contacts.other.readonly'
+        scope: googleContactsScopes.contactsOtherReadonly
       },
       {
         title: 'Directory (Read-only)',
         description: "See and download your organization's Google Workspace directory.",
-        scope: 'https://www.googleapis.com/auth/directory.readonly'
+        scope: googleContactsScopes.directoryReadonly
       },
       {
         title: 'User Profile',
         description:
           "See your personal info, including any personal info you've made publicly available.",
-        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        scope: googleContactsScopes.userInfoProfile
       }
     ],
 
@@ -65,7 +70,7 @@ export let auth = SlateAuth.create()
 
     handleCallback: async ctx => {
       let response = await googleAxios.post(
-        'https://oauth2.googleapis.com/token',
+        '/token',
         new URLSearchParams({
           code: ctx.code,
           client_id: ctx.clientId,
@@ -74,9 +79,7 @@ export let auth = SlateAuth.create()
           grant_type: 'authorization_code'
         }).toString(),
         {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -84,13 +87,16 @@ export let auth = SlateAuth.create()
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
+      let grantedScopes =
+        typeof data.scope === 'string' ? data.scope.split(' ').filter(Boolean) : undefined;
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt
-        }
+        },
+        scopes: grantedScopes
       };
     },
 
@@ -100,7 +106,7 @@ export let auth = SlateAuth.create()
       }
 
       let response = await googleAxios.post(
-        'https://oauth2.googleapis.com/token',
+        '/token',
         new URLSearchParams({
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
@@ -108,9 +114,7 @@ export let auth = SlateAuth.create()
           grant_type: 'refresh_token'
         }).toString(),
         {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -133,7 +137,7 @@ export let auth = SlateAuth.create()
       input: {};
       scopes: string[];
     }) => {
-      let response = await googleAxios.get('people/me', {
+      let response = await peopleAxios.get('people/me', {
         params: {
           personFields: 'names,emailAddresses,photos'
         },

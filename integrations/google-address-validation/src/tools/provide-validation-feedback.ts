@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
+import { googleAddressValidationActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ Helps Google improve future validation results by indicating whether the validat
     readOnly: false
   }
 })
+  .scopes(googleAddressValidationActionScopes.provideValidationFeedback)
   .input(
     z.object({
       responseId: z

@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let createFileTool = SlateTool.create(spec, {
     'If no parents are specified, the file is created in the root of My Drive.'
   ]
 })
+  .scopes(googleDriveActionScopes.createFile)
   .input(
     z.object({
       name: z.string().describe('Name of the file or folder'),

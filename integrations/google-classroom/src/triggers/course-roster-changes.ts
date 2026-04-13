@@ -1,6 +1,7 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let rosterMemberSchema = z.object({
@@ -25,6 +26,7 @@ export let courseRosterChanges = SlateTrigger.create(spec, {
   description:
     'Triggers when students or teachers are added to or removed from a course. Polls the course roster periodically and detects changes in the list of teachers and students.'
 })
+  .scopes(googleClassroomActionScopes.courseRosterChanges)
   .input(
     z.object({
       changeType: z

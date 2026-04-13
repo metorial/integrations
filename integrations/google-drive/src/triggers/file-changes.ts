@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { GoogleDriveClient } from '../lib/client';
+import { googleDriveActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -18,6 +19,7 @@ export let fileChangesTrigger = SlateTrigger.create(spec, {
   description:
     'Triggers when files in Google Drive are created, updated, trashed, or deleted. Detects changes across My Drive and shared drives.'
 })
+  .scopes(googleDriveActionScopes.fileChanges)
   .input(
     z.object({
       changeType: z.string().describe('Type of change detected'),

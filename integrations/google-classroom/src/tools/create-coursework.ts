@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { ClassroomClient } from '../lib/client';
 import { spec } from '../spec';
+import { googleClassroomActionScopes } from '../scopes';
 import { z } from 'zod';
 
 let materialSchema = z
@@ -56,6 +57,7 @@ export let createCoursework = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleClassroomActionScopes.createCoursework)
   .input(
     z.object({
       courseId: z.string().describe('ID of the course'),

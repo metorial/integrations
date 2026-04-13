@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { SpeechToTextClient } from '../lib/client';
+import { googleCloudSpeechActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ export let createRecognizer = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.createRecognizer)
   .input(
     z.object({
       recognizerId: z
@@ -80,6 +82,7 @@ export let listRecognizers = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.listRecognizers)
   .input(
     z.object({
       pageSize: z
@@ -154,6 +157,7 @@ export let updateRecognizer = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.updateRecognizer)
   .input(
     z.object({
       recognizerId: z.string().describe('ID of the recognizer to update.'),
@@ -201,6 +205,7 @@ export let deleteRecognizer = SlateTool.create(spec, {
     destructive: true
   }
 })
+  .scopes(googleCloudSpeechActionScopes.deleteRecognizer)
   .input(
     z.object({
       recognizerId: z.string().describe('ID of the recognizer to delete.')
@@ -240,6 +245,7 @@ export let getRecognizer = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleCloudSpeechActionScopes.getRecognizer)
   .input(
     z.object({
       recognizerId: z.string().describe('ID of the recognizer to retrieve.')

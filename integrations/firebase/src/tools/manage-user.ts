@@ -1,5 +1,6 @@
 import { SlateTool } from 'slates';
 import { AuthClient } from '../lib/client';
+import { firebaseActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -31,6 +32,7 @@ export let manageUser = SlateTool.create(spec, {
     readOnly: false
   }
 })
+  .scopes(firebaseActionScopes.manageUser)
   .input(
     z.object({
       operation: z

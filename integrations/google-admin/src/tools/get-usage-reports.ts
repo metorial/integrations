@@ -1,6 +1,7 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
+import { googleAdminActionScopes } from '../scopes';
 import { z } from 'zod';
 
 export let getUsageReports = SlateTool.create(spec, {
@@ -17,6 +18,7 @@ export let getUsageReports = SlateTool.create(spec, {
     destructive: false
   }
 })
+  .scopes(googleAdminActionScopes.getUsageReports)
   .input(
     z.object({
       reportType: z.enum(['customer', 'user']).describe('Type of usage report to retrieve'),

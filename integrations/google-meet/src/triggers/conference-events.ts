@@ -1,5 +1,6 @@
 import { SlateTrigger, SlateDefaultPollingIntervalSeconds } from 'slates';
 import { MeetClient } from '../lib/client';
+import { googleMeetActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export let conferenceEventsTrigger = SlateTrigger.create(spec, {
   description:
     'Triggers when conferences start or end in meeting spaces. Polls for new and recently ended conference records.'
 })
+  .scopes(googleMeetActionScopes.conferenceEvents)
   .input(
     z.object({
       eventType: z

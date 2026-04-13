@@ -1,6 +1,7 @@
 import { SlateTrigger } from 'slates';
 import { DriveClient } from '../lib/drive-client';
 import { SheetsClient } from '../lib/client';
+import { googleSheetsActionScopes } from '../scopes';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -10,6 +11,7 @@ export let spreadsheetChanged = SlateTrigger.create(spec, {
   description:
     'Triggers when a watched spreadsheet file is modified. Uses Google Drive push notifications to detect changes, then fetches updated spreadsheet metadata. Requires Drive scope.'
 })
+  .scopes(googleSheetsActionScopes.spreadsheetChanged)
   .input(
     z.object({
       spreadsheetId: z.string().describe('ID of the spreadsheet that changed'),
