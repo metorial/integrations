@@ -15,6 +15,32 @@ import { getAction, getActionWithType, getAuthMethod, mapAction, mapAuthMethod }
 import { State } from './state';
 import { toJsonSchema, validate } from './validation';
 
+let isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+let getObjectKeyCount = (value: unknown) =>
+  isRecord(value) ? Object.keys(value).length : undefined;
+
+let toErrorMetadata = (error: unknown) => {
+  if (error instanceof Error) {
+    return {
+      errorName: error.name,
+      errorMessage: error.message,
+      errorStack: error.stack
+    };
+  }
+
+  return {
+    errorValue: String(error)
+  };
+};
+
+let formatEntityLabel = (name: string, key: string) => `"${name}" (${key})`;
+let resolveTraceMessage = <ResultType>(
+  message: string | ((result: ResultType) => string),
+  result: ResultType
+) => (typeof message === 'function' ? message(result) : message);
+
 export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
   slate: Slate<ConfigType, AuthType>,
   listeners: SlateLogListener[]
@@ -28,6 +54,66 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
     let session = new State<{ id: string; state: any } | null>(null);
 
     let logger = new SlateLogger(listeners);
+    let providerTrace = {
+      providerId: slate.spec.key,
+      providerName: slate.spec.name
+    };
+
+    let traceProviderCall = async <ResultType>(
+      trace: {
+        component: 'config' | 'auth' | 'action';
+        functionName: string;
+        message: string;
+        successMessage: string | ((result: ResultType) => string);
+        errorMessage?: string;
+        metadata?: Record<string, unknown>;
+        onSuccess?: (result: ResultType) => Record<string, unknown> | undefined;
+      },
+      handler: () => Promise<ResultType>
+    ): Promise<ResultType> => {
+      let startedAt = Date.now();
+
+      logger.info({
+        ...providerTrace,
+        ...trace.metadata,
+        component: trace.component,
+        functionName: trace.functionName,
+        phase: 'start',
+        message: trace.message
+      });
+
+      try {
+        let result = await handler();
+        let successMessage = resolveTraceMessage(trace.successMessage, result);
+
+        logger.info({
+          ...providerTrace,
+          ...trace.metadata,
+          ...(trace.onSuccess?.(result) ?? {}),
+          component: trace.component,
+          functionName: trace.functionName,
+          phase: 'success',
+          durationMs: Date.now() - startedAt,
+          message: successMessage
+        });
+
+        return result;
+      } catch (error) {
+        logger.error({
+          ...providerTrace,
+          ...trace.metadata,
+          ...toErrorMetadata(error),
+          component: trace.component,
+          functionName: trace.functionName,
+          phase: 'error',
+          durationMs: Date.now() - startedAt,
+          message:
+            trace.errorMessage ??
+            `${typeof trace.successMessage === 'string' ? trace.successMessage : trace.message} failed`
+        });
+        throw error;
+      }
+    };
 
     let getContextBasic = () => {
       let currentProtocol = protocol.get();
@@ -75,6 +161,13 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
     };
 
     let getEmptyContext = () => new SlateContext({}, {}, {}, slate.spec as any, logger);
+    let withRequestTraces = <Result extends Record<string, any>>(
+      context: SlateContext<any, any, any>,
+      result: Result
+    ) => {
+      let requestTraces = context.getHttpTraces();
+      return requestTraces.length > 0 ? { ...result, requestTraces } : result;
+    };
 
     manager.onNotification('slates/hello', async ({ params }) => {
       protocol.set(params.protocol);
@@ -144,12 +237,34 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         return { success: true, config: newConfig };
       }
 
-      let updatedConfig = await configChanged({
-        previousConfig: params.previousConfig as ConfigType | null,
-        newConfig
-      });
+      let context = getEmptyContext();
+      let updatedConfig = await traceProviderCall<{ config?: ConfigType } | undefined>(
+        {
+          component: 'config',
+          functionName: 'configChanged',
+          message: 'Running config change handler',
+          successMessage: 'Config change handler completed',
+          metadata: {
+            hasPreviousConfig: params.previousConfig !== null,
+            newConfigKeyCount: getObjectKeyCount(newConfig)
+          },
+          onSuccess: result => ({
+            returnedConfig: !!result?.config
+          })
+        },
+        () =>
+          runWithContext(context, async () =>
+            configChanged({
+              previousConfig: params.previousConfig as ConfigType | null,
+              newConfig
+            })
+          )
+      );
 
-      return { success: true, config: updatedConfig?.config ?? newConfig };
+      return withRequestTraces(context, {
+        success: true,
+        config: (updatedConfig?.config ?? newConfig) as Record<string, any>
+      });
     });
 
     manager.onRequest('slates/config.get_default', async () => {
@@ -160,8 +275,22 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         return { config: null };
       }
 
-      let defaultConfig = await getDefaultConfig();
-      return { config: defaultConfig };
+      let context = getEmptyContext();
+      let defaultConfig = await traceProviderCall<ConfigType>(
+        {
+          component: 'config',
+          functionName: 'getDefaultConfig',
+          message: 'Getting default config',
+          successMessage: 'Default config retrieved',
+          onSuccess: result => ({
+            configKeyCount: getObjectKeyCount(result)
+          })
+        },
+        () => runWithContext(context, async () => getDefaultConfig())
+      );
+      return withRequestTraces(context, {
+        config: (defaultConfig ?? null) as Record<string, any> | null
+      });
     });
 
     manager.onRequest('slates/config.schema.get', async () => {
@@ -210,9 +339,25 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         return { input: null };
       }
 
-      return {
-        input: await runWithContext(getEmptyContext(), () => authMethod.getDefaultInput!())
-      };
+      let context = getEmptyContext();
+      let input = await traceProviderCall(
+        {
+          component: 'auth',
+          functionName: 'getDefaultInput',
+          message: 'Getting default authentication input',
+          successMessage: 'Default authentication input retrieved',
+          metadata: {
+            authenticationMethodId: params.authenticationMethodId,
+            authenticationMethodName: authMethod.name
+          },
+          onSuccess: result => ({
+            inputKeyCount: getObjectKeyCount(result)
+          })
+        },
+        () => runWithContext(context, () => authMethod.getDefaultInput!())
+      );
+
+      return withRequestTraces(context, { input });
     });
 
     manager.onRequest('slates/auth.input.changed', async ({ params }) => {
@@ -223,14 +368,36 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         return { success: true, input: params.newInput };
       }
 
-      let updatedInput = await runWithContext(getEmptyContext(), () =>
-        authMethod.onInputChanged!({
-          previousInput: params.previousInput as any | null,
-          newInput: params.newInput
-        })
+      let context = getEmptyContext();
+      let updatedInput = await traceProviderCall(
+        {
+          component: 'auth',
+          functionName: 'onInputChanged',
+          message: 'Running authentication input change handler',
+          successMessage: 'Authentication input change handler completed',
+          metadata: {
+            authenticationMethodId: params.authenticationMethodId,
+            authenticationMethodName: authMethod.name,
+            hasPreviousInput: params.previousInput !== null,
+            newInputKeyCount: getObjectKeyCount(params.newInput)
+          },
+          onSuccess: result => ({
+            returnedInput: !!result?.input
+          })
+        },
+        () =>
+          runWithContext(context, () =>
+            authMethod.onInputChanged!({
+              previousInput: params.previousInput as any | null,
+              newInput: params.newInput
+            })
+          )
       );
 
-      return { success: true, input: updatedInput?.input ?? params.newInput };
+      return withRequestTraces(context, {
+        success: true,
+        input: updatedInput?.input ?? params.newInput
+      });
     });
 
     manager.onRequest('slates/auth.output.get', async ({ params }) => {
@@ -249,10 +416,25 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       }
 
       if ('getOutput' in authMethod) {
-        let outputRes = await runWithContext(getEmptyContext(), () =>
-          authMethod.getOutput({ input })
+        let context = getEmptyContext();
+        let outputRes = await traceProviderCall(
+          {
+            component: 'auth',
+            functionName: 'getOutput',
+            message: 'Getting authentication output',
+            successMessage: 'Authentication output retrieved',
+            metadata: {
+              authenticationMethodId: params.authenticationMethodId,
+              authenticationMethodName: authMethod.name,
+              inputKeyCount: getObjectKeyCount(input)
+            },
+            onSuccess: result => ({
+              outputKeyCount: getObjectKeyCount(result.output)
+            })
+          },
+          () => runWithContext(context, () => authMethod.getOutput({ input }))
         );
-        return { output: outputRes.output };
+        return withRequestTraces(context, { output: outputRes.output });
       }
 
       return { output: input as any };
@@ -263,24 +445,45 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       let authMethod = getAuthMethod(slate, params.authenticationMethodId);
 
       if ('handleCallback' in authMethod) {
-        let callbackRes = await runWithContext(getEmptyContext(), () =>
-          authMethod.handleCallback({
-            code: params.code,
-            state: params.state,
-            redirectUri: params.redirectUri,
-            input: params.input,
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            scopes: params.scopes,
-            callbackState: params.callbackState || {}
-          })
+        let context = getEmptyContext();
+        let callbackRes = await traceProviderCall(
+          {
+            component: 'auth',
+            functionName: 'handleCallback',
+            message: 'Handling authentication callback',
+            successMessage: 'Authentication callback handled',
+            metadata: {
+              authenticationMethodId: params.authenticationMethodId,
+              authenticationMethodName: authMethod.name,
+              scopeCount: params.scopes.length,
+              hasCallbackState: !!params.callbackState
+            },
+            onSuccess: result => ({
+              outputKeyCount: getObjectKeyCount(result.output),
+              returnedInput: !!result.input,
+              returnedScopeCount: result.scopes?.length
+            })
+          },
+          () =>
+            runWithContext(context, () =>
+              authMethod.handleCallback({
+                code: params.code,
+                state: params.state,
+                redirectUri: params.redirectUri,
+                input: params.input,
+                clientId: params.clientId,
+                clientSecret: params.clientSecret,
+                scopes: params.scopes,
+                callbackState: params.callbackState || {}
+              })
+            )
         );
 
-        return {
+        return withRequestTraces(context, {
           output: callbackRes.output,
           input: callbackRes.input,
           scopes: callbackRes.scopes
-        };
+        });
       }
 
       throw new ServiceError(
@@ -295,22 +498,42 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       let authMethod = getAuthMethod(slate, params.authenticationMethodId);
 
       if ('getAuthorizationUrl' in authMethod) {
-        let urlRes = await runWithContext(getEmptyContext(), () =>
-          authMethod.getAuthorizationUrl({
-            redirectUri: params.redirectUri,
-            state: params.state,
-            input: params.input,
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            scopes: params.scopes
-          })
+        let context = getEmptyContext();
+        let urlRes = await traceProviderCall(
+          {
+            component: 'auth',
+            functionName: 'getAuthorizationUrl',
+            message: 'Getting authentication authorization URL',
+            successMessage: 'Authentication authorization URL retrieved',
+            metadata: {
+              authenticationMethodId: params.authenticationMethodId,
+              authenticationMethodName: authMethod.name,
+              scopeCount: params.scopes.length,
+              inputKeyCount: getObjectKeyCount(params.input)
+            },
+            onSuccess: result => ({
+              returnedInput: !!result.input,
+              hasCallbackState: !!result.callbackState
+            })
+          },
+          () =>
+            runWithContext(context, () =>
+              authMethod.getAuthorizationUrl({
+                redirectUri: params.redirectUri,
+                state: params.state,
+                input: params.input,
+                clientId: params.clientId,
+                clientSecret: params.clientSecret,
+                scopes: params.scopes
+              })
+            )
         );
 
-        return {
+        return withRequestTraces(context, {
           authorizationUrl: urlRes.url,
           input: urlRes.input,
           callbackState: urlRes.callbackState
-        };
+        });
       }
 
       throw new ServiceError(
@@ -325,19 +548,39 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       let authMethod = getAuthMethod(slate, params.authenticationMethodId);
 
       if (authMethod.getProfile) {
-        let profileRes = await runWithContext(
-          getEmptyContext(),
+        let context = getEmptyContext();
+        let profileRes = await traceProviderCall(
+          {
+            component: 'auth',
+            functionName: 'getProfile',
+            message: 'Getting authentication profile',
+            successMessage: 'Authentication profile retrieved',
+            metadata: {
+              authenticationMethodId: params.authenticationMethodId,
+              authenticationMethodName: authMethod.name,
+              scopeCount: params.scopes.length,
+              inputKeyCount: getObjectKeyCount(params.input),
+              outputKeyCount: getObjectKeyCount(params.output)
+            },
+            onSuccess: result => ({
+              profileKeyCount: getObjectKeyCount(result.profile)
+            })
+          },
           () =>
-            authMethod.getProfile!({
-              output: params.output as any,
-              input: params.input,
-              scopes: params.scopes
-            })!
+            runWithContext(
+              context,
+              () =>
+                authMethod.getProfile!({
+                  output: params.output as any,
+                  input: params.input,
+                  scopes: params.scopes
+                })!
+            )
         );
 
-        return {
+        return withRequestTraces(context, {
           profile: profileRes.profile
-        };
+        });
       }
 
       throw new ServiceError(
@@ -352,20 +595,41 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       let authMethod = getAuthMethod(slate, params.authenticationMethodId);
 
       if ('handleTokenRefresh' in authMethod && authMethod.handleTokenRefresh) {
-        let refreshRes = await runWithContext(getEmptyContext(), () =>
-          authMethod.handleTokenRefresh!({
-            output: params.output as any,
-            input: params.input,
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            scopes: params.scopes
-          })
+        let context = getEmptyContext();
+        let refreshRes = await traceProviderCall(
+          {
+            component: 'auth',
+            functionName: 'handleTokenRefresh',
+            message: 'Refreshing authentication token',
+            successMessage: 'Authentication token refreshed',
+            metadata: {
+              authenticationMethodId: params.authenticationMethodId,
+              authenticationMethodName: authMethod.name,
+              scopeCount: params.scopes.length,
+              inputKeyCount: getObjectKeyCount(params.input),
+              outputKeyCount: getObjectKeyCount(params.output)
+            },
+            onSuccess: result => ({
+              refreshedOutputKeyCount: getObjectKeyCount(result.output),
+              returnedInput: !!result.input
+            })
+          },
+          () =>
+            runWithContext(context, () =>
+              authMethod.handleTokenRefresh!({
+                output: params.output as any,
+                input: params.input,
+                clientId: params.clientId,
+                clientSecret: params.clientSecret,
+                scopes: params.scopes
+              })
+            )
         );
 
-        return {
+        return withRequestTraces(context, {
           output: refreshRes.output,
           input: refreshRes.input
-        };
+        });
       }
 
       throw new ServiceError(
@@ -404,9 +668,29 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       );
 
       let context = new SlateContext(ctx.config, input, ctx.auth?.output!, slate.spec, logger);
-      let res = await runWithContext(context, () => action.handleInvocation(context));
+      let res = await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'handleInvocation',
+          message: `Starting tool ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: `Completed tool ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Tool ${formatEntityLabel(action.name, action.key)} failed`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type,
+            inputKeyCount: getObjectKeyCount(input)
+          },
+          onSuccess: result => ({
+            hasMessage: !!result.message,
+            actionResultMessage: result.message,
+            outputKeyCount: getObjectKeyCount(result.output)
+          })
+        },
+        () => runWithContext(context, () => action.handleInvocation(context))
+      );
 
-      return { output: res.output, message: res.message };
+      return withRequestTraces(context, { output: res.output, message: res.message });
     });
 
     manager.onRequest('slates/action.trigger.map_event', async ({ params }) => {
@@ -421,9 +705,30 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
       );
 
       let context = new SlateContext(ctx.config, input, ctx.auth?.output!, slate.spec, logger);
-      let res = await runWithContext(context, () => action.handleEvent(context));
+      let res = await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'handleEvent',
+          message: `Mapping event for trigger ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: result =>
+            `Mapped trigger event "${result.type}" for ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Trigger ${formatEntityLabel(action.name, action.key)} failed while mapping an event`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type,
+            inputKeyCount: getObjectKeyCount(input)
+          },
+          onSuccess: result => ({
+            eventType: result.type,
+            hasEventId: !!result.id,
+            outputKeyCount: getObjectKeyCount(result.output)
+          })
+        },
+        () => runWithContext(context, () => action.handleEvent(context))
+      );
 
-      return { id: res.id, type: res.type, output: res.output };
+      return withRequestTraces(context, { id: res.id, type: res.type, output: res.output });
     });
 
     manager.onRequest('slates/action.trigger.poll_events', async ({ params }) => {
@@ -445,9 +750,32 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         slate.spec,
         logger
       );
-      let res = await runWithContext(context, () => action.pollEvents!(context));
+      let res = await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'pollEvents',
+          message: `Polling events for trigger ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: result =>
+            `Polled ${result.inputs.length} event(s) for trigger ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Trigger ${formatEntityLabel(action.name, action.key)} failed while polling events`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type,
+            hasPreviousState: params.state !== null
+          },
+          onSuccess: result => ({
+            inputCount: result.inputs.length,
+            hasUpdatedState: result.updatedState !== undefined
+          })
+        },
+        () => runWithContext(context, () => action.pollEvents!(context))
+      );
 
-      return { inputs: res.inputs, updatedState: res.updatedState };
+      return withRequestTraces(context, {
+        inputs: res.inputs,
+        updatedState: res.updatedState
+      });
     });
 
     manager.onRequest('slates/action.trigger.webhook_handle', async ({ params }) => {
@@ -477,9 +805,34 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         slate.spec,
         logger
       );
-      let res = await runWithContext(context, () => action.handleRequest!(context));
+      let res = await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'handleRequest',
+          message: `Handling webhook request for trigger ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: result =>
+            `Received ${result.inputs.length} webhook event(s) for trigger ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Trigger ${formatEntityLabel(action.name, action.key)} failed while handling a webhook request`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type,
+            requestMethod: params.method,
+            hasRequestBody: !!params.body,
+            hasPreviousState: params.state !== null
+          },
+          onSuccess: result => ({
+            inputCount: result.inputs.length,
+            hasUpdatedState: result.updatedState !== undefined
+          })
+        },
+        () => runWithContext(context, () => action.handleRequest!(context))
+      );
 
-      return { inputs: res.inputs, updatedState: res.updatedState };
+      return withRequestTraces(context, {
+        inputs: res.inputs,
+        updatedState: res.updatedState
+      });
     });
 
     manager.onRequest('slates/action.trigger.webhook_register', async ({ params }) => {
@@ -501,9 +854,30 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         slate.spec,
         logger
       );
-      let res = await runWithContext(context, () => action.autoRegisterWebhook!(context));
+      let res = await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'autoRegisterWebhook',
+          message: `Registering webhook for trigger ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: `Registered webhook for trigger ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Trigger ${formatEntityLabel(action.name, action.key)} failed while registering a webhook`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type
+          },
+          onSuccess: result => ({
+            hasRegistrationDetails: result.registrationDetails !== undefined,
+            hasState: result.state !== undefined
+          })
+        },
+        () => runWithContext(context, () => action.autoRegisterWebhook!(context))
+      );
 
-      return { registrationDetails: res.registrationDetails, state: res.state };
+      return withRequestTraces(context, {
+        registrationDetails: res.registrationDetails,
+        state: res.state
+      });
     });
 
     manager.onRequest('slates/action.trigger.webhook_unregister', async ({ params }) => {
@@ -529,8 +903,24 @@ export let createProviderHandler = <ConfigType extends {}, AuthType extends {}>(
         slate.spec,
         logger
       );
-      await runWithContext(context, () => action.autoUnregisterWebhook!(context));
+      await traceProviderCall(
+        {
+          component: 'action',
+          functionName: 'autoUnregisterWebhook',
+          message: `Unregistering webhook for trigger ${formatEntityLabel(action.name, action.key)}`,
+          successMessage: `Unregistered webhook for trigger ${formatEntityLabel(action.name, action.key)}`,
+          errorMessage: `Trigger ${formatEntityLabel(action.name, action.key)} failed while unregistering a webhook`,
+          metadata: {
+            actionId: action.key,
+            actionName: action.name,
+            actionType: action.type,
+            hasRegistrationDetails: params.registrationDetails !== null,
+            hasPreviousState: params.state !== null
+          }
+        },
+        () => runWithContext(context, () => action.autoUnregisterWebhook!(context))
+      );
 
-      return {};
+      return withRequestTraces(context, {});
     });
   });
