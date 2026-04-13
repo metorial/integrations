@@ -3,6 +3,7 @@ export * from './auth';
 export * from './config';
 export * from './controlFlow';
 export * from './identify';
+export * from './tracing';
 
 import type { z } from 'zod';
 import {

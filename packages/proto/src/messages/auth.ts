@@ -1,5 +1,6 @@
 import z from 'zod';
 import { slatesAuthenticationMethod } from '../types';
+import { withRequestTraces } from './tracing';
 
 /**
  * Set Authentication
@@ -92,7 +93,7 @@ export type SlatesMessageAuthInputChangedRequest = z.infer<
 export let slatesMessageAuthInputChangedResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     input: z.record(z.string(), z.any()).optional()
   })
 });
@@ -120,7 +121,7 @@ export type SlatesMessageAuthDefaultInputGetRequest = z.infer<
 export let slatesMessageAuthDefaultInputGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     input: z.record(z.string(), z.any())
   })
 });
@@ -155,7 +156,7 @@ export type SlatesMessageAuthAuthorizationUrlGetRequest = z.infer<
 export let slatesMessageAuthAuthorizationUrlGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     authorizationUrl: z.string(),
     input: z.record(z.string(), z.any()).optional(),
     callbackState: z.record(z.string(), z.any()).optional()
@@ -194,7 +195,7 @@ export type SlatesMessageAuthAuthorizationCallbackHandleRequest = z.infer<
 export let slatesMessageAuthAuthorizationCallbackHandleResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     output: z.record(z.string(), z.any()),
     input: z.record(z.string(), z.any()).optional(),
     scopes: z.array(z.string()).optional()
@@ -230,7 +231,7 @@ export type SlatesMessageAuthTokenRefreshHandleRequest = z.infer<
 export let slatesMessageAuthTokenRefreshHandleResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     output: z.record(z.string(), z.any()),
     input: z.record(z.string(), z.any()).optional()
   })
@@ -263,7 +264,7 @@ export type SlatesMessageAuthProfileGetRequest = z.infer<
 export let slatesMessageAuthProfileGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     profile: z.record(z.string(), z.any())
   })
 });
@@ -293,7 +294,7 @@ export type SlatesMessageAuthOutputGetRequest = z.infer<
 export let slatesMessageAuthOutputGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     output: z.record(z.string(), z.any())
   })
 });

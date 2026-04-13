@@ -1,3 +1,4 @@
+import type { SlateHttpTrace } from '../axios/trace';
 import type { SlateLogger, SlateLogMessageInput } from '../logger';
 import type { SlateSpecification } from '../specification/specification';
 
@@ -5,6 +6,7 @@ export class SlateContext<ConfigType extends {}, AuthType extends {}, InputType 
   #config: ConfigType;
   #input: InputType;
   #auth: AuthType;
+  #httpTraces: SlateHttpTrace[] = [];
 
   constructor(
     config: ConfigType,
@@ -48,6 +50,31 @@ export class SlateContext<ConfigType extends {}, AuthType extends {}, InputType 
 
   get auth() {
     return Object.freeze(this.#auth);
+  }
+
+  recordHttpTrace(trace: SlateHttpTrace) {
+    this.#httpTraces.push(trace);
+  }
+
+  getHttpTraces() {
+    return this.#httpTraces.map(trace => ({
+      ...trace,
+      request: {
+        ...trace.request,
+        ...(trace.request.headers ? { headers: { ...trace.request.headers } } : {}),
+        ...(trace.request.body ? { body: { ...trace.request.body } } : {})
+      },
+      ...(trace.response
+        ? {
+            response: {
+              ...trace.response,
+              ...(trace.response.headers ? { headers: { ...trace.response.headers } } : {}),
+              ...(trace.response.body ? { body: { ...trace.response.body } } : {})
+            }
+          }
+        : {}),
+      ...(trace.error ? { error: { ...trace.error } } : {})
+    }));
   }
 
   info(message: SlateLogMessageInput) {

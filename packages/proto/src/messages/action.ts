@@ -1,5 +1,6 @@
 import z from 'zod';
 import { slatesAction } from '../types';
+import { withRequestTraces } from './tracing';
 
 /**
  * List Actions
@@ -69,7 +70,7 @@ export type SlatesMessageActionInvokeRequest = z.infer<
 export let slatesMessageActionInvokeResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     output: z.record(z.string(), z.any()),
     message: z.string().optional()
   })
@@ -99,7 +100,7 @@ export type SlatesMessageActionTriggerEventMapRequest = z.infer<
 export let slatesMessageActionTriggerEventMapResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     type: z.string(),
     id: z.string(),
     output: z.record(z.string(), z.any())
@@ -130,7 +131,7 @@ export type SlatesMessageActionTriggerEventsPollRequest = z.infer<
 export let slatesMessageActionTriggerEventsPollResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     inputs: z.array(z.record(z.string(), z.any())),
     updatedState: z.any().nullable().optional()
   })
@@ -169,7 +170,7 @@ export type SlatesMessageActionTriggerWebhookHandleRequest = z.infer<
 export let slatesMessageActionTriggerWebhookHandleResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     inputs: z.array(z.record(z.string(), z.any())),
     updatedState: z.any().nullable().optional()
   })
@@ -199,7 +200,7 @@ export type SlatesMessageActionTriggerWebhookRegisterRequest = z.infer<
 export let slatesMessageActionTriggerWebhookRegisterResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     registrationDetails: z.any(),
     state: z.any().optional()
   })
@@ -231,7 +232,7 @@ export type SlatesMessageActionTriggerWebhookUnregisterRequest = z.infer<
 export let slatesMessageActionTriggerWebhookUnregisterResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({})
+  result: withRequestTraces({})
 });
 
 export type SlatesMessageActionTriggerWebhookUnregisterResponse = z.infer<

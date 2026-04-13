@@ -1,23 +1,24 @@
 import {
+  axios,
   Slate,
   SlateAuth,
   SlateConfig,
+  type SlateLogEntry,
   SlateSpecification,
-  SlateTool
+  SlateTool,
+  SlateTrigger
 } from '@slates/provider';
-import { mkdtemp, rm } from 'fs/promises';
-import { tmpdir } from 'os';
-import path from 'path';
+import { rm } from 'fs/promises';
+import { createServer } from 'http';
+import type { AddressInfo } from 'net';
 import { afterEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createLocalSlateTransport, createSlatesClient, SlateProtocolError } from './index';
 
 let tempDirs: string[] = [];
 
-let createTempDir = async () => {
-  let dir = await mkdtemp(path.join(tmpdir(), 'slates-client-'));
-  tempDirs.push(dir);
-  return dir;
+let waitForLogs = async () => {
+  await new Promise(resolve => setTimeout(resolve, 25));
 };
 
 afterEach(async () => {
@@ -112,6 +113,142 @@ let createDemoSlate = () => {
   });
 };
 
+let createTraceSlate = (baseUrl: string) => {
+  let config = SlateConfig.create(z.object({}));
+  let auth = SlateAuth.create<{}>().output(z.object({}));
+
+  let spec = SlateSpecification.create({
+    key: 'trace-slate',
+    name: 'Trace Slate',
+    description: 'A slate that traces HTTP requests',
+    config,
+    auth
+  });
+
+  let traceTool = SlateTool.create(spec, {
+    key: 'trace_http',
+    name: 'Trace HTTP'
+  })
+    .input(z.object({}))
+    .output(
+      z.object({
+        ok: z.boolean(),
+        status: z.number(),
+        traceCount: z.number()
+      })
+    )
+    .handleInvocation(async ctx => {
+      let response = await axios.post(
+        `${baseUrl}/trace?api_key=request-secret&visible=yes`,
+        {
+          message: 'hello',
+          secret: 'client-secret'
+        },
+        {
+          headers: {
+            Authorization: 'Bearer client-token',
+            'X-Api-Key': 'client-api-key'
+          }
+        }
+      );
+
+      return {
+        output: {
+          ok: response.data.ok,
+          status: response.status,
+          traceCount: ctx.getHttpTraces().length
+        },
+        message: 'traced'
+      };
+    })
+    .build();
+
+  return Slate.create({
+    spec,
+    tools: [traceTool],
+    triggers: []
+  });
+};
+
+let createTriggerTraceSlate = () => {
+  let config = SlateConfig.create(z.object({}));
+  let auth = SlateAuth.create<{}>().output(z.object({}));
+
+  let spec = SlateSpecification.create({
+    key: 'trigger-trace-slate',
+    name: 'Trigger Trace Slate',
+    description: 'A slate that traces trigger execution',
+    config,
+    auth
+  });
+
+  let pollingTrigger = SlateTrigger.create(spec, {
+    key: 'poll_trigger',
+    name: 'Poll Trigger'
+  })
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .output(
+      z.object({
+        type: z.string(),
+        value: z.string()
+      })
+    )
+    .polling({
+      pollEvents: async () => ({
+        inputs: [{ id: 'poll-1' }, { id: 'poll-2' }]
+      }),
+      handleEvent: async ctx => ({
+        id: ctx.input.id,
+        type: 'poll.event',
+        output: {
+          type: 'poll.event',
+          value: ctx.input.id
+        }
+      })
+    })
+    .build();
+
+  let webhookTrigger = SlateTrigger.create(spec, {
+    key: 'webhook_trigger',
+    name: 'Webhook Trigger'
+  })
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .output(
+      z.object({
+        type: z.string(),
+        value: z.string()
+      })
+    )
+    .webhook({
+      handleRequest: async () => ({
+        inputs: [{ id: 'webhook-1' }, { id: 'webhook-2' }]
+      }),
+      handleEvent: async ctx => ({
+        id: ctx.input.id,
+        type: 'webhook.event',
+        output: {
+          type: 'webhook.event',
+          value: ctx.input.id
+        }
+      })
+    })
+    .build();
+
+  return Slate.create({
+    spec,
+    tools: [],
+    triggers: [pollingTrigger, webhookTrigger]
+  });
+};
+
 describe('@slates/client local transport', () => {
   it('discovers auth/config and invokes tools with session state', async () => {
     let slate = createDemoSlate();
@@ -173,6 +310,145 @@ describe('@slates/client local transport', () => {
     expect(client.state.session?.id).toBeTruthy();
   });
 
+  it('emits structured traces for provider callbacks', async () => {
+    let slate = createDemoSlate();
+    let logs: SlateLogEntry[] = [];
+    let client = createSlatesClient({
+      transport: createLocalSlateTransport({
+        slate,
+        listeners: [
+          entries => {
+            logs.push(...entries);
+          }
+        ]
+      })
+    });
+
+    await client.identify();
+    await client.getDefaultConfig();
+    let changedInput = await client.updateAuthInput({
+      authenticationMethodId: 'token_auth',
+      previousInput: null,
+      newInput: { token: '  traced-token  ' }
+    });
+    let authOutput = await client.getAuthOutput({
+      authenticationMethodId: 'token_auth',
+      input: changedInput.input ?? { token: '' }
+    });
+
+    client.setConfig({ prefix: 'Hi' });
+    client.setAuth({
+      authenticationMethodId: 'token_auth',
+      output: authOutput.output
+    });
+    await client.invokeTool('echo', { name: 'Tracing' });
+
+    await waitForLogs();
+
+    expect(logs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'info',
+          message: 'Getting default config',
+          data: expect.objectContaining({
+            providerId: 'demo-slate',
+            component: 'config',
+            functionName: 'getDefaultConfig',
+            phase: 'start'
+          })
+        }),
+        expect.objectContaining({
+          type: 'info',
+          message: 'Authentication input change handler completed',
+          data: expect.objectContaining({
+            providerId: 'demo-slate',
+            component: 'auth',
+            functionName: 'onInputChanged',
+            phase: 'success',
+            authenticationMethodId: 'token_auth',
+            returnedInput: true
+          })
+        }),
+        expect.objectContaining({
+          type: 'info',
+          message: 'Completed tool "Echo" (echo)',
+          data: expect.objectContaining({
+            providerId: 'demo-slate',
+            component: 'action',
+            functionName: 'handleInvocation',
+            phase: 'success',
+            actionId: 'echo',
+            hasMessage: true,
+            actionResultMessage: 'done'
+          })
+        })
+      ])
+    );
+  });
+
+  it('emits human-readable trigger event count logs', async () => {
+    let logs: SlateLogEntry[] = [];
+    let client = createSlatesClient({
+      transport: createLocalSlateTransport({
+        slate: createTriggerTraceSlate(),
+        listeners: [
+          entries => {
+            logs.push(...entries);
+          }
+        ]
+      }),
+      state: {
+        config: {}
+      }
+    });
+
+    client.ensureSession();
+
+    await client.request('slates/action.trigger.poll_events', {
+      actionId: 'poll_trigger',
+      state: null
+    });
+
+    await client.request('slates/action.trigger.webhook_handle', {
+      actionId: 'webhook_trigger',
+      url: 'https://example.com/webhook',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: null,
+      state: null
+    });
+
+    await waitForLogs();
+
+    expect(logs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'info',
+          message: 'Polled 2 event(s) for trigger "Poll Trigger" (poll_trigger)',
+          data: expect.objectContaining({
+            component: 'action',
+            functionName: 'pollEvents',
+            inputCount: 2,
+            actionId: 'poll_trigger'
+          })
+        }),
+        expect.objectContaining({
+          type: 'info',
+          message:
+            'Received 2 webhook event(s) for trigger "Webhook Trigger" (webhook_trigger)',
+          data: expect.objectContaining({
+            component: 'action',
+            functionName: 'handleRequest',
+            inputCount: 2,
+            actionId: 'webhook_trigger'
+          })
+        })
+      ])
+    );
+  });
+
   it('throws structured protocol errors for provider responses', async () => {
     let client = createSlatesClient({
       transport: {
@@ -221,6 +497,72 @@ describe('@slates/client local transport', () => {
         baggage: {
           resourceId: 'contact_123'
         }
+      });
+    }
+  });
+
+  it('returns sanitized request traces for shared axios calls', async () => {
+    let server = createServer((_req, res) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('X-Request-Id', 'req-123');
+      res.end(
+        JSON.stringify({
+          ok: true,
+          token: 'server-secret',
+          note: 'x'.repeat(11_000)
+        })
+      );
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', () => resolve());
+    });
+
+    try {
+      let { port } = server.address() as AddressInfo;
+      let client = createSlatesClient({
+        transport: createLocalSlateTransport({
+          slate: createTraceSlate(`http://127.0.0.1:${port}`)
+        }),
+        state: {
+          config: {}
+        }
+      });
+
+      let result = await client.invokeTool('trace_http', {});
+
+      expect(result.output).toEqual({
+        ok: true,
+        status: 200,
+        traceCount: 1
+      });
+      expect(result.requestTraces).toHaveLength(1);
+
+      let trace = result.requestTraces?.[0];
+      expect(trace?.request.method).toBe('POST');
+      expect(trace?.request.url).toContain('visible=yes');
+      expect(trace?.request.url).not.toContain('request-secret');
+      expect(trace?.request.headers).toMatchObject({
+        accept: 'application/json, text/plain, */*',
+        'user-agent': 'slates.dev@1.0.0/trace-slate',
+        'x-slates-provider': 'trace-slate'
+      });
+      expect(trace?.request.headers).not.toHaveProperty('authorization');
+      expect(trace?.request.headers).not.toHaveProperty('x-api-key');
+      expect(trace?.request.body?.text).toContain('"secret":"[redacted]"');
+      expect(trace?.request.body?.text).not.toContain('client-secret');
+      expect(trace?.response?.headers).toMatchObject({
+        'content-type': 'application/json',
+        'x-request-id': 'req-123'
+      });
+      expect(trace?.response?.body?.truncated).toBe(true);
+      expect(trace?.response?.body?.text).toContain('"token":"[redacted]"');
+      expect(trace?.response?.body?.text).not.toContain('server-secret');
+    } finally {
+      await new Promise<void>((resolve, reject) => {
+        server.close(error => (error ? reject(error) : resolve()));
       });
     }
   });

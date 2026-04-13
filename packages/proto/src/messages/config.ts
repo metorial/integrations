@@ -1,4 +1,5 @@
 import z from 'zod';
+import { withRequestTraces } from './tracing';
 
 /**
  * Set Config
@@ -61,7 +62,7 @@ export type SlatesMessageConfigChangedRequest = z.infer<
 export let slatesMessageConfigChangedResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     success: z.boolean(),
     config: z.record(z.string(), z.any()).optional(),
     errors: z
@@ -97,7 +98,7 @@ export type SlatesMessageConfigDefaultGetRequest = z.infer<
 export let slatesMessageConfigDefaultGetResponse = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.string(),
-  result: z.object({
+  result: withRequestTraces({
     config: z.record(z.string(), z.any()).nullable()
   })
 });

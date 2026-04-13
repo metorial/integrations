@@ -1,8 +1,13 @@
-import type { AxiosInstance, CreateAxiosDefaults } from 'axios';
-import baseAxios from 'axios';
+import type { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig } from 'axios';
+import baseAxios, { getAdapter, isAxiosError } from 'axios';
 import { getCurrentContext } from '../context/hook';
 import type { SlateAxiosErrorOptions } from '../error';
 import { SlateError } from '../error';
+import {
+  attachHttpTraceDraft,
+  recordHttpTraceFromError,
+  recordHttpTraceFromResponse
+} from './trace';
 
 export interface SlateAxiosDefaults extends CreateAxiosDefaults {
   errorMapping?: SlateAxiosErrorOptions;
@@ -21,7 +26,27 @@ let applySlateInterceptors = (
       request.headers.set('User-Agent', `slates.dev@1.0.0/${spec.key}`);
       request.headers.set('X-Slates-Provider', spec.key);
 
-      return request;
+      let tracedRequest = attachHttpTraceDraft(request, ctx) as InternalAxiosRequestConfig & {
+        __slatesTraceAdapterWrapped?: boolean;
+      };
+
+      if (!tracedRequest.__slatesTraceAdapterWrapped) {
+        let adapter = getAdapter(tracedRequest.adapter ?? baseAxios.defaults.adapter);
+        tracedRequest.adapter = async config => {
+          try {
+            let response = await adapter(config);
+            return recordHttpTraceFromResponse(response);
+          } catch (error) {
+            if (isAxiosError(error)) {
+              recordHttpTraceFromError(error);
+            }
+            throw error;
+          }
+        };
+        tracedRequest.__slatesTraceAdapterWrapped = true;
+      }
+
+      return tracedRequest;
     },
     error => Promise.reject(error)
   );
