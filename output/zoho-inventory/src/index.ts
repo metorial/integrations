@@ -1,0 +1,67 @@
+import {
+  Slate } from 'slates';
+import { spec } from './spec';
+import {
+  manageItem,
+  getItem,
+  listItems,
+  manageContact,
+  listContacts,
+  manageSalesOrder,
+  getSalesOrder,
+  listSalesOrders,
+  manageInvoice,
+  listInvoices,
+  managePurchaseOrder,
+  listPurchaseOrders,
+  manageBill,
+  managePackageShipment,
+  manageCreditNote,
+  recordCustomerPayment,
+  recordInventoryAdjustment,
+  manageTransferOrder,
+  listWarehouses,
+  deleteResource,
+} from './tools';
+import {
+  itemChanges,
+  salesOrderChanges,
+  invoiceChanges,
+  purchaseOrderChanges,
+  contactChanges,
+  inboundWebhook,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    manageItem,
+    getItem,
+    listItems,
+    manageContact,
+    listContacts,
+    manageSalesOrder,
+    getSalesOrder,
+    listSalesOrders,
+    manageInvoice,
+    listInvoices,
+    managePurchaseOrder,
+    listPurchaseOrders,
+    manageBill,
+    managePackageShipment,
+    manageCreditNote,
+    recordCustomerPayment,
+    recordInventoryAdjustment,
+    manageTransferOrder,
+    listWarehouses,
+    deleteResource,
+  ],
+  triggers: [
+    inboundWebhook,
+    itemChanges,
+    salesOrderChanges,
+    invoiceChanges,
+    purchaseOrderChanges,
+    contactChanges,
+  ],
+});

@@ -1,0 +1,62 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createTimeEntry,
+  getTimeEntry,
+  updateTimeEntry,
+  stopTimeEntry,
+  deleteTimeEntry,
+  listTimeEntries,
+  manageProject,
+  listProjects,
+  manageClient,
+  listClients,
+  manageTag,
+  listTags,
+  manageTask,
+  listTasks,
+  getWorkspace,
+  listWorkspaceUsers,
+  getMe,
+  getReport,
+} from './tools';
+import {
+  timeEntryEventsTrigger,
+  projectEventsTrigger,
+  clientEventsTrigger,
+  tagEventsTrigger,
+  taskEventsTrigger,
+  workspaceUserEventsTrigger,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createTimeEntry,
+    getTimeEntry,
+    updateTimeEntry,
+    stopTimeEntry,
+    deleteTimeEntry,
+    listTimeEntries,
+    manageProject,
+    listProjects,
+    manageClient,
+    listClients,
+    manageTag,
+    listTags,
+    manageTask,
+    listTasks,
+    getWorkspace,
+    listWorkspaceUsers,
+    getMe,
+    getReport,
+  ],
+  triggers: [
+    timeEntryEventsTrigger,
+    projectEventsTrigger,
+    clientEventsTrigger,
+    tagEventsTrigger,
+    taskEventsTrigger,
+    workspaceUserEventsTrigger,
+  ],
+});

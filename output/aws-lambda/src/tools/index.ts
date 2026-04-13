@@ -1,0 +1,17 @@
+export { listFunctions } from './list-functions';
+export { getFunction } from './get-function';
+export { createFunction } from './create-function';
+export { updateFunction } from './update-function';
+export { deleteFunction } from './delete-function';
+export { invokeFunction } from './invoke-function';
+export { publishVersion } from './publish-version';
+export { manageAlias } from './manage-alias';
+export { manageLayer } from './manage-layer';
+export { manageEventSourceMapping } from './manage-event-source-mapping';
+export { manageFunctionUrl } from './manage-function-url';
+export { manageConcurrency } from './manage-concurrency';
+export { managePermission } from './manage-permission';
+export { manageTags } from './manage-tags';
+export { configureAsyncInvocation } from './configure-async-invocation';
+export { manageDurableExecution } from './manage-durable-execution';
+export { getAccountSettings } from './get-account-settings';

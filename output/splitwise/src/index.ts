@@ -1,0 +1,60 @@
+import {
+  Slate } from 'slates';
+import { spec } from './spec';
+import {
+  getCurrentUser,
+  getUser,
+  updateUser,
+  listGroups,
+  getGroup,
+  createGroup,
+  manageGroupMembers,
+  deleteGroup,
+  listExpenses,
+  getExpense,
+  createExpense,
+  updateExpense,
+  deleteExpense,
+  listFriends,
+  addFriend,
+  deleteFriend,
+  listComments,
+  createComment,
+  deleteComment,
+  getCurrencies,
+  getCategories,
+} from './tools';
+import { accountActivity,
+  inboundWebhook,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    getCurrentUser,
+    getUser,
+    updateUser,
+    listGroups,
+    getGroup,
+    createGroup,
+    manageGroupMembers,
+    deleteGroup,
+    listExpenses,
+    getExpense,
+    createExpense,
+    updateExpense,
+    deleteExpense,
+    listFriends,
+    addFriend,
+    deleteFriend,
+    listComments,
+    createComment,
+    deleteComment,
+    getCurrencies,
+    getCategories,
+  ],
+  triggers: [
+    inboundWebhook,
+    accountActivity,
+  ],
+});

@@ -1,0 +1,62 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createInvoice,
+  getInvoice,
+  createCustomer,
+  updateCustomer,
+  getCustomer,
+  createVendor,
+  getVendor,
+  createPayment,
+  getPayment,
+  createBill,
+  payBill,
+  createItem,
+  updateItem,
+  createAccount,
+  getAccount,
+  createEstimate,
+  createJournalEntry,
+  recordExpense,
+  getReport,
+  queryEntities,
+  searchCustomersAndVendors,
+  getCompanyInfo,
+} from './tools';
+import {
+  entityWebhook,
+  entityPolling,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createInvoice,
+    getInvoice,
+    createCustomer,
+    updateCustomer,
+    getCustomer,
+    createVendor,
+    getVendor,
+    createPayment,
+    getPayment,
+    createBill,
+    payBill,
+    createItem,
+    updateItem,
+    createAccount,
+    getAccount,
+    createEstimate,
+    createJournalEntry,
+    recordExpense,
+    getReport,
+    queryEntities,
+    searchCustomersAndVendors,
+    getCompanyInfo,
+  ],
+  triggers: [
+    entityWebhook,
+    entityPolling,
+  ],
+});

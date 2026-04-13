@@ -1,0 +1,60 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  listSchedulesTool,
+  listResourcesTool,
+  listUsersTool,
+  getUserTool,
+  createUserTool,
+  updateUserTool,
+  deleteUserTool,
+  listAppointmentsTool,
+  getAppointmentTool,
+  getUserAgendaTool,
+  createAppointmentTool,
+  updateAppointmentTool,
+  deleteAppointmentTool,
+  checkAvailabilityTool,
+  listFormTemplatesTool,
+  getFormEntriesTool,
+  listPromotionsTool,
+  getPromotionTool,
+  duplicatePromotionTool,
+  getRecentChangesTool,
+} from './tools';
+import {
+  appointmentChangesTrigger,
+  userChangesTrigger,
+  formChangesTrigger,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    listSchedulesTool,
+    listResourcesTool,
+    listUsersTool,
+    getUserTool,
+    createUserTool,
+    updateUserTool,
+    deleteUserTool,
+    listAppointmentsTool,
+    getAppointmentTool,
+    getUserAgendaTool,
+    createAppointmentTool,
+    updateAppointmentTool,
+    deleteAppointmentTool,
+    checkAvailabilityTool,
+    listFormTemplatesTool,
+    getFormEntriesTool,
+    listPromotionsTool,
+    getPromotionTool,
+    duplicatePromotionTool,
+    getRecentChangesTool,
+  ],
+  triggers: [
+    appointmentChangesTrigger,
+    userChangesTrigger,
+    formChangesTrigger,
+  ],
+});

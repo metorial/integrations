@@ -1,0 +1,42 @@
+{
+  "name": "@slates/client",
+  "version": "1.0.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src/**",
+    "dist/**",
+    "README.md",
+    "package.json"
+  ],
+  "author": "Tobias Herber",
+  "license": "FSL 1.1",
+  "type": "module",
+  "source": "src/index.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "default": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "unpkg": "./dist/index.js",
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "lint": "prettier src/**/*.ts --check",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@slates/proto": "workspace:*",
+    "@slates/provider": "workspace:*",
+    "@slates/provider-handler": "workspace:*"
+  },
+  "devDependencies": {
+    "@slates/tsconfig": "workspace:*",
+    "typescript": "5.8.2",
+    "vitest": "^3.1.2"
+  }
+}

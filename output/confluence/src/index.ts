@@ -1,0 +1,88 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  getPage,
+  listPages,
+  createPage,
+  updatePage,
+  deletePage,
+  getPageChildren,
+  listBlogPosts,
+  getBlogPost,
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
+  listSpaces,
+  getSpace,
+  getComments,
+  addComment,
+  deleteComment,
+  searchContent,
+  getLabels,
+  addLabels,
+  removeLabel,
+  getContentRestrictions,
+  updateContentRestrictions,
+  removeContentRestrictions,
+  getCurrentUser,
+  listGroups,
+  getGroupMembers,
+  getAttachments,
+  getContentVersions,
+  getPageProperties,
+  setPageProperty,
+  deletePageProperty
+} from './tools';
+import {
+  pageEvents,
+  blogEvents,
+  commentEvents,
+  spaceEvents,
+  attachmentEvents,
+  labelEvents
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    getPage,
+    listPages,
+    createPage,
+    updatePage,
+    deletePage,
+    getPageChildren,
+    listBlogPosts,
+    getBlogPost,
+    createBlogPost,
+    updateBlogPost,
+    deleteBlogPost,
+    listSpaces,
+    getSpace,
+    getComments,
+    addComment,
+    deleteComment,
+    searchContent,
+    getLabels,
+    addLabels,
+    removeLabel,
+    getContentRestrictions,
+    updateContentRestrictions,
+    removeContentRestrictions,
+    getCurrentUser,
+    listGroups,
+    getGroupMembers,
+    getAttachments,
+    getContentVersions,
+    getPageProperties,
+    setPageProperty,
+    deletePageProperty
+  ],
+  triggers: [
+    pageEvents,
+    blogEvents,
+    commentEvents,
+    spaceEvents,
+    attachmentEvents,
+    labelEvents
+  ]
+});

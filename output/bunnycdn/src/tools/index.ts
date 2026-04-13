@@ -1,0 +1,11 @@
+export { managePullZone } from './manage-pull-zone';
+export { purgeCache } from './purge-cache';
+export { manageStorageZone } from './manage-storage-zone';
+export { manageStorageFiles } from './manage-storage-files';
+export { manageDnsZone } from './manage-dns-zone';
+export { manageDnsRecord } from './manage-dns-record';
+export { manageVideoLibrary } from './manage-video-library';
+export { manageVideo } from './manage-video';
+export { manageCollection } from './manage-collection';
+export { getStatistics } from './get-statistics';
+export { getBilling } from './get-billing';

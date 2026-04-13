@@ -1,0 +1,22 @@
+{
+  "name": "@metorial/zendesk",
+  "version": "0.1.1",
+  "description": "Manage customer support tickets, users, organizations, and help center articles. Create, update, and resolve support tickets with assignments, priorities, tags, and comments. Search across tickets, users, and organizations. Manage knowledge base articles, sections, and categories with multi-locale translations. Handle sales CRM data including leads, contacts, and deals. Configure business rules like triggers, automations, and macros for workflow automation. Manage custom objects, SLA policies, ticket views, and omnichannel routing. Create and manage webhooks for event-driven integrations. Moderate community forums with posts and comments. Manage live chat and messaging conversations across channels.",
+  "categories": [
+    "crm-and-sales-tools",
+    "note-taking-and-knowledge-bases"
+  ],
+  "skills": [
+    "manage support tickets",
+    "search tickets and users",
+    "manage knowledge base articles",
+    "create and manage users",
+    "manage organizations",
+    "configure triggers and automations",
+    "manage sales leads and deals",
+    "manage webhooks",
+    "handle live chat messaging",
+    "manage custom objects"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/zendesk.svg"
+}

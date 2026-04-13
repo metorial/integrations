@@ -1,0 +1,262 @@
+import { SlateAuth, createAxios } from 'slates';
+import { z } from 'zod';
+
+export let auth = SlateAuth.create()
+  .output(z.object({
+    token: z.string(),
+    refreshToken: z.string().optional(),
+    expiresAt: z.string().optional(),
+  }))
+  .addOauth({
+    type: 'auth.oauth',
+    name: 'Typeform OAuth',
+    key: 'oauth',
+
+    scopes: [
+      {
+        title: 'Account Read',
+        description: 'Read basic account information',
+        scope: 'accounts:read',
+      },
+      {
+        title: 'Forms Read',
+        description: 'Read forms',
+        scope: 'forms:read',
+      },
+      {
+        title: 'Forms Write',
+        description: 'Create, update, and delete forms',
+        scope: 'forms:write',
+      },
+      {
+        title: 'Images Read',
+        description: 'Read images',
+        scope: 'images:read',
+      },
+      {
+        title: 'Images Write',
+        description: 'Upload and delete images',
+        scope: 'images:write',
+      },
+      {
+        title: 'Themes Read',
+        description: 'Read themes',
+        scope: 'themes:read',
+      },
+      {
+        title: 'Themes Write',
+        description: 'Create, update, and delete themes',
+        scope: 'themes:write',
+      },
+      {
+        title: 'Responses Read',
+        description: 'Read form responses',
+        scope: 'responses:read',
+      },
+      {
+        title: 'Responses Write',
+        description: 'Delete form responses',
+        scope: 'responses:write',
+      },
+      {
+        title: 'Webhooks Read',
+        description: 'Read webhooks',
+        scope: 'webhooks:read',
+      },
+      {
+        title: 'Webhooks Write',
+        description: 'Create, update, and delete webhooks',
+        scope: 'webhooks:write',
+      },
+      {
+        title: 'Workspaces Read',
+        description: 'Read workspaces',
+        scope: 'workspaces:read',
+      },
+      {
+        title: 'Workspaces Write',
+        description: 'Create, update, and delete workspaces',
+        scope: 'workspaces:write',
+      },
+      {
+        title: 'Offline',
+        description: 'Required to receive a refresh token for long-lived access',
+        scope: 'offline',
+      },
+    ],
+
+    getAuthorizationUrl: async (ctx) => {
+      let params = new URLSearchParams({
+        client_id: ctx.clientId,
+        redirect_uri: ctx.redirectUri,
+        scope: ctx.scopes.join('+'),
+        state: ctx.state,
+      });
+
+      return {
+        url: `https://api.typeform.com/oauth/authorize?${params.toString()}`,
+      };
+    },
+
+    handleCallback: async (ctx) => {
+      let client = createAxios({
+        baseURL: 'https://api.typeform.com',
+      });
+
+      let body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: ctx.code,
+        client_id: ctx.clientId,
+        client_secret: ctx.clientSecret,
+        redirect_uri: ctx.redirectUri,
+      });
+
+      let response = await client.post('/oauth/token', body.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      let data = response.data as {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+        token_type?: string;
+      };
+
+      if (!data.access_token) {
+        throw new Error('Failed to obtain access token from Typeform');
+      }
+
+      let expiresAt: string | undefined;
+      if (data.expires_in) {
+        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      }
+
+      return {
+        output: {
+          token: data.access_token,
+          refreshToken: data.refresh_token,
+          expiresAt,
+        },
+      };
+    },
+
+    handleTokenRefresh: async (ctx) => {
+      if (!ctx.output.refreshToken) {
+        throw new Error('No refresh token available. Ensure the "offline" scope was requested during authorization.');
+      }
+
+      let client = createAxios({
+        baseURL: 'https://api.typeform.com',
+      });
+
+      let body = new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: ctx.output.refreshToken,
+        client_id: ctx.clientId,
+        client_secret: ctx.clientSecret,
+      });
+
+      let response = await client.post('/oauth/token', body.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      let data = response.data as {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+        token_type?: string;
+      };
+
+      if (!data.access_token) {
+        throw new Error('Failed to refresh access token');
+      }
+
+      let expiresAt: string | undefined;
+      if (data.expires_in) {
+        expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
+      }
+
+      return {
+        output: {
+          token: data.access_token,
+          refreshToken: data.refresh_token || ctx.output.refreshToken,
+          expiresAt,
+        },
+      };
+    },
+
+    getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
+      let client = createAxios({
+        baseURL: 'https://api.typeform.com',
+        headers: {
+          Authorization: `Bearer ${ctx.output.token}`,
+        },
+      });
+
+      let response = await client.get('/me');
+
+      let data = response.data as {
+        user_id?: string;
+        alias?: string;
+        email?: string;
+        language?: string;
+      };
+
+      return {
+        profile: {
+          id: data.user_id,
+          name: data.alias,
+          email: data.email,
+          language: data.language,
+        },
+      };
+    },
+  })
+  .addTokenAuth({
+    type: 'auth.token',
+    name: 'Personal Access Token',
+    key: 'personal_token',
+
+    inputSchema: z.object({
+      token: z.string().describe('Typeform personal access token (starts with tfp_)'),
+    }),
+
+    getOutput: async (ctx) => {
+      return {
+        output: {
+          token: ctx.input.token,
+        },
+      };
+    },
+
+    getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
+      let client = createAxios({
+        baseURL: 'https://api.typeform.com',
+        headers: {
+          Authorization: `Bearer ${ctx.output.token}`,
+        },
+      });
+
+      let response = await client.get('/me');
+
+      let data = response.data as {
+        user_id?: string;
+        alias?: string;
+        email?: string;
+        language?: string;
+      };
+
+      return {
+        profile: {
+          id: data.user_id,
+          name: data.alias,
+          email: data.email,
+          language: data.language,
+        },
+      };
+    },
+  });

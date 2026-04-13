@@ -1,0 +1,48 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  searchCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer,
+  searchTickets, getTicket, createTicket, updateTicket, deleteTicket, addTicketComment, listTicketComments,
+  searchInvoices, getInvoice, createInvoice, updateInvoice, deleteInvoice,
+  searchEstimates, getEstimate, createEstimate, updateEstimate,
+  searchLeads, getLead, createLead, updateLead,
+  searchProducts, getProduct, createProduct, updateProduct,
+  searchAssets, getAsset, createAsset, updateAsset,
+  searchAppointments, getAppointment, createAppointment, updateAppointment, deleteAppointment,
+  listContacts, createContact, updateContact, deleteContact,
+  searchPayments, getPayment, createPayment,
+  listClockEntries, createClockEntry, updateClockEntry,
+} from './tools';
+import {
+  ticketEvents,
+  customerEvents,
+  invoiceEvents,
+  paymentEvents,
+  leadEvents,
+  appointmentEvents,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    searchCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer,
+    searchTickets, getTicket, createTicket, updateTicket, deleteTicket, addTicketComment, listTicketComments,
+    searchInvoices, getInvoice, createInvoice, updateInvoice, deleteInvoice,
+    searchEstimates, getEstimate, createEstimate, updateEstimate,
+    searchLeads, getLead, createLead, updateLead,
+    searchProducts, getProduct, createProduct, updateProduct,
+    searchAssets, getAsset, createAsset, updateAsset,
+    searchAppointments, getAppointment, createAppointment, updateAppointment, deleteAppointment,
+    listContacts, createContact, updateContact, deleteContact,
+    searchPayments, getPayment, createPayment,
+    listClockEntries, createClockEntry, updateClockEntry,
+  ],
+  triggers: [
+    ticketEvents,
+    customerEvents,
+    invoiceEvents,
+    paymentEvents,
+    leadEvents,
+    appointmentEvents,
+  ],
+});

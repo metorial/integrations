@@ -1,0 +1,12 @@
+export { manageProject } from './manage-project';
+export { manageExperiment } from './manage-experiment';
+export { manageAudience } from './manage-audience';
+export { manageFeatureFlag } from './manage-feature-flag';
+export { manageCmpTask } from './manage-cmp-task';
+export { manageCmpCampaign } from './manage-cmp-campaign';
+export { manageCmpAsset } from './manage-cmp-asset';
+export { manageCmsContent } from './manage-cms-content';
+export { manageMailing } from './manage-mailing';
+export { manageRecipientList } from './manage-recipient-list';
+export { manageCustomer } from './manage-customer';
+export { sendOdpEvent } from './send-odp-event';

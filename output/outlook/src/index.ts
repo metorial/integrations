@@ -1,0 +1,60 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  sendMessage,
+  listMessages,
+  getMessage,
+  manageMessage,
+  createDraft,
+  listMailFolders,
+  listEvents,
+  getEvent,
+  createEvent,
+  manageEvent,
+  findMeetingTimes,
+  listCalendars,
+  listContacts,
+  getContact,
+  createContact,
+  manageContact,
+  listTaskLists,
+  listTasks,
+  createTask,
+  manageTask,
+} from './tools';
+import {
+  messageChanges,
+  eventChanges,
+  contactChanges,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    sendMessage,
+    listMessages,
+    getMessage,
+    manageMessage,
+    createDraft,
+    listMailFolders,
+    listEvents,
+    getEvent,
+    createEvent,
+    manageEvent,
+    findMeetingTimes,
+    listCalendars,
+    listContacts,
+    getContact,
+    createContact,
+    manageContact,
+    listTaskLists,
+    listTasks,
+    createTask,
+    manageTask,
+  ],
+  triggers: [
+    messageChanges,
+    eventChanges,
+    contactChanges,
+  ],
+});

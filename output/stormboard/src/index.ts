@@ -1,0 +1,48 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  listStorms,
+  createStorm,
+  getStorm,
+  manageStormStatus,
+  listIdeas,
+  createIdea,
+  getIdea,
+  getStormTemplate,
+  updateStormSection,
+  manageConnectors,
+  manageTags,
+  manageChat,
+  manageParticipants,
+  getUserProfile,
+} from './tools';
+import {
+  ideaEvents,
+  commentEvents,
+  legendEvents,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    listStorms,
+    createStorm,
+    getStorm,
+    manageStormStatus,
+    listIdeas,
+    createIdea,
+    getIdea,
+    getStormTemplate,
+    updateStormSection,
+    manageConnectors,
+    manageTags,
+    manageChat,
+    manageParticipants,
+    getUserProfile,
+  ],
+  triggers: [
+    ideaEvents,
+    commentEvents,
+    legendEvents,
+  ],
+});

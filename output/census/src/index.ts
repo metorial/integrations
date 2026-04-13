@@ -1,0 +1,36 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  listSyncs,
+  getSync,
+  createSync,
+  updateSync,
+  triggerSync,
+  deleteSync,
+  getSyncRuns,
+  listConnections,
+  manageWebhook,
+  listWebhooks,
+  getDatasetRecord,
+} from './tools';
+import { syncAlert } from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    listSyncs,
+    getSync,
+    createSync,
+    updateSync,
+    triggerSync,
+    deleteSync,
+    getSyncRuns,
+    listConnections,
+    manageWebhook,
+    listWebhooks,
+    getDatasetRecord,
+  ],
+  triggers: [
+    syncAlert,
+  ],
+});

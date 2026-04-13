@@ -1,0 +1,22 @@
+{
+  "name": "@discord/discord",
+  "version": "0.1.1",
+  "description": "Send, edit, and delete messages in channels and DMs. Manage servers (guilds), channels, roles, and members. Create and handle slash commands, buttons, and interactive components. Execute webhooks to post messages into channels. Manage threads, scheduled events, auto moderation rules, and audit logs. Create and manage voice and stage channels. Handle emoji, stickers, and soundboard sounds. Add or remove users, assign roles, kick or ban members. Register application commands at global or guild scope. Receive real-time events via Gateway WebSocket for messages, reactions, voice state changes, and member updates. Manage monetization with SKUs and entitlements. Create multiplayer game lobbies and send in-lobby messages.",
+  "categories": [
+    "email-and-messaging",
+    "news-and-media"
+  ],
+  "skills": [
+    "send and manage messages",
+    "manage servers and channels",
+    "create slash commands",
+    "execute webhooks",
+    "manage roles and members",
+    "moderate content automatically",
+    "schedule guild events",
+    "manage threads",
+    "handle interactive components",
+    "track audit logs"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/discord.svg"
+}

@@ -1,0 +1,40 @@
+import {
+  Slate } from 'slates';
+import { spec } from './spec';
+import {
+  synthesizeSpeech,
+  listVoices,
+  recognizeSpeech,
+  createBatchTranscription,
+  getBatchTranscription,
+  listBatchTranscriptions,
+  deleteBatchTranscription,
+  listSpeechModels,
+  manageSpeakerProfile,
+  verifySpeaker,
+  identifySpeaker,
+} from './tools';
+import { batchTranscriptionCompleted,
+  inboundWebhook,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    synthesizeSpeech,
+    listVoices,
+    recognizeSpeech,
+    createBatchTranscription,
+    getBatchTranscription,
+    listBatchTranscriptions,
+    deleteBatchTranscription,
+    listSpeechModels,
+    manageSpeakerProfile,
+    verifySpeaker,
+    identifySpeaker,
+  ],
+  triggers: [
+    inboundWebhook,
+    batchTranscriptionCompleted,
+  ],
+});

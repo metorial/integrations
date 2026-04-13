@@ -1,0 +1,17 @@
+export { createTable } from './create-table';
+export { describeTable } from './describe-table';
+export { listTables } from './list-tables';
+export { deleteTable } from './delete-table';
+export { updateTable } from './update-table';
+export { putItem } from './put-item';
+export { getItem } from './get-item';
+export { updateItem } from './update-item';
+export { deleteItem } from './delete-item';
+export { queryItems } from './query-items';
+export { scanItems } from './scan-items';
+export { executePartiql } from './execute-partiql';
+export { batchWriteItems } from './batch-write-items';
+export { batchGetItems } from './batch-get-items';
+export { transactWrite } from './transact-write';
+export { manageTtl } from './manage-ttl';
+export { manageBackups } from './manage-backups';

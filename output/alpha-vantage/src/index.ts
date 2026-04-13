@@ -1,0 +1,47 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  getStockPrice,
+  getQuote,
+  searchSymbol,
+  getCompanyOverview,
+  getFinancialStatements,
+  getEarnings,
+  getDividendsAndSplits,
+  getForexRate,
+  getCryptoPrice,
+  getCommodityPrice,
+  getEconomicIndicator,
+  getTechnicalIndicator,
+  getNewsSentiment,
+  getOptionsChain,
+  getTopMovers,
+  getMarketStatus,
+} from './tools';
+
+import { inboundWebhook } from './triggers/inbound-webhook';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    getStockPrice,
+    getQuote,
+    searchSymbol,
+    getCompanyOverview,
+    getFinancialStatements,
+    getEarnings,
+    getDividendsAndSplits,
+    getForexRate,
+    getCryptoPrice,
+    getCommodityPrice,
+    getEconomicIndicator,
+    getTechnicalIndicator,
+    getNewsSentiment,
+    getOptionsChain,
+    getTopMovers,
+    getMarketStatus,
+  ],
+  triggers: [
+    inboundWebhook,
+  ],
+});

@@ -1,0 +1,62 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createReservation,
+  modifyReservation,
+  reservationAction,
+  deleteReservation,
+  getReservation,
+  listReservations,
+  getResource,
+  listResources,
+  checkAvailability,
+  getRentalPrice,
+  getResourceUsage,
+  recordPayment,
+  listPayments,
+  createUser,
+  modifyUser,
+  getUser,
+  listUsers,
+  createVoucher,
+  listVouchers,
+  getSiteInfo,
+} from './tools';
+import {
+  reservationEvents,
+  paymentEvents,
+  userEvents,
+  resourceEvents,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createReservation,
+    modifyReservation,
+    reservationAction,
+    deleteReservation,
+    getReservation,
+    listReservations,
+    getResource,
+    listResources,
+    checkAvailability,
+    getRentalPrice,
+    getResourceUsage,
+    recordPayment,
+    listPayments,
+    createUser,
+    modifyUser,
+    getUser,
+    listUsers,
+    createVoucher,
+    listVouchers,
+    getSiteInfo,
+  ],
+  triggers: [
+    reservationEvents,
+    paymentEvents,
+    userEvents,
+    resourceEvents,
+  ],
+});

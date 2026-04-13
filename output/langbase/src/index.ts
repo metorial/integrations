@@ -1,0 +1,61 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createPipe,
+  listPipes,
+  updatePipe,
+  runPipe,
+  createMemory,
+  listMemories,
+  deleteMemory,
+  retrieveMemory,
+  listDocuments,
+  deleteDocument,
+  retryDocumentEmbeddings,
+  createThread,
+  getThread,
+  updateThread,
+  deleteThread,
+  appendMessages,
+  listMessages,
+  runAgent,
+  chunkText,
+  generateEmbeddings,
+  generateImages,
+  webSearch,
+  webCrawl,
+} from './tools';
+
+import { inboundWebhook } from './triggers/inbound-webhook';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createPipe,
+    listPipes,
+    updatePipe,
+    runPipe,
+    createMemory,
+    listMemories,
+    deleteMemory,
+    retrieveMemory,
+    listDocuments,
+    deleteDocument,
+    retryDocumentEmbeddings,
+    createThread,
+    getThread,
+    updateThread,
+    deleteThread,
+    appendMessages,
+    listMessages,
+    runAgent,
+    chunkText,
+    generateEmbeddings,
+    generateImages,
+    webSearch,
+    webCrawl,
+  ],
+  triggers: [
+    inboundWebhook,
+  ],
+});

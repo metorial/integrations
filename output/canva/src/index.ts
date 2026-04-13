@@ -1,0 +1,62 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  getUserProfile,
+  getAsset,
+  updateAsset,
+  deleteAsset,
+  uploadAsset,
+  listDesigns,
+  getDesign,
+  createDesign,
+  exportDesign,
+  getExportJob,
+  importDesign,
+  getImportJob,
+  getFolder,
+  createFolder,
+  updateFolder,
+  deleteFolder,
+  listFolderItems,
+  moveFolderItem,
+  createComment,
+  getCommentThread,
+  listBrandTemplates,
+  getBrandTemplate,
+  autofillBrandTemplate,
+} from './tools';
+import {
+  designNotification,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    getUserProfile,
+    getAsset,
+    updateAsset,
+    deleteAsset,
+    uploadAsset,
+    listDesigns,
+    getDesign,
+    createDesign,
+    exportDesign,
+    getExportJob,
+    importDesign,
+    getImportJob,
+    getFolder,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+    listFolderItems,
+    moveFolderItem,
+    createComment,
+    getCommentThread,
+    listBrandTemplates,
+    getBrandTemplate,
+    autofillBrandTemplate,
+  ],
+  triggers: [
+    designNotification,
+  ],
+});

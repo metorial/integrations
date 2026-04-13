@@ -1,0 +1,60 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  searchConstituents,
+  listConstituents,
+  getConstituent,
+  createConstituent,
+  updateConstituent,
+  getGivingSummary,
+  listGifts,
+  getGift,
+  createGift,
+  listActions,
+  createAction,
+  updateAction,
+  listCampaigns,
+  getCampaign,
+  listFunds,
+  getFund,
+  listAppeals,
+  getAppeal,
+  listLists,
+  getListResults,
+} from './tools';
+import {
+  constituentEvents,
+  giftEvents,
+  actionEvents,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    searchConstituents,
+    listConstituents,
+    getConstituent,
+    createConstituent,
+    updateConstituent,
+    getGivingSummary,
+    listGifts,
+    getGift,
+    createGift,
+    listActions,
+    createAction,
+    updateAction,
+    listCampaigns,
+    getCampaign,
+    listFunds,
+    getFund,
+    listAppeals,
+    getAppeal,
+    listLists,
+    getListResults,
+  ],
+  triggers: [
+    constituentEvents,
+    giftEvents,
+    actionEvents,
+  ],
+});

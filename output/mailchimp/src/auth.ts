@@ -1,0 +1,136 @@
+import { SlateAuth, createAxios } from 'slates';
+import { z } from 'zod';
+
+let oauthAxios = createAxios({
+  baseURL: 'https://login.mailchimp.com',
+});
+
+type AuthOutput = {
+  token: string;
+  serverPrefix: string;
+};
+
+export let auth = SlateAuth.create()
+  .output(z.object({
+    token: z.string(),
+    serverPrefix: z.string(),
+  }))
+  .addOauth({
+    type: 'auth.oauth',
+    name: 'OAuth',
+    key: 'oauth',
+
+    scopes: [],
+
+    getAuthorizationUrl: async (ctx) => {
+      let params = new URLSearchParams({
+        response_type: 'code',
+        client_id: ctx.clientId,
+        redirect_uri: ctx.redirectUri,
+      });
+
+      return {
+        url: `https://login.mailchimp.com/oauth2/authorize?${params.toString()}`,
+      };
+    },
+
+    handleCallback: async (ctx) => {
+      let tokenResponse = await oauthAxios.post('/oauth2/token', new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: ctx.clientId,
+        client_secret: ctx.clientSecret,
+        redirect_uri: ctx.redirectUri,
+        code: ctx.code,
+      }).toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      let accessToken = tokenResponse.data.access_token as string;
+
+      let metadataResponse = await oauthAxios.get('/oauth2/metadata', {
+        headers: {
+          Authorization: `OAuth ${accessToken}`,
+        },
+      });
+
+      let serverPrefix = metadataResponse.data.dc as string;
+
+      return {
+        output: {
+          token: accessToken,
+          serverPrefix,
+        },
+      };
+    },
+
+    getProfile: async (ctx: { output: AuthOutput; input: {}; scopes: string[] }) => {
+      let apiAxios = createAxios({
+        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`,
+      });
+
+      let response = await apiAxios.get('/', {
+        headers: {
+          Authorization: `Bearer ${ctx.output.token}`,
+        },
+      });
+
+      let data = response.data;
+
+      return {
+        profile: {
+          id: data.account_id,
+          email: data.email,
+          name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() || data.account_name,
+          accountName: data.account_name,
+        },
+      };
+    },
+  })
+  .addTokenAuth({
+    type: 'auth.token',
+    name: 'API Key',
+    key: 'api_key',
+
+    inputSchema: z.object({
+      token: z.string().describe('Mailchimp API key (e.g., "abc123def-us19"). Find it under Profile > Extras > API Keys.'),
+    }),
+
+    getOutput: async (ctx) => {
+      let parts = ctx.input.token.split('-');
+      let serverPrefix = parts[parts.length - 1] ?? '';
+
+      return {
+        output: {
+          token: ctx.input.token,
+          serverPrefix,
+        },
+      };
+    },
+
+    getProfile: async (ctx: { output: AuthOutput; input: { token: string } }) => {
+      let apiAxios = createAxios({
+        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`,
+      });
+
+      let encoded = btoa(`anystring:${ctx.output.token}`);
+
+      let response = await apiAxios.get('/', {
+        headers: {
+          Authorization: `Basic ${encoded}`,
+        },
+      });
+
+      let data = response.data;
+
+      return {
+        profile: {
+          id: data.account_id,
+          email: data.email,
+          name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() || data.account_name,
+          accountName: data.account_name,
+        },
+      };
+    },
+  });

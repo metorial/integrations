@@ -1,0 +1,68 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  listWorkspaces,
+  listProjects,
+  getProject,
+  createProject,
+  updateProject,
+  deleteProject,
+  listTasks,
+  getTask,
+  createTask,
+  updateTask,
+  deleteTask,
+  searchTasks,
+  listSubtasks,
+  listSections,
+  createSection,
+  listComments,
+  addComment,
+  listTags,
+  createTag,
+  listPortfolios,
+  getPortfolio,
+  createPortfolio,
+  updatePortfolio,
+  listGoals,
+  getGoal,
+  listUsers,
+  getUser,
+  listTeams
+} from './tools';
+import { projectEvents, taskEvents, taskChangesWebhook } from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    listWorkspaces,
+    listProjects,
+    getProject,
+    createProject,
+    updateProject,
+    deleteProject,
+    listTasks,
+    getTask,
+    createTask,
+    updateTask,
+    deleteTask,
+    searchTasks,
+    listSubtasks,
+    listSections,
+    createSection,
+    listComments,
+    addComment,
+    listTags,
+    createTag,
+    listPortfolios,
+    getPortfolio,
+    createPortfolio,
+    updatePortfolio,
+    listGoals,
+    getGoal,
+    listUsers,
+    getUser,
+    listTeams
+  ],
+  triggers: [projectEvents, taskEvents, taskChangesWebhook]
+});

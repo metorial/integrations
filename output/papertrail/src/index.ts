@@ -1,0 +1,56 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  searchEvents,
+  listSystems,
+  createSystem,
+  updateSystem,
+  deleteSystem,
+  listGroups,
+  getGroup,
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  manageGroupMembership,
+  listSavedSearches,
+  createSavedSearch,
+  updateSavedSearch,
+  deleteSavedSearch,
+  listUsers,
+  inviteUser,
+  removeUser,
+  listArchives,
+  getAccountUsage,
+  listDestinations,
+} from './tools';
+import { savedSearchAlert } from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    searchEvents,
+    listSystems,
+    createSystem,
+    updateSystem,
+    deleteSystem,
+    listGroups,
+    getGroup,
+    createGroup,
+    updateGroup,
+    deleteGroup,
+    manageGroupMembership,
+    listSavedSearches,
+    createSavedSearch,
+    updateSavedSearch,
+    deleteSavedSearch,
+    listUsers,
+    inviteUser,
+    removeUser,
+    listArchives,
+    getAccountUsage,
+    listDestinations,
+  ],
+  triggers: [
+    savedSearchAlert,
+  ],
+});

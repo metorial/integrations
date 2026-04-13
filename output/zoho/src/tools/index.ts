@@ -1,0 +1,13 @@
+export { crmGetRecords } from './crm-get-records';
+export { crmManageRecord } from './crm-manage-record';
+export { crmSearchRecords } from './crm-search-records';
+export { crmGetModules } from './crm-get-modules';
+export { deskGetTickets } from './desk-get-tickets';
+export { deskManageTicket } from './desk-manage-ticket';
+export { booksGetInvoices } from './books-get-invoices';
+export { booksManageInvoice } from './books-manage-invoice';
+export { booksManageContact } from './books-manage-contact';
+export { booksManageExpense } from './books-manage-expense';
+export { peopleManageEmployee } from './people-manage-employee';
+export { projectsManageProject } from './projects-manage-project';
+export { projectsManageTask } from './projects-manage-task';

@@ -1,0 +1,20 @@
+{
+  "name": "@metorial/slack-user",
+  "version": "0.1.4",
+  "description": "Slack (User): OAuth uses user tokens — API actions and messages appear as the authorized user. Same tools as the bot slate where the Slack API allows user tokens; workspace search uses `search:read` (enable under User Token Scopes in the Slack app). Use a dedicated Slack app with User Token Scopes only.",
+  "categories": [
+    "email-and-messaging"
+  ],
+  "skills": [
+    "send messages as the connected user",
+    "manage channels and conversations",
+    "search messages and files",
+    "upload and share files",
+    "manage emoji reactions",
+    "create and manage reminders",
+    "retrieve user profiles",
+    "manage user groups",
+    "pin and bookmark messages"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/slack.svg"
+}

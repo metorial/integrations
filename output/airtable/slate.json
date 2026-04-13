@@ -1,0 +1,22 @@
+{
+  "name": "@metorial/airtable",
+  "version": "0.1.1",
+  "description": "Create, read, update, and delete records in Airtable bases and tables. Manage base schemas including creating tables and fields. Filter records using formulas, sort by fields, and scope queries to specific views. Upsert records to find, create, or update in a single call. Read and write comments on records. Manage collaborators and permissions on bases and workspaces. Sync CSV data in bulk. Create and manage webhooks to receive real-time notifications about record, field, and table changes. Access enterprise administration features for user management and audit logging.",
+  "categories": [
+    "apis-and-http-requests",
+    "task-and-project-management"
+  ],
+  "skills": [
+    "create and update records",
+    "filter and sort records",
+    "manage base schemas",
+    "read and write record comments",
+    "manage collaborators and permissions",
+    "bulk sync CSV data",
+    "create and manage webhooks",
+    "upsert records",
+    "enterprise user management",
+    "create bases and tables"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/airtable.svg"
+}

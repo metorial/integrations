@@ -1,0 +1,72 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  searchModelsTool,
+  searchDatasetsTool,
+  searchSpacesTool,
+  createRepositoryTool,
+  deleteRepositoryTool,
+  getRepositoryInfoTool,
+  updateRepositoryVisibilityTool,
+  listRepoFilesTool,
+  getFileContentTool,
+  uploadFileTool,
+  deleteFileTool,
+  listDiscussionsTool,
+  getDiscussionTool,
+  createDiscussionTool,
+  commentOnDiscussionTool,
+  updateDiscussionStatusTool,
+  getCollectionTool,
+  createCollectionTool,
+  deleteCollectionTool,
+  addCollectionItemTool,
+  removeCollectionItemTool,
+  getSpaceRuntimeTool,
+  controlSpaceTool,
+  manageSpaceSecretsTool,
+  manageSpaceVariablesTool,
+  chatCompletionTool,
+  textGenerationTool,
+  runInferenceTool,
+  getUserInfoTool
+} from './tools';
+import { repositoryEventsTrigger } from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    searchModelsTool,
+    searchDatasetsTool,
+    searchSpacesTool,
+    createRepositoryTool,
+    deleteRepositoryTool,
+    getRepositoryInfoTool,
+    updateRepositoryVisibilityTool,
+    listRepoFilesTool,
+    getFileContentTool,
+    uploadFileTool,
+    deleteFileTool,
+    listDiscussionsTool,
+    getDiscussionTool,
+    createDiscussionTool,
+    commentOnDiscussionTool,
+    updateDiscussionStatusTool,
+    getCollectionTool,
+    createCollectionTool,
+    deleteCollectionTool,
+    addCollectionItemTool,
+    removeCollectionItemTool,
+    getSpaceRuntimeTool,
+    controlSpaceTool,
+    manageSpaceSecretsTool,
+    manageSpaceVariablesTool,
+    chatCompletionTool,
+    textGenerationTool,
+    runInferenceTool,
+    getUserInfoTool
+  ],
+  triggers: [
+    repositoryEventsTrigger
+  ]
+});

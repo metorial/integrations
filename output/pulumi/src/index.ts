@@ -1,0 +1,60 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  listStacks,
+  getStack,
+  createStack,
+  deleteStack,
+  triggerDeployment,
+  getDeployment,
+  listDeployments,
+  cancelDeployment,
+  listStackUpdates,
+  manageStackTags,
+  manageEnvironment,
+  listEnvironments,
+  openEnvironment,
+  searchResources,
+  listAuditLogs,
+  listOrgMembers,
+  manageAccessTokens,
+  listPolicyPacks,
+  manageWebhooks,
+} from './tools';
+import {
+  stackEvents,
+  deploymentEvents,
+  driftEvents,
+  policyViolationEvents,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    listStacks,
+    getStack,
+    createStack,
+    deleteStack,
+    triggerDeployment,
+    getDeployment,
+    listDeployments,
+    cancelDeployment,
+    listStackUpdates,
+    manageStackTags,
+    manageEnvironment,
+    listEnvironments,
+    openEnvironment,
+    searchResources,
+    listAuditLogs,
+    listOrgMembers,
+    manageAccessTokens,
+    listPolicyPacks,
+    manageWebhooks,
+  ],
+  triggers: [
+    stackEvents,
+    deploymentEvents,
+    driftEvents,
+    policyViolationEvents,
+  ],
+});

@@ -1,0 +1,22 @@
+{
+  "name": "@metorial/tableau",
+  "version": "0.1.1",
+  "description": "Manage Tableau Cloud and Tableau Server resources programmatically. Publish, query, update, download, and delete workbooks, data sources, views, and flows. Export views as images, PDFs, or CSV. Manage users, groups, projects, and granular permissions. Create and monitor extract refresh tasks and scheduled jobs. Query metadata, data lineage, and apply data quality labels to assets. Manage collections, favorites, custom views, and data-driven alerts. Configure connected apps, analytics extensions, and webhooks for event-driven notifications on content and user changes.",
+  "categories": [
+    "apis-and-http-requests",
+    "document-processing"
+  ],
+  "skills": [
+    "publish and manage workbooks",
+    "export views as images or PDF",
+    "manage data source extracts",
+    "administer users and groups",
+    "configure permissions",
+    "monitor jobs and schedules",
+    "query metadata and lineage",
+    "manage flows and runs",
+    "create data-driven alerts",
+    "manage webhooks for events"
+  ],
+  "logoUrl": "https://provider-logos.metorial-cdn.com/tableau.png"
+}

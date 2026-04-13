@@ -1,0 +1,45 @@
+import {
+  Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createCourse, getCourse, updateCourse, deleteCourse, listCourses,
+  createUser, getUser, updateUser, deleteUser, listUsers,
+  enrollUser, unenrollUser, listEnrollments, getEnrollment, updateEnrollment,
+  createContent, getContent, listContent, updateContent, deleteContent,
+  createGradeColumn, listGradeColumns, updateGradeColumn, recordGrade, getGrade, listGrades,
+  createAnnouncement, listAnnouncements, updateAnnouncement, deleteAnnouncement,
+  createGroup, listGroups, updateGroup, deleteGroup, manageGroupMembers,
+  createAttendanceMeeting, listAttendanceMeetings, recordAttendance, listAttendanceRecords,
+  listAttempts, getAttempt, gradeAttempt,
+  listCalendarItems, createCalendarItem,
+  listTerms,
+} from './tools';
+import {
+  courseChanges,
+  enrollmentChanges,
+  gradeChanges,
+  inboundWebhook,
+} from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createCourse, getCourse, updateCourse, deleteCourse, listCourses,
+    createUser, getUser, updateUser, deleteUser, listUsers,
+    enrollUser, unenrollUser, listEnrollments, getEnrollment, updateEnrollment,
+    createContent, getContent, listContent, updateContent, deleteContent,
+    createGradeColumn, listGradeColumns, updateGradeColumn, recordGrade, getGrade, listGrades,
+    createAnnouncement, listAnnouncements, updateAnnouncement, deleteAnnouncement,
+    createGroup, listGroups, updateGroup, deleteGroup, manageGroupMembers,
+    createAttendanceMeeting, listAttendanceMeetings, recordAttendance, listAttendanceRecords,
+    listAttempts, getAttempt, gradeAttempt,
+    listCalendarItems, createCalendarItem,
+    listTerms,
+  ],
+  triggers: [
+    inboundWebhook,
+    courseChanges,
+    enrollmentChanges,
+    gradeChanges,
+  ],
+});

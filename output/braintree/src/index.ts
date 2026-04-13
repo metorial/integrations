@@ -1,0 +1,58 @@
+import { Slate } from 'slates';
+import { spec } from './spec';
+import {
+  createTransaction,
+  findTransaction,
+  searchTransactions,
+  refundTransaction,
+  voidTransaction,
+  settleTransaction,
+  createCustomer,
+  updateCustomer,
+  findCustomer,
+  deleteCustomer,
+  createSubscription,
+  findSubscription,
+  updateSubscription,
+  cancelSubscription,
+  findDispute,
+  acceptDispute,
+  addDisputeEvidence,
+  finalizeDispute,
+  vaultPaymentMethod,
+  findPaymentMethod,
+  deletePaymentMethod,
+  getSettlementReport,
+} from './tools';
+import { webhookEvents } from './triggers';
+
+export let provider = Slate.create({
+  spec,
+  tools: [
+    createTransaction,
+    findTransaction,
+    searchTransactions,
+    refundTransaction,
+    voidTransaction,
+    settleTransaction,
+    createCustomer,
+    updateCustomer,
+    findCustomer,
+    deleteCustomer,
+    createSubscription,
+    findSubscription,
+    updateSubscription,
+    cancelSubscription,
+    findDispute,
+    acceptDispute,
+    addDisputeEvidence,
+    finalizeDispute,
+    vaultPaymentMethod,
+    findPaymentMethod,
+    deletePaymentMethod,
+    getSettlementReport,
+  ],
+  triggers: [
+    webhookEvents,
+  ],
+});
