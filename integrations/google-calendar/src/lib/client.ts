@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface EventDateTime {
   dateTime?: string;
@@ -236,7 +236,7 @@ export class GoogleCalendarClient {
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}/move`,
-      null,
+      {},
       { params }
     );
     return response.data;
@@ -252,7 +252,7 @@ export class GoogleCalendarClient {
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events/quickAdd`,
-      null,
+      {},
       { params }
     );
     return response.data;

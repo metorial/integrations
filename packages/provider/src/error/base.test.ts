@@ -1,4 +1,3 @@
-import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import {
   badRequestError,
   conflictError,
@@ -16,6 +15,7 @@ import {
   unauthorizedError,
   validationError
 } from '@lowerdeck/error';
+import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { describe, expect, it } from 'vitest';
 import { SlateError } from './base';
 
@@ -143,7 +143,10 @@ describe('SlateError', () => {
 
   it('maps service errors to canonical slate errors', () => {
     let serviceErrors = [
-      [validationError({ entity: 'request', errors: [], message: 'Invalid request data' }), 'input.invalid'],
+      [
+        validationError({ entity: 'request', errors: [], message: 'Invalid request data' }),
+        'input.invalid'
+      ],
       [badRequestError({ message: 'Bad request' }), 'request.bad'],
       [notFoundError('handler', 'missing'), 'resource.not_found'],
       [unauthorizedError({ message: 'Please log in' }), 'auth.required'],
@@ -152,7 +155,10 @@ describe('SlateError', () => {
       [conflictError({ message: 'Conflict' }), 'resource.conflict'],
       [goneError({ message: 'Gone' }), 'resource.gone'],
       [paymentRequiredError({ message: 'Payment required' }), 'payment.required'],
-      [preconditionFailedError({ message: 'Precondition failed' }), 'request.precondition_failed'],
+      [
+        preconditionFailedError({ message: 'Precondition failed' }),
+        'request.precondition_failed'
+      ],
       [notAcceptableError({ message: 'Not acceptable' }), 'request.not_acceptable'],
       [notImplementedError({ message: 'Not implemented' }), 'operation.not_implemented'],
       [tooManyRequestsError({ message: 'Too many requests' }), 'request.rate_limited'],

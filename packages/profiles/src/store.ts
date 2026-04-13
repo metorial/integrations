@@ -100,7 +100,9 @@ let resolveScopeKeyFromStorePath = (rootDir: string, storePath: string) => {
   return normalizeScopeKey(relativeDir);
 };
 
-let readStoreData = async <T extends { currentProfileId: string | null; profiles: Record<string, any> }>(
+let readStoreData = async <
+  T extends { currentProfileId: string | null; profiles: Record<string, any> }
+>(
   storePath: string
 ): Promise<T | null> => {
   try {
@@ -132,7 +134,10 @@ let isProfileInScope = (rootDir: string, scopeKey: string, profile: SlatesProfil
   return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative);
 };
 
-let loadMigratedLegacyStore = async (rootDir: string, scopeKey: string): Promise<SlatesCliStoreData> => {
+let loadMigratedLegacyStore = async (
+  rootDir: string,
+  scopeKey: string
+): Promise<SlatesCliStoreData> => {
   let legacyStorePath = path.join(resolveSlatesCliDir(rootDir), STORE_FILE_NAME);
   let legacy = await readStoreData<SlatesLegacyCliStoreData>(legacyStorePath);
   if (!legacy) {
@@ -146,7 +151,9 @@ let loadMigratedLegacyStore = async (rootDir: string, scopeKey: string): Promise
   );
 
   let currentProfileId =
-    legacy.currentProfileId && profiles[legacy.currentProfileId] ? legacy.currentProfileId : null;
+    legacy.currentProfileId && profiles[legacy.currentProfileId]
+      ? legacy.currentProfileId
+      : null;
 
   return {
     version: STORE_VERSION,
@@ -165,7 +172,9 @@ export class SlatesCliStore {
     readonly data: SlatesCliStoreData
   ) {}
 
-  static async open(opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}) {
+  static async open(
+    opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
+  ) {
     let rootDir = opts.storePath
       ? inferRootDirFromStorePath(opts.storePath)
       : resolveSlatesCliRoot(opts.cwd);
@@ -175,31 +184,32 @@ export class SlatesCliStore {
       : opts.scope?.key
         ? normalizeScopeKey(opts.scope.key)
         : null;
-    let dirPath =
-      opts.storePath
-        ? path.dirname(opts.storePath)
-        : scopeKey
-          ? resolveScopedStoreDir(rootDir, scopeKey)
-          : cliDir;
+    let dirPath = opts.storePath
+      ? path.dirname(opts.storePath)
+      : scopeKey
+        ? resolveScopedStoreDir(rootDir, scopeKey)
+        : cliDir;
     let storePath =
-      opts.storePath ?? (scopeKey ? resolveScopedStorePath(rootDir, scopeKey) : path.join(cliDir, STORE_FILE_NAME));
+      opts.storePath ??
+      (scopeKey
+        ? resolveScopedStorePath(rootDir, scopeKey)
+        : path.join(cliDir, STORE_FILE_NAME));
 
     await ensureDir(cliDir);
     await ensureGitIgnore(cliDir);
     await ensureDir(dirPath);
 
     let parsed = await readStoreData<SlatesCliStoreData>(storePath);
-    let data =
-      parsed
-        ? {
-            version: STORE_VERSION,
-            currentProfileId: parsed.currentProfileId ?? null,
-            profiles: parsed.profiles ?? {},
-            oauthCredentials: parsed.oauthCredentials ?? {}
-          }
-        : scopeKey
-          ? await loadMigratedLegacyStore(rootDir, scopeKey)
-          : createEmptyStore();
+    let data = parsed
+      ? {
+          version: STORE_VERSION,
+          currentProfileId: parsed.currentProfileId ?? null,
+          profiles: parsed.profiles ?? {},
+          oauthCredentials: parsed.oauthCredentials ?? {}
+        }
+      : scopeKey
+        ? await loadMigratedLegacyStore(rootDir, scopeKey)
+        : createEmptyStore();
 
     if (!parsed) {
       await writeFile(storePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
@@ -409,5 +419,4 @@ export class SlatesCliStore {
 
 export let openSlatesCliStore = async (
   opts: { cwd?: string; scope?: SlatesCliStoreScope; storePath?: string } = {}
-) =>
-  SlatesCliStore.open(opts);
+) => SlatesCliStore.open(opts);

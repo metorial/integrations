@@ -1,8 +1,7 @@
 import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { resolveSlatesCliRoot } from './store';
-import { SlatesCliStore } from './store';
+import { resolveSlatesCliRoot, SlatesCliStore } from './store';
 import { SlatesProfileRecord, SlatesStoredAuth } from './types';
 
 let resolveEntryPath = (entry: string, cwd?: string) => {

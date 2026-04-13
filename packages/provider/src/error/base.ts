@@ -1,4 +1,4 @@
-import { isAxiosErrorLike, inferSlateErrorFromAxios } from './axios';
+import { inferSlateErrorFromAxios, isAxiosErrorLike } from './axios';
 import { DEFAULT_CODE } from './defaults';
 import { getServiceErrorData, mapServiceErrorToSlateErrorInput } from './service';
 import type { SlateAxiosErrorOptions, SlateErrorInput, SlateErrorResponse } from './types';
@@ -100,12 +100,9 @@ export class SlateError extends Error {
 
   static fromAxios(error: unknown, options: SlateAxiosErrorOptions = {}): SlateError {
     if (SlateError.is(error)) return error;
-    if (getServiceErrorData(error)) {
+    if (getServiceErrorData(error))
       return SlateError.fromServiceError(error, options.defaults);
-    }
-    if (!isAxiosErrorLike(error)) {
-      return SlateError.fromUnknown(error, options.defaults);
-    }
+    if (!isAxiosErrorLike(error)) return SlateError.fromUnknown(error, options.defaults);
 
     let inferred = inferSlateErrorFromAxios(error, options);
 

@@ -160,6 +160,11 @@ export class SlatesProtocolClient {
     return result.actions.filter(action => action.type === 'action.tool');
   }
 
+  async listTriggers(): Promise<SlatesAction[]> {
+    let result = await this.listActions();
+    return result.actions.filter(action => action.type === 'action.trigger');
+  }
+
   async getAction(actionId: string) {
     return this.request('slates/action.get', { actionId });
   }
@@ -168,6 +173,15 @@ export class SlatesProtocolClient {
     let result = await this.getAction(actionId);
     if (result.action.type !== 'action.tool') {
       throw new Error(`Action ${actionId} is not a tool.`);
+    }
+
+    return result.action;
+  }
+
+  async getTrigger(actionId: string) {
+    let result = await this.getAction(actionId);
+    if (result.action.type !== 'action.trigger') {
+      throw new Error(`Action ${actionId} is not a trigger.`);
     }
 
     return result.action;
@@ -277,6 +291,68 @@ export class SlatesProtocolClient {
     return this.request('slates/action.tool.invoke', {
       actionId,
       input
+    });
+  }
+
+  async mapTriggerEvent(actionId: string, input: Record<string, any>) {
+    this.ensureSession();
+    return this.request('slates/action.trigger.map_event', {
+      actionId,
+      input
+    });
+  }
+
+  async registerTriggerWebhook(actionId: string, webhookBaseUrl: string) {
+    this.ensureSession();
+    return this.request('slates/action.trigger.webhook_register', {
+      actionId,
+      webhookBaseUrl
+    });
+  }
+
+  async handleTriggerWebhook(d: {
+    actionId: string;
+    url: string;
+    method: string;
+    headers?: Record<string, string>;
+    body?: string | Uint8Array | null;
+    state?: any;
+  }) {
+    this.ensureSession();
+    let encodedBody =
+      typeof d.body === 'string'
+        ? Buffer.from(d.body, 'utf-8').toString('base64')
+        : d.body
+          ? Buffer.from(d.body).toString('base64')
+          : null;
+
+    return this.request('slates/action.trigger.webhook_handle', {
+      actionId: d.actionId,
+      url: d.url,
+      method: d.method,
+      headers: d.headers ?? {},
+      body: encodedBody
+        ? {
+            encoding: 'base64',
+            content: encodedBody
+          }
+        : null,
+      state: d.state ?? null
+    });
+  }
+
+  async unregisterTriggerWebhook(d: {
+    actionId: string;
+    webhookBaseUrl: string;
+    registrationDetails: any;
+    state?: any;
+  }) {
+    this.ensureSession();
+    return this.request('slates/action.trigger.webhook_unregister', {
+      actionId: d.actionId,
+      webhookBaseUrl: d.webhookBaseUrl,
+      registrationDetails: d.registrationDetails,
+      state: d.state ?? null
     });
   }
 

@@ -1,5 +1,5 @@
-import { isAxiosError } from 'axios';
 import type { AxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { getCurrentContext } from '../context/hook';
 import type { SlateAxiosErrorOptions, SlateErrorResponse } from './types';
 import {
@@ -191,7 +191,8 @@ export let inferSlateErrorFromAxios = (
     message: options.defaults?.message ?? inferAxiosMessage(error, responseData, code),
     kind: options.defaults?.kind ?? normalizeKind(options.defaults?.code ?? code),
     retryable:
-      options.defaults?.retryable ?? inferAxiosRetryable(error, options.defaults?.code ?? code),
+      options.defaults?.retryable ??
+      inferAxiosRetryable(error, options.defaults?.code ?? code),
     status: options.defaults?.status ?? error.response?.status,
     provider: {
       ...getProviderDefaults().provider,

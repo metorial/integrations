@@ -26,9 +26,11 @@ export let normalizeKind = (code: string, kind?: SlateErrorKind): SlateErrorKind
 
 export let normalizeStatus = (code: string, status?: number) => {
   if (status) return status;
-  if (code === 'input.invalid' || code === 'request.bad' || code === 'config.invalid') return 400;
+  if (code === 'input.invalid' || code === 'request.bad' || code === 'config.invalid')
+    return 400;
   if (code === 'request.invalid_version') return 400;
-  if (code === 'auth.required' || code === 'auth.invalid' || code === 'auth.expired') return 401;
+  if (code === 'auth.required' || code === 'auth.invalid' || code === 'auth.expired')
+    return 401;
   if (code === 'payment.required') return 402;
   if (code === 'permission.denied') return 403;
   if (code === 'resource.not_found') return 404;

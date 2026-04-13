@@ -1,9 +1,30 @@
+import {
+  Slate,
+  SlateAuth,
+  SlateConfig,
+  SlateSpecification,
+  SlateTool,
+  SlateTrigger
+} from '@slates/provider';
 import { openSlatesCliStore } from '@slates/profiles';
 import { mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { loadSlatesRuntimeContext } from './index';
+import { z } from 'zod';
+import {
+  createLocalSlateTestClient,
+  expectSlateContract,
+  expectSlateError,
+  expectToolCall,
+  handleSlateTriggerWebhook,
+  loadSlatesRuntimeContext,
+  mapSlateTriggerEvent,
+  registerSlateTriggerWebhook,
+  unregisterSlateTriggerWebhook
+} from './index';
+
+(globalThis as typeof globalThis & { expect?: typeof expect }).expect = expect;
 
 let tempDirs: string[] = [];
 
@@ -20,6 +41,147 @@ afterEach(async () => {
   delete process.env.SLATES_TEST_CONTEXT_PATH;
   await Promise.all(tempDirs.splice(0).map(dir => rm(dir, { recursive: true, force: true })));
 });
+
+let createDemoSlate = () => {
+  let config = SlateConfig.create(
+    z.object({
+      prefix: z.string()
+    })
+  ).getDefaultConfig(() => ({
+    prefix: 'Hello'
+  }));
+
+  let auth = SlateAuth.create<{ token: string }>()
+    .output(
+      z.object({
+        token: z.string()
+      })
+    )
+    .addTokenAuth({
+      type: 'auth.token',
+      key: 'token_auth',
+      name: 'Token Auth',
+      inputSchema: z.object({
+        token: z.string()
+      }),
+      getOutput: async ctx => ({
+        output: {
+          token: ctx.input.token
+        }
+      })
+    });
+
+  let spec = SlateSpecification.create({
+    key: 'demo-slate',
+    name: 'Demo Slate',
+    description: 'A tiny test slate',
+    config,
+    auth
+  });
+
+  let echo = SlateTool.create(spec, {
+    key: 'echo',
+    name: 'Echo',
+    tags: {
+      readOnly: false
+    }
+  })
+    .input(
+      z.object({
+        name: z.string()
+      })
+    )
+    .output(
+      z.object({
+        greeting: z.string(),
+        token: z.string()
+      })
+    )
+    .handleInvocation(async ctx => ({
+      output: {
+        greeting: `${ctx.config.prefix} ${ctx.input.name}`,
+        token: ctx.auth.token
+      },
+      message: 'done'
+    }))
+    .build();
+
+  let fail = SlateTool.create(spec, {
+    key: 'fail',
+    name: 'Fail'
+  })
+    .input(
+      z.object({
+        reason: z.string()
+      })
+    )
+    .output(z.object({}))
+    .handleInvocation(async ctx => {
+      throw new Error(ctx.input.reason);
+    })
+    .build();
+
+  let webhookEcho = SlateTrigger.create(spec, {
+    key: 'webhook_echo',
+    name: 'Webhook Echo'
+  })
+    .input(
+      z.object({
+        value: z.string()
+      })
+    )
+    .output(
+      z.object({
+        echoed: z.string()
+      })
+    )
+    .webhook({
+      autoRegisterWebhook: async ctx => ({
+        registrationDetails: {
+          webhookBaseUrl: ctx.input.webhookBaseUrl,
+          channelId: 'channel-1'
+        },
+        state: {
+          registered: true
+        }
+      }),
+      autoUnregisterWebhook: async ctx => {
+        if (ctx.input.registrationDetails?.channelId !== 'channel-1') {
+          throw new Error('Unexpected channel');
+        }
+      },
+      handleRequest: async ctx => {
+        if (ctx.request.headers.get('x-demo-event') === 'ignore') {
+          return { inputs: [] };
+        }
+
+        return {
+          inputs: [
+            {
+              value: (await ctx.request.text()) || 'empty'
+            }
+          ],
+          updatedState: {
+            lastEvent: ctx.request.headers.get('x-demo-event') ?? 'unknown'
+          }
+        };
+      },
+      handleEvent: async ctx => ({
+        type: 'demo.webhook',
+        id: `webhook-${ctx.input.value}`,
+        output: {
+          echoed: ctx.input.value
+        }
+      })
+    })
+    .build();
+
+  return Slate.create({
+    spec,
+    tools: [echo, fail],
+    triggers: [webhookEcho]
+  });
+};
 
 describe('@slates/test', () => {
   it('loads runtime context from the CLI handoff file', async () => {
@@ -60,5 +222,139 @@ describe('@slates/test', () => {
     expect(context.profileId).toBe(profile.id);
     expect(context.profile?.target.type).toBe('local');
     expect(context.storePath).toBe(store.storePath);
+  });
+
+  it('creates local slate clients and asserts provider contracts', async () => {
+    let client = createLocalSlateTestClient({
+      slate: createDemoSlate(),
+      state: {
+        config: {
+          prefix: 'Hi'
+        },
+        auth: {
+          authenticationMethodId: 'token_auth',
+          output: {
+            token: 'secret-token'
+          }
+        }
+      }
+    });
+
+    let contract = await expectSlateContract({
+      client,
+      provider: {
+        id: 'demo-slate',
+        name: 'Demo Slate',
+        description: 'A tiny test slate'
+      },
+      toolIds: ['echo', 'fail'],
+      triggerIds: ['webhook_echo'],
+      authMethodIds: ['token_auth'],
+      tools: [
+        { id: 'echo', readOnly: false, destructive: false },
+        { id: 'fail', readOnly: false, destructive: false }
+      ],
+      triggers: [{ id: 'webhook_echo', invocationType: 'webhook' }]
+    });
+
+    expect(contract.configSchema.properties.prefix.type).toBe('string');
+
+    await expectToolCall({
+      client,
+      toolId: 'echo',
+      input: {
+        name: 'Tobias'
+      },
+      output: {
+        greeting: 'Hi Tobias',
+        token: 'secret-token'
+      }
+    });
+  });
+
+  it('wraps trigger webhook flows and error assertions', async () => {
+    let client = createLocalSlateTestClient({
+      slate: createDemoSlate(),
+      state: {
+        config: {
+          prefix: 'Hi'
+        },
+        auth: {
+          authenticationMethodId: 'token_auth',
+          output: {
+            token: 'secret-token'
+          }
+        }
+      }
+    });
+
+    let registration = await registerSlateTriggerWebhook({
+      client,
+      triggerId: 'webhook_echo',
+      webhookBaseUrl: 'https://example.com/hooks/google-calendar'
+    });
+    expect(registration).toMatchObject({
+      registrationDetails: {
+        webhookBaseUrl: 'https://example.com/hooks/google-calendar',
+        channelId: 'channel-1'
+      },
+      state: {
+        registered: true
+      }
+    });
+
+    let ignored = await handleSlateTriggerWebhook({
+      client,
+      triggerId: 'webhook_echo',
+      url: 'https://example.com/hooks/google-calendar',
+      headers: {
+        'x-demo-event': 'ignore'
+      }
+    });
+    expect(ignored.inputs).toEqual([]);
+
+    let handled = await handleSlateTriggerWebhook({
+      client,
+      triggerId: 'webhook_echo',
+      url: 'https://example.com/hooks/google-calendar',
+      headers: {
+        'x-demo-event': 'created'
+      },
+      body: 'payload-value'
+    });
+    expect(handled).toMatchObject({
+      inputs: [{ value: 'payload-value' }],
+      updatedState: {
+        lastEvent: 'created'
+      }
+    });
+
+    let mapped = await mapSlateTriggerEvent({
+      client,
+      triggerId: 'webhook_echo',
+      input: {
+        value: 'payload-value'
+      },
+      type: 'demo.webhook',
+      output: {
+        echoed: 'payload-value'
+      }
+    });
+    expect(mapped.id).toBe('webhook-payload-value');
+
+    await unregisterSlateTriggerWebhook({
+      client,
+      triggerId: 'webhook_echo',
+      webhookBaseUrl: 'https://example.com/hooks/google-calendar',
+      registrationDetails: registration.registrationDetails
+    });
+
+    await expectSlateError(
+      () =>
+        client.invokeTool('fail', {
+          reason: 'intentional failure'
+        }),
+      { code: 'internal.unexpected', kind: 'internal', status: 500 }
+    );
   });
 });
