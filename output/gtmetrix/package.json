@@ -1,14 +1,14 @@
 {
-  "name": "@slates/gtmetrix",
+  "name": "@slates/integration-gtmetrix",
   "main": "src/index.ts",
   "type": "module",
-  "private": true,
   "scripts": {
+    "build": "bunx @vercel/ncc build src/index.ts -o .ncc-dist -m -s",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@types/node": "^20",
-    "slates": "latest",
+    "slates": "workspace:*",
     "zod": "^4.2"
   },
   "devDependencies": {
