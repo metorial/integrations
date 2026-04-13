@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-northflank",
+  "name": "@slates-integration/northflank",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

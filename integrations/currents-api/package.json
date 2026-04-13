@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-currents-api",
+  "name": "@slates-integration/currents-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-metabase",
+  "name": "@slates-integration/metabase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

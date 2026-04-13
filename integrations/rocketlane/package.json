@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rocketlane",
+  "name": "@slates-integration/rocketlane",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

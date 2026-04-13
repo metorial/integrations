@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-engage",
+  "name": "@slates-integration/engage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

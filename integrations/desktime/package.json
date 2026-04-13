@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-desktime",
+  "name": "@slates-integration/desktime",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

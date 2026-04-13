@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-eventzilla",
+  "name": "@slates-integration/eventzilla",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

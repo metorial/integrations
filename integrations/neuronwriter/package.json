@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-neuronwriter",
+  "name": "@slates-integration/neuronwriter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

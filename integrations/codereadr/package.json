@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-codereadr",
+  "name": "@slates-integration/codereadr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

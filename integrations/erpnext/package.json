@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-erpnext",
+  "name": "@slates-integration/erpnext",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

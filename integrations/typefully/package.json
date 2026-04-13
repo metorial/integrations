@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-typefully",
+  "name": "@slates-integration/typefully",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

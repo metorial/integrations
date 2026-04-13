@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-spotlightr",
+  "name": "@slates-integration/spotlightr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

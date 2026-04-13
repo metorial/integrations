@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-helpdesk",
+  "name": "@slates-integration/helpdesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

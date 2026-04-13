@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hookdeck",
+  "name": "@slates-integration/hookdeck",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

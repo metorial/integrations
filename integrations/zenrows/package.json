@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zenrows",
+  "name": "@slates-integration/zenrows",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

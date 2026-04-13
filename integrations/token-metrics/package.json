@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-token-metrics",
+  "name": "@slates-integration/token-metrics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

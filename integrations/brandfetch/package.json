@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-brandfetch",
+  "name": "@slates-integration/brandfetch",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

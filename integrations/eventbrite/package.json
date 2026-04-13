@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-eventbrite",
+  "name": "@slates-integration/eventbrite",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

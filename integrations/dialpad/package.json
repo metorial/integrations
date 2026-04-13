@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dialpad",
+  "name": "@slates-integration/dialpad",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

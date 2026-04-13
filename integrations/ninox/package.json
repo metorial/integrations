@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ninox",
+  "name": "@slates-integration/ninox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

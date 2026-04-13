@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kaggle",
+  "name": "@slates-integration/kaggle",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

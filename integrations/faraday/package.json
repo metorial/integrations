@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-faraday",
+  "name": "@slates-integration/faraday",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

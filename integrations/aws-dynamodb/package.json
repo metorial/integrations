@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-dynamodb",
+  "name": "@slates-integration/aws-dynamodb",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-suitedash",
+  "name": "@slates-integration/suitedash",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

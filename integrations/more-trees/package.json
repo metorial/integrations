@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-more-trees",
+  "name": "@slates-integration/more-trees",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

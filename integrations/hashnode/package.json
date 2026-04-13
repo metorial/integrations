@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hashnode",
+  "name": "@slates-integration/hashnode",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

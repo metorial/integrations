@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nango",
+  "name": "@slates-integration/nango",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

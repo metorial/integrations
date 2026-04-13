@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docnify",
+  "name": "@slates-integration/docnify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

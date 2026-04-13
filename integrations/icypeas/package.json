@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-icypeas",
+  "name": "@slates-integration/icypeas",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

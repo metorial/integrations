@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-proabono",
+  "name": "@slates-integration/proabono",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

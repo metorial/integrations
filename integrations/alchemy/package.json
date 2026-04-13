@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-alchemy",
+  "name": "@slates-integration/alchemy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

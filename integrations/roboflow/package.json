@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-roboflow",
+  "name": "@slates-integration/roboflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

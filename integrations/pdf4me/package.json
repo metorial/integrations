@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pdf4me",
+  "name": "@slates-integration/pdf4me",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

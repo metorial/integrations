@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dynapictures",
+  "name": "@slates-integration/dynapictures",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

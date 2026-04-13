@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tapfiliate",
+  "name": "@slates-integration/tapfiliate",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

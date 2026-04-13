@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-twocaptcha",
+  "name": "@slates-integration/twocaptcha",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-piloterr",
+  "name": "@slates-integration/piloterr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

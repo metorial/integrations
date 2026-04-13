@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-analytics",
+  "name": "@slates-integration/google-analytics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-moco",
+  "name": "@slates-integration/moco",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-looker",
+  "name": "@slates-integration/looker",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

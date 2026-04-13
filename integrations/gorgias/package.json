@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gorgias",
+  "name": "@slates-integration/gorgias",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

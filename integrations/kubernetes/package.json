@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kubernetes",
+  "name": "@slates-integration/kubernetes",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

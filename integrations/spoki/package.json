@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-spoki",
+  "name": "@slates-integration/spoki",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

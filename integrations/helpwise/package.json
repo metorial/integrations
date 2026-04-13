@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-helpwise",
+  "name": "@slates-integration/helpwise",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

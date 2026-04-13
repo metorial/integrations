@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-webscraper-io",
+  "name": "@slates-integration/webscraper-io",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

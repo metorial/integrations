@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rosette-text-analytics",
+  "name": "@slates-integration/rosette-text-analytics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

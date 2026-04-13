@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-cloud-speech",
+  "name": "@slates-integration/google-cloud-speech",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

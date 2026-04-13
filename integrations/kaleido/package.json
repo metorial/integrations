@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kaleido",
+  "name": "@slates-integration/kaleido",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

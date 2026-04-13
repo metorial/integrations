@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nusii-proposals",
+  "name": "@slates-integration/nusii-proposals",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

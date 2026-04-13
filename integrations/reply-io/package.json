@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-replyio",
+  "name": "@slates-integration/replyio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fluxguard",
+  "name": "@slates-integration/fluxguard",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

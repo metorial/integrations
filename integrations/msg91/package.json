@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-msg91",
+  "name": "@slates-integration/msg91",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

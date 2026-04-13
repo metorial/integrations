@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-redcircle-api",
+  "name": "@slates-integration/redcircle-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

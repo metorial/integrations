@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ntfy",
+  "name": "@slates-integration/ntfy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

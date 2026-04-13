@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-blackbaud",
+  "name": "@slates-integration/blackbaud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

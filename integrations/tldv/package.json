@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tldv",
+  "name": "@slates-integration/tldv",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

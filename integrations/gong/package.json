@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gong",
+  "name": "@slates-integration/gong",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

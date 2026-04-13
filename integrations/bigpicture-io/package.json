@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bigpictureio",
+  "name": "@slates-integration/bigpictureio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

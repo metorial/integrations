@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-clockify",
+  "name": "@slates-integration/clockify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

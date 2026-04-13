@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-terraform-cloud",
+  "name": "@slates-integration/terraform-cloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

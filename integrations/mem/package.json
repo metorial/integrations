@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mem",
+  "name": "@slates-integration/mem",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-paypal",
+  "name": "@slates-integration/paypal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

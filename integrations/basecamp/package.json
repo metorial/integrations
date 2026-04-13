@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-basecamp",
+  "name": "@slates-integration/basecamp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

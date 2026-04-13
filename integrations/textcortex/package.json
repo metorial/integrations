@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-textcortex",
+  "name": "@slates-integration/textcortex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

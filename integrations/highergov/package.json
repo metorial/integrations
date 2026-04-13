@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-highergov",
+  "name": "@slates-integration/highergov",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-capsule-crm",
+  "name": "@slates-integration/capsule-crm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

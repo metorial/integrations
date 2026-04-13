@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-abuseipdb",
+  "name": "@slates-integration/abuseipdb",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

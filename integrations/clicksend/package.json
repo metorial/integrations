@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-clicksend",
+  "name": "@slates-integration/clicksend",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

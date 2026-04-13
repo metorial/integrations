@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-data247",
+  "name": "@slates-integration/data247",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

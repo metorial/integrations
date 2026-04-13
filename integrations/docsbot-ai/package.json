@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docsbot-ai",
+  "name": "@slates-integration/docsbot-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

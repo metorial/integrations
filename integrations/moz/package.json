@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-moz",
+  "name": "@slates-integration/moz",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pagerduty",
+  "name": "@slates-integration/pagerduty",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

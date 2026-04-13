@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-opencage",
+  "name": "@slates-integration/opencage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

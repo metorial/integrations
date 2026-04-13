@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gusto",
+  "name": "@slates-integration/gusto",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

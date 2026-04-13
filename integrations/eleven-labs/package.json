@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-elevenlabs",
+  "name": "@slates-integration/elevenlabs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-krakenio",
+  "name": "@slates-integration/krakenio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

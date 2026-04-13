@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-browseai",
+  "name": "@slates-integration/browseai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

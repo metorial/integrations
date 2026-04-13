@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fireflies",
+  "name": "@slates-integration/fireflies",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

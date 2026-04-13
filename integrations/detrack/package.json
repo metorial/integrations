@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-detrack",
+  "name": "@slates-integration/detrack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

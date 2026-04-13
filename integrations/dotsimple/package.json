@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dotsimple",
+  "name": "@slates-integration/dotsimple",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

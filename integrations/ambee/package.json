@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ambee",
+  "name": "@slates-integration/ambee",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

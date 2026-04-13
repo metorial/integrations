@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ticketmaster",
+  "name": "@slates-integration/ticketmaster",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

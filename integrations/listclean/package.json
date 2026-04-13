@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-listclean",
+  "name": "@slates-integration/listclean",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

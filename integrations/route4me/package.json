@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-route4me",
+  "name": "@slates-integration/route4me",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

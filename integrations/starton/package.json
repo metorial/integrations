@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-starton",
+  "name": "@slates-integration/starton",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

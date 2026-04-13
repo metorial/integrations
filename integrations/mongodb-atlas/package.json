@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mongodb-atlas",
+  "name": "@slates-integration/mongodb-atlas",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

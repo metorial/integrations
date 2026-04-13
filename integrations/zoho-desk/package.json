@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-desk",
+  "name": "@slates-integration/zoho-desk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-api-labz",
+  "name": "@slates-integration/api-labz",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bugsnag",
+  "name": "@slates-integration/bugsnag",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jotform",
+  "name": "@slates-integration/jotform",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

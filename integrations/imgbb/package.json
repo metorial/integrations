@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-imgbb",
+  "name": "@slates-integration/imgbb",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

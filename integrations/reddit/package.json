@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-reddit",
+  "name": "@slates-integration/reddit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

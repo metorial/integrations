@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onepage",
+  "name": "@slates-integration/onepage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

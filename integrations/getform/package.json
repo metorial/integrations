@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-getform",
+  "name": "@slates-integration/getform",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

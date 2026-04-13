@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gumroad",
+  "name": "@slates-integration/gumroad",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

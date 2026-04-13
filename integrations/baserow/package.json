@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-baserow",
+  "name": "@slates-integration/baserow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

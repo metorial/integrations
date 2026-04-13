@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-boloforms",
+  "name": "@slates-integration/boloforms",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailcheck",
+  "name": "@slates-integration/mailcheck",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

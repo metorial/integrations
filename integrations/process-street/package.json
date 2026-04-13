@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-process-street",
+  "name": "@slates-integration/process-street",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

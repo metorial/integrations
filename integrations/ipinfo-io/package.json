@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ipinfoio",
+  "name": "@slates-integration/ipinfoio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

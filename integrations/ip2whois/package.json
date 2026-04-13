@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ip2whois",
+  "name": "@slates-integration/ip2whois",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

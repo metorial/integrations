@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-transcribe",
+  "name": "@slates-integration/aws-transcribe",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

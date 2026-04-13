@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-drive",
+  "name": "@slates-integration/google-drive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dock-labs-truvera",
+  "name": "@slates-integration/dock-labs-truvera",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-vestaboard",
+  "name": "@slates-integration/vestaboard",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

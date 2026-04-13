@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-crowdin",
+  "name": "@slates-integration/crowdin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

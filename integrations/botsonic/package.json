@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-botsonic",
+  "name": "@slates-integration/botsonic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

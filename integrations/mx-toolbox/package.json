@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mxtoolbox",
+  "name": "@slates-integration/mxtoolbox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

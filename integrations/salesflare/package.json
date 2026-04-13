@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-salesflare",
+  "name": "@slates-integration/salesflare",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

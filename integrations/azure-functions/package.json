@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-azure-functions",
+  "name": "@slates-integration/azure-functions",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

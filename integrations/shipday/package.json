@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shipday",
+  "name": "@slates-integration/shipday",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

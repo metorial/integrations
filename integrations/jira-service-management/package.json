@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jira-service-management",
+  "name": "@slates-integration/jira-service-management",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

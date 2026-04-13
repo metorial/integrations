@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docsautomator",
+  "name": "@slates-integration/docsautomator",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

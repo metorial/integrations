@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-melo",
+  "name": "@slates-integration/melo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

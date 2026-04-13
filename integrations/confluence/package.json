@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-confluence",
+  "name": "@slates-integration/confluence",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

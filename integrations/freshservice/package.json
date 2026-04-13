@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-freshservice",
+  "name": "@slates-integration/freshservice",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

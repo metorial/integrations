@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-boxhero",
+  "name": "@slates-integration/boxhero",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

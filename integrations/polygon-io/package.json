@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-polygonio",
+  "name": "@slates-integration/polygonio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-vapi",
+  "name": "@slates-integration/vapi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

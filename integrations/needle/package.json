@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-needle",
+  "name": "@slates-integration/needle",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

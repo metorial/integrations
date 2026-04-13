@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-entelligence",
+  "name": "@slates-integration/entelligence",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-accredible-certificates",
+  "name": "@slates-integration/accredible-certificates",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agentql",
+  "name": "@slates-integration/agentql",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

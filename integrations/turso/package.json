@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-turso",
+  "name": "@slates-integration/turso",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

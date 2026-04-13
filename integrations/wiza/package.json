@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wiza",
+  "name": "@slates-integration/wiza",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

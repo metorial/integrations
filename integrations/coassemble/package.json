@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coassemble",
+  "name": "@slates-integration/coassemble",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

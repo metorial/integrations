@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lessonspace",
+  "name": "@slates-integration/lessonspace",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rafflys",
+  "name": "@slates-integration/rafflys",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

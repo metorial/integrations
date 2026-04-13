@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-parsera",
+  "name": "@slates-integration/parsera",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

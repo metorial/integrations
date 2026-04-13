@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hubspot",
+  "name": "@slates-integration/hubspot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

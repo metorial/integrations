@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-npm",
+  "name": "@slates-integration/npm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

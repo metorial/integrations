@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendgrid",
+  "name": "@slates-integration/sendgrid",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

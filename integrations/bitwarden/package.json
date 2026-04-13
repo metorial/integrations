@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bitwarden",
+  "name": "@slates-integration/bitwarden",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

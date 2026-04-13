@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-perigon",
+  "name": "@slates-integration/perigon",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

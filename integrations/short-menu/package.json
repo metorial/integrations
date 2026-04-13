@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-short-menu",
+  "name": "@slates-integration/short-menu",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

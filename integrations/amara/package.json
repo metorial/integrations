@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-amara",
+  "name": "@slates-integration/amara",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

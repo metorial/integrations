@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-facebook",
+  "name": "@slates-integration/facebook",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

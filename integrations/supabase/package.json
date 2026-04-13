@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-supabase",
+  "name": "@slates-integration/supabase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

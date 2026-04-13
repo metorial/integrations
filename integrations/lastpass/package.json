@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lastpass",
+  "name": "@slates-integration/lastpass",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

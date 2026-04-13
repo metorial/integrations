@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-parallel",
+  "name": "@slates-integration/parallel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

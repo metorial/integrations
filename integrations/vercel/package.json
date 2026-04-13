@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-vercel",
+  "name": "@slates-integration/vercel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-supadata",
+  "name": "@slates-integration/supadata",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agenty",
+  "name": "@slates-integration/agenty",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

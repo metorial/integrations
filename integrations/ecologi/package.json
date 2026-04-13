@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ecologi",
+  "name": "@slates-integration/ecologi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-splunk",
+  "name": "@slates-integration/splunk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

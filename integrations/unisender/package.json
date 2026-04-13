@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-unisender",
+  "name": "@slates-integration/unisender",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-new-relic",
+  "name": "@slates-integration/new-relic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

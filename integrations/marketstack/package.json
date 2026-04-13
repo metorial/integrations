@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-marketstack",
+  "name": "@slates-integration/marketstack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

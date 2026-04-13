@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agent-mail",
+  "name": "@slates-integration/agent-mail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-statuspage",
+  "name": "@slates-integration/statuspage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

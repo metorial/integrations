@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pulumi",
+  "name": "@slates-integration/pulumi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

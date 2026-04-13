@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-metatextai",
+  "name": "@slates-integration/metatextai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

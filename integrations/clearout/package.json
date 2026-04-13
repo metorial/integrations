@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-clearout",
+  "name": "@slates-integration/clearout",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

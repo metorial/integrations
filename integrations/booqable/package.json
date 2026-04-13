@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-booqable",
+  "name": "@slates-integration/booqable",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

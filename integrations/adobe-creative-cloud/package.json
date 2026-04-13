@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-adobe-creative-cloud",
+  "name": "@slates-integration/adobe-creative-cloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pandadoc",
+  "name": "@slates-integration/pandadoc",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

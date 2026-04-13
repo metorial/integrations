@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-missive",
+  "name": "@slates-integration/missive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

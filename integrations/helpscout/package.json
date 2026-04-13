@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-help-scout",
+  "name": "@slates-integration/help-scout",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

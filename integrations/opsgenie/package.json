@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-opsgenie",
+  "name": "@slates-integration/opsgenie",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

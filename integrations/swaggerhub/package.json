@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-swaggerhub",
+  "name": "@slates-integration/swaggerhub",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

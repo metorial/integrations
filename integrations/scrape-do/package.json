@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scrape-do",
+  "name": "@slates-integration/scrape-do",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

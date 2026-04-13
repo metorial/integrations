@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-promptmateio",
+  "name": "@slates-integration/promptmateio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

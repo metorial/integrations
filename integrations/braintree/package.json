@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-braintree",
+  "name": "@slates-integration/braintree",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

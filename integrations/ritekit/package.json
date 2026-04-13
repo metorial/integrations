@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ritekit",
+  "name": "@slates-integration/ritekit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

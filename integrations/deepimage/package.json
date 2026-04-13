@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-deepimage",
+  "name": "@slates-integration/deepimage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

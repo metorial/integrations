@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-influxdb-cloud",
+  "name": "@slates-integration/influxdb-cloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

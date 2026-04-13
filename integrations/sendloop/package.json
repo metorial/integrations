@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendloop",
+  "name": "@slates-integration/sendloop",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

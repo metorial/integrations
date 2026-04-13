@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mural",
+  "name": "@slates-integration/mural",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

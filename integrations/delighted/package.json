@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-delighted",
+  "name": "@slates-integration/delighted",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

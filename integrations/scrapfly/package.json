@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scrapfly",
+  "name": "@slates-integration/scrapfly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

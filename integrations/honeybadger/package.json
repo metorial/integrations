@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-honeybadger",
+  "name": "@slates-integration/honeybadger",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lexoffice",
+  "name": "@slates-integration/lexoffice",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

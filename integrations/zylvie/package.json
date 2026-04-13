@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zylvie",
+  "name": "@slates-integration/zylvie",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

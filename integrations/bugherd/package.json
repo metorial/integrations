@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bugherd",
+  "name": "@slates-integration/bugherd",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

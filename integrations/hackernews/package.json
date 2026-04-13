@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hacker-news",
+  "name": "@slates-integration/hacker-news",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

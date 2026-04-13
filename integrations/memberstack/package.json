@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-memberstack",
+  "name": "@slates-integration/memberstack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

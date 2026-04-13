@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-slack",
+  "name": "@slates-integration/slack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-convex",
+  "name": "@slates-integration/convex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

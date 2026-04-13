@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-carbone",
+  "name": "@slates-integration/carbone",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

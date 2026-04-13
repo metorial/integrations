@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-maintainx",
+  "name": "@slates-integration/maintainx",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

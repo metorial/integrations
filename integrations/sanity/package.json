@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sanity",
+  "name": "@slates-integration/sanity",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-plaid",
+  "name": "@slates-integration/plaid",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-l2s",
+  "name": "@slates-integration/l2s",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

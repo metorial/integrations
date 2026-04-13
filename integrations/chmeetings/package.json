@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chmeetings",
+  "name": "@slates-integration/chmeetings",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

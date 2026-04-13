@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ocrspace",
+  "name": "@slates-integration/ocrspace",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

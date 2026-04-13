@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-leadboxer",
+  "name": "@slates-integration/leadboxer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

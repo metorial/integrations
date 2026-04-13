@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-streamtime",
+  "name": "@slates-integration/streamtime",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

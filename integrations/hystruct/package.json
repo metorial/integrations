@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hystruct",
+  "name": "@slates-integration/hystruct",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

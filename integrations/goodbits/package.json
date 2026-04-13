@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-goodbits",
+  "name": "@slates-integration/goodbits",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

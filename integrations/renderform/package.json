@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-renderform",
+  "name": "@slates-integration/renderform",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

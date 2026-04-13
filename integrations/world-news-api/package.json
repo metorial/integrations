@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-world-news-api",
+  "name": "@slates-integration/world-news-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

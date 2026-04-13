@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-azure-repos",
+  "name": "@slates-integration/azure-repos",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

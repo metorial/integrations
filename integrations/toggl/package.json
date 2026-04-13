@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-toggl",
+  "name": "@slates-integration/toggl",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

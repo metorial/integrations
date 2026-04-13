@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-breathe-hr",
+  "name": "@slates-integration/breathe-hr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

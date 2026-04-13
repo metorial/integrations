@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-21risk",
+  "name": "@slates-integration/21risk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

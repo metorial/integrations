@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-woocommerce",
+  "name": "@slates-integration/woocommerce",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

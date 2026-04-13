@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cisco-webex",
+  "name": "@slates-integration/cisco-webex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

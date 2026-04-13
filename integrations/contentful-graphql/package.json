@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-contentful-graphql",
+  "name": "@slates-integration/contentful-graphql",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

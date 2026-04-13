@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendbird-ai-chatbot",
+  "name": "@slates-integration/sendbird-ai-chatbot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

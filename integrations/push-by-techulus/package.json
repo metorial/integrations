@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-push-by-techulus",
+  "name": "@slates-integration/push-by-techulus",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

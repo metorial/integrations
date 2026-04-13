@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-youtube-analytics",
+  "name": "@slates-integration/youtube-analytics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

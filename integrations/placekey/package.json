@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-placekey",
+  "name": "@slates-integration/placekey",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

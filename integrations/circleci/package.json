@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-circleci",
+  "name": "@slates-integration/circleci",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

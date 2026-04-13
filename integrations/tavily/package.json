@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tavily",
+  "name": "@slates-integration/tavily",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-optimoroute",
+  "name": "@slates-integration/optimoroute",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

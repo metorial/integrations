@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gamma",
+  "name": "@slates-integration/gamma",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

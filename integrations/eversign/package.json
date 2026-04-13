@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-eversign",
+  "name": "@slates-integration/eversign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

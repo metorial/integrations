@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kadoa",
+  "name": "@slates-integration/kadoa",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

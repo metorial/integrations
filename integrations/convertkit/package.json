@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-convertkit",
+  "name": "@slates-integration/convertkit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

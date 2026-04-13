@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ollama",
+  "name": "@slates-integration/ollama",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

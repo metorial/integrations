@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-evernote",
+  "name": "@slates-integration/evernote",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

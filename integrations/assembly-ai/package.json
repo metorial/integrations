@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-assemblyai",
+  "name": "@slates-integration/assemblyai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-imgix",
+  "name": "@slates-integration/imgix",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

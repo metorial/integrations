@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-miro",
+  "name": "@slates-integration/miro",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

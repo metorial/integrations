@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tinyurl",
+  "name": "@slates-integration/tinyurl",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

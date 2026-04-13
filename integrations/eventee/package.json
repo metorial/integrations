@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-eventee",
+  "name": "@slates-integration/eventee",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

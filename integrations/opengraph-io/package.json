@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-opengraphio",
+  "name": "@slates-integration/opengraphio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

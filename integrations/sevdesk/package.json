@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sevdesk",
+  "name": "@slates-integration/sevdesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

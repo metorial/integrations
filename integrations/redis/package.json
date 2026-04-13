@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-redis",
+  "name": "@slates-integration/redis",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

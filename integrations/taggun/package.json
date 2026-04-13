@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-taggun",
+  "name": "@slates-integration/taggun",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

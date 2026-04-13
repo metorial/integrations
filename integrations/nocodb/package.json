@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nocodb",
+  "name": "@slates-integration/nocodb",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

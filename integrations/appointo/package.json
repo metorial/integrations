@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-appointo",
+  "name": "@slates-integration/appointo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

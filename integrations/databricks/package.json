@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-databricks",
+  "name": "@slates-integration/databricks",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

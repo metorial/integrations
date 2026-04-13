@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-telegram",
+  "name": "@slates-integration/telegram",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

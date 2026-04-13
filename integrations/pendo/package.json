@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pendo",
+  "name": "@slates-integration/pendo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

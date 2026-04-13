@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-box",
+  "name": "@slates-integration/box",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

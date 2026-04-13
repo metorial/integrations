@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-invoice",
+  "name": "@slates-integration/zoho-invoice",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

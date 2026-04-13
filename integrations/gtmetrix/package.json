@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gtmetrix",
+  "name": "@slates-integration/gtmetrix",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

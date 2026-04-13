@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-raisely",
+  "name": "@slates-integration/raisely",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

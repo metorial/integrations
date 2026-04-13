@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mixmax",
+  "name": "@slates-integration/mixmax",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

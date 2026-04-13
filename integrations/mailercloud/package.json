@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailercloud",
+  "name": "@slates-integration/mailercloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

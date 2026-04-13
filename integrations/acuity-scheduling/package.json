@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-acuity-scheduling",
+  "name": "@slates-integration/acuity-scheduling",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

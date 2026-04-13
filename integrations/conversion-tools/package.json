@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-conversion-tools",
+  "name": "@slates-integration/conversion-tools",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kommo",
+  "name": "@slates-integration/kommo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

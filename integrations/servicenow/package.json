@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-servicenow",
+  "name": "@slates-integration/servicenow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

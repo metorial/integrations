@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-niftyimages",
+  "name": "@slates-integration/niftyimages",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

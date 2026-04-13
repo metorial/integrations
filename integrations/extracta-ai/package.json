@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-extractaai",
+  "name": "@slates-integration/extractaai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aeroleads",
+  "name": "@slates-integration/aeroleads",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

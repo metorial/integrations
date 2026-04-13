@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-railway",
+  "name": "@slates-integration/railway",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

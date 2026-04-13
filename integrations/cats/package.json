@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cats",
+  "name": "@slates-integration/cats",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

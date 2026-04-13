@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scrapingbee",
+  "name": "@slates-integration/scrapingbee",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

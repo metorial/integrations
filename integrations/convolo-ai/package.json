@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-convolo-ai",
+  "name": "@slates-integration/convolo-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

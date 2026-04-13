@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-deepgram",
+  "name": "@slates-integration/deepgram",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

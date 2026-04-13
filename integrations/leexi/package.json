@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-leexi",
+  "name": "@slates-integration/leexi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

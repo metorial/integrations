@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-certifier",
+  "name": "@slates-integration/certifier",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

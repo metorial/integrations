@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cuttly",
+  "name": "@slates-integration/cuttly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

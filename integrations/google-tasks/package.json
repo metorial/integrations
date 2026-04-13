@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-tasks",
+  "name": "@slates-integration/google-tasks",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

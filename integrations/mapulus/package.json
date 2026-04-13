@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mapulus",
+  "name": "@slates-integration/mapulus",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

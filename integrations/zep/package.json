@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zep",
+  "name": "@slates-integration/zep",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shotstack",
+  "name": "@slates-integration/shotstack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

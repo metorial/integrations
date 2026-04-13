@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-opensea",
+  "name": "@slates-integration/opensea",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

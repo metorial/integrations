@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-freeagent",
+  "name": "@slates-integration/freeagent",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

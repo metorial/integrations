@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-getprospect",
+  "name": "@slates-integration/getprospect",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

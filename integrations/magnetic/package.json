@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-magnetic",
+  "name": "@slates-integration/magnetic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-formsite",
+  "name": "@slates-integration/formsite",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

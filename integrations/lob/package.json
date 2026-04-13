@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lob",
+  "name": "@slates-integration/lob",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

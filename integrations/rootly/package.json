@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rootly",
+  "name": "@slates-integration/rootly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

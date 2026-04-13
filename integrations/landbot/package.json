@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-landbot",
+  "name": "@slates-integration/landbot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

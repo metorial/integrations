@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-savvycal",
+  "name": "@slates-integration/savvycal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pexels",
+  "name": "@slates-integration/pexels",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

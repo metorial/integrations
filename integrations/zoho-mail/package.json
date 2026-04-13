@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-mail",
+  "name": "@slates-integration/zoho-mail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onenote",
+  "name": "@slates-integration/onenote",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

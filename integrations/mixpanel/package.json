@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mixpanel",
+  "name": "@slates-integration/mixpanel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

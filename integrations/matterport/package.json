@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-matterport",
+  "name": "@slates-integration/matterport",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

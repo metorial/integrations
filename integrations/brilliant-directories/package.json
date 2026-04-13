@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-brilliant-directories",
+  "name": "@slates-integration/brilliant-directories",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

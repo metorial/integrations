@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-timely",
+  "name": "@slates-integration/timely",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

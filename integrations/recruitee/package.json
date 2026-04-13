@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-recruitee",
+  "name": "@slates-integration/recruitee",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

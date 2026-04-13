@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shopify",
+  "name": "@slates-integration/shopify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

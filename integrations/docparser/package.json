@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docparser",
+  "name": "@slates-integration/docparser",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

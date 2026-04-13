@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-reddit-ads",
+  "name": "@slates-integration/reddit-ads",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coinbase",
+  "name": "@slates-integration/coinbase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-calendarhero",
+  "name": "@slates-integration/calendarhero",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

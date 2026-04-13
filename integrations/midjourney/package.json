@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-midjourney",
+  "name": "@slates-integration/midjourney",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

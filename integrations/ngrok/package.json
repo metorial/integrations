@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ngrok",
+  "name": "@slates-integration/ngrok",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

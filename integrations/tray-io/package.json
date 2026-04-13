@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-trayio",
+  "name": "@slates-integration/trayio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

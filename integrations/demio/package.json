@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-demio",
+  "name": "@slates-integration/demio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

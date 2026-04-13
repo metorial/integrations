@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cloudconvert",
+  "name": "@slates-integration/cloudconvert",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

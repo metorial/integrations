@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-geocodio",
+  "name": "@slates-integration/geocodio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

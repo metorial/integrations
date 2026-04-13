@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-blocknative",
+  "name": "@slates-integration/blocknative",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

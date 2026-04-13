@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lemon-squeezy",
+  "name": "@slates-integration/lemon-squeezy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

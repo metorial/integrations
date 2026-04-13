@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cabinpanda",
+  "name": "@slates-integration/cabinpanda",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

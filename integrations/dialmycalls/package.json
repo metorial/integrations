@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dialmycalls",
+  "name": "@slates-integration/dialmycalls",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

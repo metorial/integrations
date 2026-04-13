@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-addressfinder",
+  "name": "@slates-integration/addressfinder",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

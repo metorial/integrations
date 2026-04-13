@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-html-to-image",
+  "name": "@slates-integration/html-to-image",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

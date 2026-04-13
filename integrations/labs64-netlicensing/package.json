@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-labs64-netlicensing",
+  "name": "@slates-integration/labs64-netlicensing",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

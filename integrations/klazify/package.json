@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-klazify",
+  "name": "@slates-integration/klazify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

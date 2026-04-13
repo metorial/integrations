@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sidetracker",
+  "name": "@slates-integration/sidetracker",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

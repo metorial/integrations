@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zixflow",
+  "name": "@slates-integration/zixflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

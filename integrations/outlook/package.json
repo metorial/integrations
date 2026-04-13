@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-microsoft-outlook",
+  "name": "@slates-integration/microsoft-outlook",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

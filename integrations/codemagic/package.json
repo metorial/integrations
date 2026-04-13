@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-codemagic",
+  "name": "@slates-integration/codemagic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

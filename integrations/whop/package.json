@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-whop",
+  "name": "@slates-integration/whop",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chatfai",
+  "name": "@slates-integration/chatfai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

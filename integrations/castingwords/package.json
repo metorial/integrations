@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-castingwords",
+  "name": "@slates-integration/castingwords",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

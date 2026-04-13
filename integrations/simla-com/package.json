@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-simlacom",
+  "name": "@slates-integration/simlacom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

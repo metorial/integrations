@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-borneo",
+  "name": "@slates-integration/borneo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

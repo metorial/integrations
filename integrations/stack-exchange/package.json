@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stack-exchange",
+  "name": "@slates-integration/stack-exchange",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-callingly",
+  "name": "@slates-integration/callingly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

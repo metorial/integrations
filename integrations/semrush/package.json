@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-semrush",
+  "name": "@slates-integration/semrush",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

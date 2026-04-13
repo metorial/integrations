@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-radar",
+  "name": "@slates-integration/radar",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailchimp",
+  "name": "@slates-integration/mailchimp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

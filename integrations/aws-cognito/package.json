@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-cognito",
+  "name": "@slates-integration/aws-cognito",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

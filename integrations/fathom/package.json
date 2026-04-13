@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fathom",
+  "name": "@slates-integration/fathom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

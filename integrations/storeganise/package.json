@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-storeganise",
+  "name": "@slates-integration/storeganise",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-triggercmd",
+  "name": "@slates-integration/triggercmd",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

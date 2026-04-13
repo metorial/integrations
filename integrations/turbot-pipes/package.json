@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-turbot-pipes",
+  "name": "@slates-integration/turbot-pipes",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-segment",
+  "name": "@slates-integration/segment",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

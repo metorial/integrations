@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-iqair-airvisual",
+  "name": "@slates-integration/iqair-airvisual",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

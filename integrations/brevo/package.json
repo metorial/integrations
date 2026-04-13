@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-brevo",
+  "name": "@slates-integration/brevo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

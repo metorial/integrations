@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mistral-ai",
+  "name": "@slates-integration/mistral-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

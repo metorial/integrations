@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-remarkety",
+  "name": "@slates-integration/remarkety",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

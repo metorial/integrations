@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-seat-geek",
+  "name": "@slates-integration/seat-geek",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

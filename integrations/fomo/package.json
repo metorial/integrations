@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fomo",
+  "name": "@slates-integration/fomo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

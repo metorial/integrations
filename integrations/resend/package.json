@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-resend",
+  "name": "@slates-integration/resend",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

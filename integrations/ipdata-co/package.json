@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ipdataco",
+  "name": "@slates-integration/ipdataco",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

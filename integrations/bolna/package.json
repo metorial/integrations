@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bolna",
+  "name": "@slates-integration/bolna",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

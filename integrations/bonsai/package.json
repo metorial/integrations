@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bonsai",
+  "name": "@slates-integration/bonsai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

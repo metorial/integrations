@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lodgify",
+  "name": "@slates-integration/lodgify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

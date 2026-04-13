@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-cloud-storage",
+  "name": "@slates-integration/google-cloud-storage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

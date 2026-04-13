@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wati",
+  "name": "@slates-integration/wati",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

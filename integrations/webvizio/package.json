@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-webvizio",
+  "name": "@slates-integration/webvizio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

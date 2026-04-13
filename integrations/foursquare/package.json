@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-foursquare",
+  "name": "@slates-integration/foursquare",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

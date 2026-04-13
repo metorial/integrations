@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-datadog",
+  "name": "@slates-integration/datadog",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

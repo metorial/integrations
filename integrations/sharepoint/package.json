@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sharepoint",
+  "name": "@slates-integration/sharepoint",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

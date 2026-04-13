@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-simplesat",
+  "name": "@slates-integration/simplesat",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

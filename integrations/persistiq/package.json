@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-persistiq",
+  "name": "@slates-integration/persistiq",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

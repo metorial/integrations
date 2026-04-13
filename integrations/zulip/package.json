@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zulip",
+  "name": "@slates-integration/zulip",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

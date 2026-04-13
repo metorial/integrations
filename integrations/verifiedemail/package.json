@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-verifiedemail",
+  "name": "@slates-integration/verifiedemail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

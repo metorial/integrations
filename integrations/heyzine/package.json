@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-heyzine",
+  "name": "@slates-integration/heyzine",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

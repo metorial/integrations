@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-azure-blob-storage",
+  "name": "@slates-integration/azure-blob-storage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

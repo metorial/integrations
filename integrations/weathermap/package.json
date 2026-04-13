@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-openweathermap",
+  "name": "@slates-integration/openweathermap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

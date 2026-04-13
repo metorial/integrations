@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-postmark",
+  "name": "@slates-integration/postmark",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-docs",
+  "name": "@slates-integration/google-docs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

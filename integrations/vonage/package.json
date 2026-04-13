@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-vonage",
+  "name": "@slates-integration/vonage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

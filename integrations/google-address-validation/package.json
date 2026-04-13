@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-address-validation",
+  "name": "@slates-integration/google-address-validation",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-photos",
+  "name": "@slates-integration/google-photos",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

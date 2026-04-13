@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-datascope",
+  "name": "@slates-integration/datascope",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

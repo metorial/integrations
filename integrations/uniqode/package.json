@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-uniqode",
+  "name": "@slates-integration/uniqode",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

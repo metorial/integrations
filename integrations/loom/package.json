@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-loom",
+  "name": "@slates-integration/loom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

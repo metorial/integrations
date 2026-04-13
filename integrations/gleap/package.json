@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gleap",
+  "name": "@slates-integration/gleap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

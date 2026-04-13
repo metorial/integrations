@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-updownio",
+  "name": "@slates-integration/updownio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

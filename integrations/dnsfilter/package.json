@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dnsfilter",
+  "name": "@slates-integration/dnsfilter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

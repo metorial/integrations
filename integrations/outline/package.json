@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-outline",
+  "name": "@slates-integration/outline",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

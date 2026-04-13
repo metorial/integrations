@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-egnyte",
+  "name": "@slates-integration/egnyte",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

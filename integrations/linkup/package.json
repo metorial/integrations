@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linkup",
+  "name": "@slates-integration/linkup",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

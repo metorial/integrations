@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-heroku",
+  "name": "@slates-integration/heroku",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

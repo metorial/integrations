@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dromo",
+  "name": "@slates-integration/dromo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

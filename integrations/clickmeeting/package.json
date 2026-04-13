@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-clickmeeting",
+  "name": "@slates-integration/clickmeeting",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

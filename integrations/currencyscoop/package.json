@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-currencyscoop",
+  "name": "@slates-integration/currencyscoop",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

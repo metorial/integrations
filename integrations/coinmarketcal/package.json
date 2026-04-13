@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coinmarketcal",
+  "name": "@slates-integration/coinmarketcal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

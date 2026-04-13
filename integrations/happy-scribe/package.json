@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-happy-scribe",
+  "name": "@slates-integration/happy-scribe",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

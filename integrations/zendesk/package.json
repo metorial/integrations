@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zendesk",
+  "name": "@slates-integration/zendesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

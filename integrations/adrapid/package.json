@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-adrapid",
+  "name": "@slates-integration/adrapid",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

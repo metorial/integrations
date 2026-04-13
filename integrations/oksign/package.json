@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-oksign",
+  "name": "@slates-integration/oksign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

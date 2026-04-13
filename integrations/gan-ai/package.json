@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ganai",
+  "name": "@slates-integration/ganai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

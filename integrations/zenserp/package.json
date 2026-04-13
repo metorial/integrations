@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zenserp",
+  "name": "@slates-integration/zenserp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

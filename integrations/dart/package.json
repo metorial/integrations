@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dart",
+  "name": "@slates-integration/dart",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

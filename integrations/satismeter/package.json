@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-satismeter",
+  "name": "@slates-integration/satismeter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

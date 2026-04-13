@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chatwork",
+  "name": "@slates-integration/chatwork",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

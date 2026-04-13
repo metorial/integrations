@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-giphy",
+  "name": "@slates-integration/giphy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

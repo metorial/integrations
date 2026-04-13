@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-campayn",
+  "name": "@slates-integration/campayn",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

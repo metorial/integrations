@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ashby",
+  "name": "@slates-integration/ashby",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

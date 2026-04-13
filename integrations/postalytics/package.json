@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-postalytics",
+  "name": "@slates-integration/postalytics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

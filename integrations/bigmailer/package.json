@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bigmailer",
+  "name": "@slates-integration/bigmailer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

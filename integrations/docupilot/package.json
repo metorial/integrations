@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docupilot",
+  "name": "@slates-integration/docupilot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

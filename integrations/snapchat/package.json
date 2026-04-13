@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-snapchat",
+  "name": "@slates-integration/snapchat",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

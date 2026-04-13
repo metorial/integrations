@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-abyssale",
+  "name": "@slates-integration/abyssale",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

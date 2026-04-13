@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ibm-x-force-exchange",
+  "name": "@slates-integration/ibm-x-force-exchange",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

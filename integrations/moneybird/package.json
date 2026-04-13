@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-moneybird",
+  "name": "@slates-integration/moneybird",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

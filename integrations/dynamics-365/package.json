@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dynamics-365",
+  "name": "@slates-integration/dynamics-365",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

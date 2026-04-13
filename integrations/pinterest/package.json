@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pinterest",
+  "name": "@slates-integration/pinterest",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ip2location",
+  "name": "@slates-integration/ip2location",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

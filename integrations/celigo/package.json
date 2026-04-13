@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-celigo",
+  "name": "@slates-integration/celigo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

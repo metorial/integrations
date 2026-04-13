@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-benchmark-email",
+  "name": "@slates-integration/benchmark-email",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

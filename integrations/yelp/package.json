@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-yelp",
+  "name": "@slates-integration/yelp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

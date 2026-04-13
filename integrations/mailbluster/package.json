@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailbluster",
+  "name": "@slates-integration/mailbluster",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-canva",
+  "name": "@slates-integration/canva",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

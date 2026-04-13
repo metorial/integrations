@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-goody",
+  "name": "@slates-integration/goody",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-api-sports",
+  "name": "@slates-integration/api-sports",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-d2l-brightspace",
+  "name": "@slates-integration/d2l-brightspace",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

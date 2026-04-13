@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cults",
+  "name": "@slates-integration/cults",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

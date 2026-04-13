@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-blazemeter",
+  "name": "@slates-integration/blazemeter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

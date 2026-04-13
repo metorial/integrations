@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-browserless",
+  "name": "@slates-integration/browserless",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

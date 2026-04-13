@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-woodpecker-co",
+  "name": "@slates-integration/woodpecker-co",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

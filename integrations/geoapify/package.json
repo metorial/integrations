@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-geoapify",
+  "name": "@slates-integration/geoapify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

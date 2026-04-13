@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-algolia",
+  "name": "@slates-integration/algolia",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

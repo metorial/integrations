@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-eodhd-apis",
+  "name": "@slates-integration/eodhd-apis",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

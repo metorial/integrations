@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-genderapiio",
+  "name": "@slates-integration/genderapiio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

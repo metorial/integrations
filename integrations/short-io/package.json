@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-short-io",
+  "name": "@slates-integration/short-io",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

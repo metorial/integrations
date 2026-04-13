@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rocketreach",
+  "name": "@slates-integration/rocketreach",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

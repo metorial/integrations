@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailgun",
+  "name": "@slates-integration/mailgun",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

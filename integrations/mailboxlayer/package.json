@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailboxlayer",
+  "name": "@slates-integration/mailboxlayer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

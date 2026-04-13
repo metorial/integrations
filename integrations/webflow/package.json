@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-webflow",
+  "name": "@slates-integration/webflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

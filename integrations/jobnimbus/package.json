@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jobnimbus",
+  "name": "@slates-integration/jobnimbus",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

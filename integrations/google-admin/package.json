@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-admin",
+  "name": "@slates-integration/google-admin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

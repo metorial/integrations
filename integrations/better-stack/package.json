@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-better-stack",
+  "name": "@slates-integration/better-stack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jigsawstack",
+  "name": "@slates-integration/jigsawstack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

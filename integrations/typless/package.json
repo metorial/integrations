@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-typless",
+  "name": "@slates-integration/typless",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

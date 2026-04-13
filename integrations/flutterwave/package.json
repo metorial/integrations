@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-flutterwave",
+  "name": "@slates-integration/flutterwave",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

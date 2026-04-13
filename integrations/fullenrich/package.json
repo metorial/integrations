@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fullenrich",
+  "name": "@slates-integration/fullenrich",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

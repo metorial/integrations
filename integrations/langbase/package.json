@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-langbase",
+  "name": "@slates-integration/langbase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

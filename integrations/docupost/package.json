@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docupost",
+  "name": "@slates-integration/docupost",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

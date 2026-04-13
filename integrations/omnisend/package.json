@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-omnisend",
+  "name": "@slates-integration/omnisend",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

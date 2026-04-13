@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-simplero",
+  "name": "@slates-integration/simplero",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

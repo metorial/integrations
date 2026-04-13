@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gigasheet",
+  "name": "@slates-integration/gigasheet",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

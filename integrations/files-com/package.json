@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-filescom",
+  "name": "@slates-integration/filescom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

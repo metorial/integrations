@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pdfless",
+  "name": "@slates-integration/pdfless",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

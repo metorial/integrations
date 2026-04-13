@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-callerapi",
+  "name": "@slates-integration/callerapi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

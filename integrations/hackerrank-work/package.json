@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hackerrank-work",
+  "name": "@slates-integration/hackerrank-work",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

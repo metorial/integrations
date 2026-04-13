@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-appdrag",
+  "name": "@slates-integration/appdrag",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

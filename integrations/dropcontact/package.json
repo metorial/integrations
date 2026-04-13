@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dropcontact",
+  "name": "@slates-integration/dropcontact",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

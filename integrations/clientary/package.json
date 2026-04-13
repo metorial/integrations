@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-clientary",
+  "name": "@slates-integration/clientary",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-attio",
+  "name": "@slates-integration/attio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

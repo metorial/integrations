@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stitch",
+  "name": "@slates-integration/stitch",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

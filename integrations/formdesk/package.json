@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-formdesk",
+  "name": "@slates-integration/formdesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

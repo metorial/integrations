@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-quickbooks",
+  "name": "@slates-integration/quickbooks",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

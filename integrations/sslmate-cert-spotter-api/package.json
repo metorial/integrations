@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sslmate-cert-spotter-api",
+  "name": "@slates-integration/sslmate-cert-spotter-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

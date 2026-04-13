@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-victorops",
+  "name": "@slates-integration/victorops",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

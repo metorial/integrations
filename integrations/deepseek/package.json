@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-deepseek",
+  "name": "@slates-integration/deepseek",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hightouch",
+  "name": "@slates-integration/hightouch",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

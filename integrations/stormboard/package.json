@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stormboard",
+  "name": "@slates-integration/stormboard",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

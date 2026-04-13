@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ticktick",
+  "name": "@slates-integration/ticktick",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-microsoft-clarity",
+  "name": "@slates-integration/microsoft-clarity",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

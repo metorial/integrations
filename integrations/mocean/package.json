@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mocean",
+  "name": "@slates-integration/mocean",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

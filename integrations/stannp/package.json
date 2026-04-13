@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stannp",
+  "name": "@slates-integration/stannp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

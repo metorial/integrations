@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pipedrive",
+  "name": "@slates-integration/pipedrive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

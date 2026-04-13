@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendbird",
+  "name": "@slates-integration/sendbird",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

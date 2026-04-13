@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dailybot",
+  "name": "@slates-integration/dailybot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

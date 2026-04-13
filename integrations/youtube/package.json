@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-youtube",
+  "name": "@slates-integration/youtube",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

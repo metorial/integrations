@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bouncer",
+  "name": "@slates-integration/bouncer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

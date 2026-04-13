@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-builtwith",
+  "name": "@slates-integration/builtwith",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

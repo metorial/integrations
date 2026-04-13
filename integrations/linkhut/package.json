@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linkhut",
+  "name": "@slates-integration/linkhut",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

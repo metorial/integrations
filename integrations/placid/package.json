@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-placid",
+  "name": "@slates-integration/placid",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

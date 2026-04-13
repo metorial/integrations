@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-passslot",
+  "name": "@slates-integration/passslot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

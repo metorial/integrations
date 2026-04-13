@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sitespeakai",
+  "name": "@slates-integration/sitespeakai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

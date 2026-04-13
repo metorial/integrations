@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-planetscale",
+  "name": "@slates-integration/planetscale",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

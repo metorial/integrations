@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-postman",
+  "name": "@slates-integration/postman",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

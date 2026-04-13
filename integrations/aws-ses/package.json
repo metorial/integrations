@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-ses",
+  "name": "@slates-integration/aws-ses",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

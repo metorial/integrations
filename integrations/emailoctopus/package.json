@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-emailoctopus",
+  "name": "@slates-integration/emailoctopus",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

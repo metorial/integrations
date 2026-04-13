@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-copper",
+  "name": "@slates-integration/copper",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

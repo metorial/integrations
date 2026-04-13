@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fidel-api",
+  "name": "@slates-integration/fidel-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

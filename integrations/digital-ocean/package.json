@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-digitalocean",
+  "name": "@slates-integration/digitalocean",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

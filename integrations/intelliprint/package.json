@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-intelliprint",
+  "name": "@slates-integration/intelliprint",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

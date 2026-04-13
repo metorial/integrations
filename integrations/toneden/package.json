@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-toneden",
+  "name": "@slates-integration/toneden",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

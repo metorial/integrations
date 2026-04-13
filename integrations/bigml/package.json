@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bigml",
+  "name": "@slates-integration/bigml",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

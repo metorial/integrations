@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-anthropic",
+  "name": "@slates-integration/anthropic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

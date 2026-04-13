@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pdf-apiio",
+  "name": "@slates-integration/pdf-apiio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

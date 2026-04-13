@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sender",
+  "name": "@slates-integration/sender",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

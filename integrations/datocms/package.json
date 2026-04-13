@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-datocms",
+  "name": "@slates-integration/datocms",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pingdom",
+  "name": "@slates-integration/pingdom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

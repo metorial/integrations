@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-spondyr",
+  "name": "@slates-integration/spondyr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

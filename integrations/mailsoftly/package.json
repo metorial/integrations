@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailsoftly",
+  "name": "@slates-integration/mailsoftly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

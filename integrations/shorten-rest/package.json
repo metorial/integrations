@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shortenrest",
+  "name": "@slates-integration/shortenrest",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

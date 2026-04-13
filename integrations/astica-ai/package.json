@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-astica-ai",
+  "name": "@slates-integration/astica-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

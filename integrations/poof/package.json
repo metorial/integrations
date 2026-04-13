@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-poof",
+  "name": "@slates-integration/poof",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

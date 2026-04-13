@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-teamwork",
+  "name": "@slates-integration/teamwork",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

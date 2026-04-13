@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-weaviate",
+  "name": "@slates-integration/weaviate",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

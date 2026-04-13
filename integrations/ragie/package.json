@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ragie",
+  "name": "@slates-integration/ragie",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

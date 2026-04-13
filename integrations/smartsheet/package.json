@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-smartsheet",
+  "name": "@slates-integration/smartsheet",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

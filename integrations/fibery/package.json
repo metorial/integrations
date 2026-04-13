@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fibery",
+  "name": "@slates-integration/fibery",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

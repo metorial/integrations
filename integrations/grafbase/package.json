@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-grafbase",
+  "name": "@slates-integration/grafbase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

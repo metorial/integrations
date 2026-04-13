@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-givebutter",
+  "name": "@slates-integration/givebutter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

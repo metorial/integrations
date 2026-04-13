@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-cloud-functions",
+  "name": "@slates-integration/google-cloud-functions",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

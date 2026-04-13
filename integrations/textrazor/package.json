@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-textrazor",
+  "name": "@slates-integration/textrazor",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

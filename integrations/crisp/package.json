@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-crisp",
+  "name": "@slates-integration/crisp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

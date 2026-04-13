@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-runpod",
+  "name": "@slates-integration/runpod",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

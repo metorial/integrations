@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-apaleo",
+  "name": "@slates-integration/apaleo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

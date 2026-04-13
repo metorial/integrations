@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-proxiedmail",
+  "name": "@slates-integration/proxiedmail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-drip",
+  "name": "@slates-integration/drip",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

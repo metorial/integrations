@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-globalping",
+  "name": "@slates-integration/globalping",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-brex",
+  "name": "@slates-integration/brex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

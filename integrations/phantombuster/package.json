@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-phantombuster",
+  "name": "@slates-integration/phantombuster",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

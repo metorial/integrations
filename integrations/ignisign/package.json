@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ignisign",
+  "name": "@slates-integration/ignisign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-basin",
+  "name": "@slates-integration/basin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

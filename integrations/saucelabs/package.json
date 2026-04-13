@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-saucelabs",
+  "name": "@slates-integration/saucelabs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

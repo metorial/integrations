@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-safetyculture",
+  "name": "@slates-integration/safetyculture",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

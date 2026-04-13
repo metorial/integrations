@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-unione",
+  "name": "@slates-integration/unione",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

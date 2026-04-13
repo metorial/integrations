@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-trello",
+  "name": "@slates-integration/trello",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

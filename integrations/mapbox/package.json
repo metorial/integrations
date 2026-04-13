@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mapbox",
+  "name": "@slates-integration/mapbox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-timelinesai",
+  "name": "@slates-integration/timelinesai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

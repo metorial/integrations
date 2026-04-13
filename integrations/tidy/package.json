@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tidy",
+  "name": "@slates-integration/tidy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

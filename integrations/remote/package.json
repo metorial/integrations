@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-remote",
+  "name": "@slates-integration/remote",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

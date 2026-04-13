@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cardly",
+  "name": "@slates-integration/cardly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

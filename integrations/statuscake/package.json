@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-statuscake",
+  "name": "@slates-integration/statuscake",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

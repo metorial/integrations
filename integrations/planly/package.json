@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-planly",
+  "name": "@slates-integration/planly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

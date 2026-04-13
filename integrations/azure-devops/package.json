@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-azure-devops",
+  "name": "@slates-integration/azure-devops",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

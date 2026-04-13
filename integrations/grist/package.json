@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-grist",
+  "name": "@slates-integration/grist",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

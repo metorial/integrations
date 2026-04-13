@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendspark",
+  "name": "@slates-integration/sendspark",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

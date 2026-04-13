@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-loopsso",
+  "name": "@slates-integration/loopsso",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

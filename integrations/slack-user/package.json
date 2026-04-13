@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-slack-user",
+  "name": "@slates-integration/slack-user",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

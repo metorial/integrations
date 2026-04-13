@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pipeline-crm",
+  "name": "@slates-integration/pipeline-crm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

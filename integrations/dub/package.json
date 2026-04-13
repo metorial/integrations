@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dub",
+  "name": "@slates-integration/dub",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

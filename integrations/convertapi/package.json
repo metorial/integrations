@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-convertapi",
+  "name": "@slates-integration/convertapi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

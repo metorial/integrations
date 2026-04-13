@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-braze",
+  "name": "@slates-integration/braze",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

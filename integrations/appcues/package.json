@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-appcues",
+  "name": "@slates-integration/appcues",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

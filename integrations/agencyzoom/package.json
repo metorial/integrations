@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agencyzoom",
+  "name": "@slates-integration/agencyzoom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

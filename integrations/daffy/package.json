@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-daffy",
+  "name": "@slates-integration/daffy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pdfco",
+  "name": "@slates-integration/pdfco",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

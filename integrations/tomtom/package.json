@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tomtom",
+  "name": "@slates-integration/tomtom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

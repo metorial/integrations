@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-harvest",
+  "name": "@slates-integration/harvest",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

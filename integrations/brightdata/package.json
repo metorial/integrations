@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bright-data",
+  "name": "@slates-integration/bright-data",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

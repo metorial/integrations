@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-flowiseai",
+  "name": "@slates-integration/flowiseai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

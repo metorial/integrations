@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-findymail",
+  "name": "@slates-integration/findymail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

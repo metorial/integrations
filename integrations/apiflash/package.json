@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-apiflash",
+  "name": "@slates-integration/apiflash",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

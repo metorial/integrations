@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-customerio",
+  "name": "@slates-integration/customerio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

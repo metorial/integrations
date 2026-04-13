@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-smugmug",
+  "name": "@slates-integration/smugmug",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

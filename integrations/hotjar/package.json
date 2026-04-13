@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hotjar",
+  "name": "@slates-integration/hotjar",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-etermin",
+  "name": "@slates-integration/etermin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

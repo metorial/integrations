@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tripadvisor",
+  "name": "@slates-integration/tripadvisor",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

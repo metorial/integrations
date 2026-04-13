@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-strava",
+  "name": "@slates-integration/strava",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

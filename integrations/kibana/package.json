@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kibana",
+  "name": "@slates-integration/kibana",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

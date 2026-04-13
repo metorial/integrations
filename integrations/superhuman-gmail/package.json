@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-superhuman-gmail",
+  "name": "@slates-integration/superhuman-gmail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

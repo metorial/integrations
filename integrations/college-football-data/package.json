@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-college-football-data",
+  "name": "@slates-integration/college-football-data",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

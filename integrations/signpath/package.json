@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-signpath",
+  "name": "@slates-integration/signpath",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

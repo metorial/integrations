@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-laposta",
+  "name": "@slates-integration/laposta",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

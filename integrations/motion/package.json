@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-motion",
+  "name": "@slates-integration/motion",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

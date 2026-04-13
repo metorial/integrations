@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-ads",
+  "name": "@slates-integration/google-ads",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

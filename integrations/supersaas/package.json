@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-supersaas",
+  "name": "@slates-integration/supersaas",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

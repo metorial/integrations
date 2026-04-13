@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fivetran",
+  "name": "@slates-integration/fivetran",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

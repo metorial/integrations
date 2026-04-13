@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-recallai",
+  "name": "@slates-integration/recallai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coinmarketcap",
+  "name": "@slates-integration/coinmarketcap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

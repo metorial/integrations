@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-activetrail",
+  "name": "@slates-integration/activetrail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

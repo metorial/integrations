@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docuseal",
+  "name": "@slates-integration/docuseal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-anonyflow",
+  "name": "@slates-integration/anonyflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

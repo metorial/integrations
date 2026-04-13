@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scrapegraph-ai",
+  "name": "@slates-integration/scrapegraph-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

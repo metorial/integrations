@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coda",
+  "name": "@slates-integration/coda",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

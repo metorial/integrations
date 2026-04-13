@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-apiverve",
+  "name": "@slates-integration/apiverve",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

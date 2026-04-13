@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-veo",
+  "name": "@slates-integration/veo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

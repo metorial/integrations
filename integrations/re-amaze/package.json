@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-reamaze",
+  "name": "@slates-integration/reamaze",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

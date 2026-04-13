@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-forcemanager",
+  "name": "@slates-integration/forcemanager",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

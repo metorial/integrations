@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-doodle",
+  "name": "@slates-integration/doodle",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

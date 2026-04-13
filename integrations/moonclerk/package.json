@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-moonclerk",
+  "name": "@slates-integration/moonclerk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

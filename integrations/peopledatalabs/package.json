@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-people-data-labs",
+  "name": "@slates-integration/people-data-labs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

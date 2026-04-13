@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-async-interview",
+  "name": "@slates-integration/async-interview",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

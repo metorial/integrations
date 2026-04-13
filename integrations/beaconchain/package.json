@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-beaconchain",
+  "name": "@slates-integration/beaconchain",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

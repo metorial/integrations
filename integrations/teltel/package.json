@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-teltel",
+  "name": "@slates-integration/teltel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

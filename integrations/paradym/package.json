@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-paradym",
+  "name": "@slates-integration/paradym",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

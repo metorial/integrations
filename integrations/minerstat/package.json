@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-minerstat",
+  "name": "@slates-integration/minerstat",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

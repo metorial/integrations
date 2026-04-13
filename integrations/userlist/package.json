@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-userlist",
+  "name": "@slates-integration/userlist",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

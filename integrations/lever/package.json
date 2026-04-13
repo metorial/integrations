@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lever",
+  "name": "@slates-integration/lever",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-resistant-ai",
+  "name": "@slates-integration/resistant-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

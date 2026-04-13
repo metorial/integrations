@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-contentful",
+  "name": "@slates-integration/contentful",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

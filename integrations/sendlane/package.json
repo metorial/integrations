@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendlane",
+  "name": "@slates-integration/sendlane",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

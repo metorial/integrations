@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-classroom",
+  "name": "@slates-integration/google-classroom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

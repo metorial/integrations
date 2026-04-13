@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sendfox",
+  "name": "@slates-integration/sendfox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

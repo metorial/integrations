@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-keenio",
+  "name": "@slates-integration/keenio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

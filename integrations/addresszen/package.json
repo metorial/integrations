@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-addresszen",
+  "name": "@slates-integration/addresszen",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

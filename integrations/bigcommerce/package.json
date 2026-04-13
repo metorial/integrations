@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bigcommerce",
+  "name": "@slates-integration/bigcommerce",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

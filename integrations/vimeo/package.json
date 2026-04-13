@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-vimeo",
+  "name": "@slates-integration/vimeo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

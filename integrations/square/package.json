@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-square",
+  "name": "@slates-integration/square",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

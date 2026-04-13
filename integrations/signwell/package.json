@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-signwell",
+  "name": "@slates-integration/signwell",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docugenerate",
+  "name": "@slates-integration/docugenerate",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

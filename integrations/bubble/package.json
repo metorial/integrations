@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bubble",
+  "name": "@slates-integration/bubble",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

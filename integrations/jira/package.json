@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jira",
+  "name": "@slates-integration/jira",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

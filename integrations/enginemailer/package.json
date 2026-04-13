@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-enginemailer",
+  "name": "@slates-integration/enginemailer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

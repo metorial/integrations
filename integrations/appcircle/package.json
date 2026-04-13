@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-appcircle",
+  "name": "@slates-integration/appcircle",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

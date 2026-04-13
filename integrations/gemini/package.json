@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gemini",
+  "name": "@slates-integration/gemini",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

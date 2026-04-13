@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gitea",
+  "name": "@slates-integration/gitea",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

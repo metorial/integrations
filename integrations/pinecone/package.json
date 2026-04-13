@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pinecone",
+  "name": "@slates-integration/pinecone",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docusign",
+  "name": "@slates-integration/docusign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

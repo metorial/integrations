@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stripe",
+  "name": "@slates-integration/stripe",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

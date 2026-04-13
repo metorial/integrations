@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sms-alert",
+  "name": "@slates-integration/sms-alert",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

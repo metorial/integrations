@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-storyblok",
+  "name": "@slates-integration/storyblok",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

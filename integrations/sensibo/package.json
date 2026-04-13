@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sensibo",
+  "name": "@slates-integration/sensibo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

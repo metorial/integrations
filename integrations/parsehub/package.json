@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-parsehub",
+  "name": "@slates-integration/parsehub",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

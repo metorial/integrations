@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-tag-manager",
+  "name": "@slates-integration/google-tag-manager",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

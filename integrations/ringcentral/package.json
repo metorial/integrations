@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ringcentral",
+  "name": "@slates-integration/ringcentral",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

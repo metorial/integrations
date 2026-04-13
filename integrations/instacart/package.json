@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-instacart",
+  "name": "@slates-integration/instacart",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

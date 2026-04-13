@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-census",
+  "name": "@slates-integration/census",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

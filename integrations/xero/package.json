@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-xero",
+  "name": "@slates-integration/xero",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

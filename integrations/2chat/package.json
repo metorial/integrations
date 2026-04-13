@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-2chat",
+  "name": "@slates-integration/2chat",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-flexisign",
+  "name": "@slates-integration/flexisign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

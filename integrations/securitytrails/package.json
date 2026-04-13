@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-securitytrails",
+  "name": "@slates-integration/securitytrails",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

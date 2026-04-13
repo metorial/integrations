@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-procfu",
+  "name": "@slates-integration/procfu",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

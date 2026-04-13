@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-keyword",
+  "name": "@slates-integration/keyword",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

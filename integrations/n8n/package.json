@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-n8n",
+  "name": "@slates-integration/n8n",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

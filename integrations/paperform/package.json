@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-paperform",
+  "name": "@slates-integration/paperform",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

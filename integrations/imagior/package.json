@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-imagior",
+  "name": "@slates-integration/imagior",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

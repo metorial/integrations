@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-alttextai",
+  "name": "@slates-integration/alttextai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

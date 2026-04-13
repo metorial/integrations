@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-kickbox",
+  "name": "@slates-integration/kickbox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-esputnik",
+  "name": "@slates-integration/esputnik",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

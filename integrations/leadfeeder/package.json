@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-leadfeeder",
+  "name": "@slates-integration/leadfeeder",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-canny",
+  "name": "@slates-integration/canny",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

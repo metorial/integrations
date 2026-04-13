@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rippling",
+  "name": "@slates-integration/rippling",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

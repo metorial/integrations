@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mopinion",
+  "name": "@slates-integration/mopinion",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

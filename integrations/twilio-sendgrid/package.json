@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-twilio-sendgrid",
+  "name": "@slates-integration/twilio-sendgrid",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

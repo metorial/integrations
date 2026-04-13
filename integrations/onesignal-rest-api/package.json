@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onesignal-rest-api",
+  "name": "@slates-integration/onesignal-rest-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

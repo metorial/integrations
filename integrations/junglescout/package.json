@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jungle-scout",
+  "name": "@slates-integration/jungle-scout",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

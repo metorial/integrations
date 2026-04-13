@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-beeminder",
+  "name": "@slates-integration/beeminder",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-sqs",
+  "name": "@slates-integration/aws-sqs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

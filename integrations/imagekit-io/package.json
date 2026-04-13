@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-imagekit",
+  "name": "@slates-integration/imagekit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

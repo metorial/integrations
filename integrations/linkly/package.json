@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linkly",
+  "name": "@slates-integration/linkly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

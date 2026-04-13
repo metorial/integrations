@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-affinda",
+  "name": "@slates-integration/affinda",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bookingmood",
+  "name": "@slates-integration/bookingmood",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

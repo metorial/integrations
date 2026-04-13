@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-asana",
+  "name": "@slates-integration/asana",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

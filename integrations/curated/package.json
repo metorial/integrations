@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-curated",
+  "name": "@slates-integration/curated",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

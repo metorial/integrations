@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-power-bi",
+  "name": "@slates-integration/power-bi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

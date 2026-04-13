@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-workato",
+  "name": "@slates-integration/workato",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

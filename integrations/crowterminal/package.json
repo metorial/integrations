@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-crowterminal",
+  "name": "@slates-integration/crowterminal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

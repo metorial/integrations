@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zerobounce",
+  "name": "@slates-integration/zerobounce",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

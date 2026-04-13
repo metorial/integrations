@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fixer",
+  "name": "@slates-integration/fixer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

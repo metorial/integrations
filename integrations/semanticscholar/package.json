@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-semantic-scholar",
+  "name": "@slates-integration/semantic-scholar",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

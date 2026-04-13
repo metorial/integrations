@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-deel",
+  "name": "@slates-integration/deel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

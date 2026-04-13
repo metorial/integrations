@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-decodo",
+  "name": "@slates-integration/decodo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

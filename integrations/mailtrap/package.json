@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailtrap",
+  "name": "@slates-integration/mailtrap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

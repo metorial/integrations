@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-excel-online",
+  "name": "@slates-integration/excel-online",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-folk",
+  "name": "@slates-integration/folk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

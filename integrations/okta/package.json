@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-okta",
+  "name": "@slates-integration/okta",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

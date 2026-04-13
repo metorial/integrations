@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-paystack",
+  "name": "@slates-integration/paystack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cohere",
+  "name": "@slates-integration/cohere",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

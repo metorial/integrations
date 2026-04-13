@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-auth0",
+  "name": "@slates-integration/auth0",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

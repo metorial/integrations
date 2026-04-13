@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-twitterx",
+  "name": "@slates-integration/twitterx",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

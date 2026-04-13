@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fingertip",
+  "name": "@slates-integration/fingertip",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

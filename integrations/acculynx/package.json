@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-acculynx",
+  "name": "@slates-integration/acculynx",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

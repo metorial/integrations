@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-serply",
+  "name": "@slates-integration/serply",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

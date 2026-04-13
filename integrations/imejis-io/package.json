@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-imejisio",
+  "name": "@slates-integration/imejisio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

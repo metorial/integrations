@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-meta-ads",
+  "name": "@slates-integration/meta-ads",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-activecampaign",
+  "name": "@slates-integration/activecampaign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

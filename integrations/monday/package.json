@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mondaycom",
+  "name": "@slates-integration/mondaycom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

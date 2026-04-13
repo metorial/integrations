@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-formcarry",
+  "name": "@slates-integration/formcarry",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

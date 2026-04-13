@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wave",
+  "name": "@slates-integration/wave",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-meet",
+  "name": "@slates-integration/google-meet",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

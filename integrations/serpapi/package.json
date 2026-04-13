@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-serpapi",
+  "name": "@slates-integration/serpapi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rollbar",
+  "name": "@slates-integration/rollbar",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

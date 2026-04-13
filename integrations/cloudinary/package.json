@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cloudinary",
+  "name": "@slates-integration/cloudinary",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

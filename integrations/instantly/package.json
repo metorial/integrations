@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-instantly",
+  "name": "@slates-integration/instantly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

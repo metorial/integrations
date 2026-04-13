@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-humanloop",
+  "name": "@slates-integration/humanloop",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoominfo",
+  "name": "@slates-integration/zoominfo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-writer",
+  "name": "@slates-integration/writer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

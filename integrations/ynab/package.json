@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ynab",
+  "name": "@slates-integration/ynab",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

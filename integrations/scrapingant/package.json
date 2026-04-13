@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scrapingant",
+  "name": "@slates-integration/scrapingant",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

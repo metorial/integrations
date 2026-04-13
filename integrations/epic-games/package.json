@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-epic-games",
+  "name": "@slates-integration/epic-games",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

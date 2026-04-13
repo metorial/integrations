@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-servicem8",
+  "name": "@slates-integration/servicem8",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chameleon",
+  "name": "@slates-integration/chameleon",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

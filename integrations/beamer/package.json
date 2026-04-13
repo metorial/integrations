@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-beamer",
+  "name": "@slates-integration/beamer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

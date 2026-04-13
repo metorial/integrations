@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linear",
+  "name": "@slates-integration/linear",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

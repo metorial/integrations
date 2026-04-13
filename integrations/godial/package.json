@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-godial",
+  "name": "@slates-integration/godial",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

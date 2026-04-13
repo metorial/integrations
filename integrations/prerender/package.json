@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-prerender",
+  "name": "@slates-integration/prerender",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-waboxapp",
+  "name": "@slates-integration/waboxapp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

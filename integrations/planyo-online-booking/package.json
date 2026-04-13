@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-planyo-online-booking",
+  "name": "@slates-integration/planyo-online-booking",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-documenso",
+  "name": "@slates-integration/documenso",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

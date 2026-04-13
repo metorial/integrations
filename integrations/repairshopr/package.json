@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-repairshopr",
+  "name": "@slates-integration/repairshopr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

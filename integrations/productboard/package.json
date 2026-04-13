@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-productboard",
+  "name": "@slates-integration/productboard",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

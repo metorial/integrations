@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-uptimerobot",
+  "name": "@slates-integration/uptimerobot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

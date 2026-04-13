@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-splitwise",
+  "name": "@slates-integration/splitwise",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

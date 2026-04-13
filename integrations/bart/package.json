@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bart",
+  "name": "@slates-integration/bart",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

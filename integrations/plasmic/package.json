@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-plasmic",
+  "name": "@slates-integration/plasmic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

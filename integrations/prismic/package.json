@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-prismic",
+  "name": "@slates-integration/prismic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

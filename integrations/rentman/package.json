@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rentman",
+  "name": "@slates-integration/rentman",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-retell-ai",
+  "name": "@slates-integration/retell-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-penpot",
+  "name": "@slates-integration/penpot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

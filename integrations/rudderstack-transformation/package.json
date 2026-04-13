@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rudderstack-transformation",
+  "name": "@slates-integration/rudderstack-transformation",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

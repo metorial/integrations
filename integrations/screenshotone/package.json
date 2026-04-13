@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-screenshotone",
+  "name": "@slates-integration/screenshotone",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

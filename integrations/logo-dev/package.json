@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-logodev",
+  "name": "@slates-integration/logodev",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

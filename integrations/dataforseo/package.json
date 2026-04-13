@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dataforseo",
+  "name": "@slates-integration/dataforseo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

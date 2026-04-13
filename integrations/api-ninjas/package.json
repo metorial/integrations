@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-api-ninjas",
+  "name": "@slates-integration/api-ninjas",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

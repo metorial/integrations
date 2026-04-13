@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-heap",
+  "name": "@slates-integration/heap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

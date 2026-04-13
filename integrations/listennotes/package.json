@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-listen-notes",
+  "name": "@slates-integration/listen-notes",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

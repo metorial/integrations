@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docker-hub",
+  "name": "@slates-integration/docker-hub",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

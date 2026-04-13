@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-calendly",
+  "name": "@slates-integration/calendly",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

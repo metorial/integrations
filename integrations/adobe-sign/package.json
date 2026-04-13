@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-adobe-sign",
+  "name": "@slates-integration/adobe-sign",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

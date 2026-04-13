@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-exa",
+  "name": "@slates-integration/exa",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

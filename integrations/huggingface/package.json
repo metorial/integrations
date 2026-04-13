@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hugging-face",
+  "name": "@slates-integration/hugging-face",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

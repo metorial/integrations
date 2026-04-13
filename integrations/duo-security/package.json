@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-duo-security",
+  "name": "@slates-integration/duo-security",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

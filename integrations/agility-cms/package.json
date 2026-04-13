@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agility-cms",
+  "name": "@slates-integration/agility-cms",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

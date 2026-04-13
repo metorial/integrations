@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-doppler",
+  "name": "@slates-integration/doppler",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

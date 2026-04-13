@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mode",
+  "name": "@slates-integration/mode",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

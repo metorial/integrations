@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onedesk",
+  "name": "@slates-integration/onedesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

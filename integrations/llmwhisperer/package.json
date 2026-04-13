@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-llmwhisperer",
+  "name": "@slates-integration/llmwhisperer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

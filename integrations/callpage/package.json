@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-callpage",
+  "name": "@slates-integration/callpage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-amcards",
+  "name": "@slates-integration/amcards",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

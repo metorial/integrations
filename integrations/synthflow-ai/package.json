@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-synthflow-ai",
+  "name": "@slates-integration/synthflow-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

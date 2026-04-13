@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-jumpcloud",
+  "name": "@slates-integration/jumpcloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

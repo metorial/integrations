@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tave",
+  "name": "@slates-integration/tave",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

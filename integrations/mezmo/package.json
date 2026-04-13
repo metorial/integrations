@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mezmo",
+  "name": "@slates-integration/mezmo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

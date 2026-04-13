@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shippo",
+  "name": "@slates-integration/shippo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

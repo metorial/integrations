@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-botpress",
+  "name": "@slates-integration/botpress",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

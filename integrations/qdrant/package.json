@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-qdrant",
+  "name": "@slates-integration/qdrant",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

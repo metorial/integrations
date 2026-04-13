@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-agiled",
+  "name": "@slates-integration/agiled",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

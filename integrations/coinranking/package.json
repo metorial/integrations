@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coinranking",
+  "name": "@slates-integration/coinranking",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

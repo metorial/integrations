@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-stability-ai",
+  "name": "@slates-integration/stability-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

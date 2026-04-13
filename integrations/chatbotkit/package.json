@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chatbotkit",
+  "name": "@slates-integration/chatbotkit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

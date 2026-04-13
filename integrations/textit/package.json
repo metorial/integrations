@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-textit",
+  "name": "@slates-integration/textit",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

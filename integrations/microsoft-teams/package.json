@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-microsoft-teams",
+  "name": "@slates-integration/microsoft-teams",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

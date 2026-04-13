@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-virustotal",
+  "name": "@slates-integration/virustotal",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

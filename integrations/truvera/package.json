@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-truvera",
+  "name": "@slates-integration/truvera",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

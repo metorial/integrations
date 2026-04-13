@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-todoist",
+  "name": "@slates-integration/todoist",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

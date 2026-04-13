@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-shipengine",
+  "name": "@slates-integration/shipengine",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

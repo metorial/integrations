@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-drift",
+  "name": "@slates-integration/drift",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

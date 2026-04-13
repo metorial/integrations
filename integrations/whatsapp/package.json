@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-whatsapp-business",
+  "name": "@slates-integration/whatsapp-business",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

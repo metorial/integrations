@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-centralstationcrm",
+  "name": "@slates-integration/centralstationcrm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

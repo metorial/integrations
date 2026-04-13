@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-passcreator",
+  "name": "@slates-integration/passcreator",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

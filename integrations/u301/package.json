@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-u301",
+  "name": "@slates-integration/u301",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

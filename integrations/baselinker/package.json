@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-baselinker",
+  "name": "@slates-integration/baselinker",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

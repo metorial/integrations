@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ably",
+  "name": "@slates-integration/ably",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

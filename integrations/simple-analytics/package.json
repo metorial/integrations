@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-simple-analytics",
+  "name": "@slates-integration/simple-analytics",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

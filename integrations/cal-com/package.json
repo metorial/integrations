@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-calcom",
+  "name": "@slates-integration/calcom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

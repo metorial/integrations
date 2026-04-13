@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-honeyhive",
+  "name": "@slates-integration/honeyhive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

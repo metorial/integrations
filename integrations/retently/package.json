@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-retently",
+  "name": "@slates-integration/retently",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

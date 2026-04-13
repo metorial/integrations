@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-removebg",
+  "name": "@slates-integration/removebg",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

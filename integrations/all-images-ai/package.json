@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-all-images-ai",
+  "name": "@slates-integration/all-images-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

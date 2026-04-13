@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bannerbear",
+  "name": "@slates-integration/bannerbear",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

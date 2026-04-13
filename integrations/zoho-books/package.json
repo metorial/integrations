@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-books",
+  "name": "@slates-integration/zoho-books",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

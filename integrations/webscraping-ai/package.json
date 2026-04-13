@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-webscrapingai",
+  "name": "@slates-integration/webscrapingai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

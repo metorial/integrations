@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-api2pdf",
+  "name": "@slates-integration/api2pdf",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

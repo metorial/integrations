@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wisepops",
+  "name": "@slates-integration/wisepops",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-modelry",
+  "name": "@slates-integration/modelry",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

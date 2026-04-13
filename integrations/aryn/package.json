@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aryn",
+  "name": "@slates-integration/aryn",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-1password",
+  "name": "@slates-integration/1password",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

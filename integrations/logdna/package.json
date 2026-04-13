@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-logdna",
+  "name": "@slates-integration/logdna",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

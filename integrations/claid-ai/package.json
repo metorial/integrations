@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-claidai",
+  "name": "@slates-integration/claidai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

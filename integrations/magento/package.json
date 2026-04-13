@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-magento",
+  "name": "@slates-integration/magento",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

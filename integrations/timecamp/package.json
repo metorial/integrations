@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-timecamp",
+  "name": "@slates-integration/timecamp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onelogin",
+  "name": "@slates-integration/onelogin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

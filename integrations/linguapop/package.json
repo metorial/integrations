@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linguapop",
+  "name": "@slates-integration/linguapop",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

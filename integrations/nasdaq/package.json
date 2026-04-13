@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nasdaq",
+  "name": "@slates-integration/nasdaq",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-finmei",
+  "name": "@slates-integration/finmei",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

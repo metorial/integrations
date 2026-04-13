@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-businessmap",
+  "name": "@slates-integration/businessmap",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

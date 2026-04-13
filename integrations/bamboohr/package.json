@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bamboohr",
+  "name": "@slates-integration/bamboohr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

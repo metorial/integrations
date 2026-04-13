@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wix",
+  "name": "@slates-integration/wix",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

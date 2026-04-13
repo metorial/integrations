@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-freshdesk",
+  "name": "@slates-integration/freshdesk",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

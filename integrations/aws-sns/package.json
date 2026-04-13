@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aws-sns",
+  "name": "@slates-integration/aws-sns",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

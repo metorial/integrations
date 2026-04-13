@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-twilio",
+  "name": "@slates-integration/twilio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

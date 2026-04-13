@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailcoach",
+  "name": "@slates-integration/mailcoach",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

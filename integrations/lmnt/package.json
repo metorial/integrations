@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lmnt",
+  "name": "@slates-integration/lmnt",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-similarweb-digital-rank-api",
+  "name": "@slates-integration/similarweb-digital-rank-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

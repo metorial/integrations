@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-elorus",
+  "name": "@slates-integration/elorus",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

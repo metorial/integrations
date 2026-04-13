@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pilvio",
+  "name": "@slates-integration/pilvio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

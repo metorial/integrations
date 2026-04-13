@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pdfmonkey",
+  "name": "@slates-integration/pdfmonkey",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-pushbullet",
+  "name": "@slates-integration/pushbullet",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-buffer",
+  "name": "@slates-integration/buffer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

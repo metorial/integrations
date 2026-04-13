@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bestbuy",
+  "name": "@slates-integration/bestbuy",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

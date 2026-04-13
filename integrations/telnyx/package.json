@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-telnyx",
+  "name": "@slates-integration/telnyx",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

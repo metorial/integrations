@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sprout-social",
+  "name": "@slates-integration/sprout-social",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

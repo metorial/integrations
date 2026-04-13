@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-postgrid-verify",
+  "name": "@slates-integration/postgrid-verify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

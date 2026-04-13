@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scale-ai",
+  "name": "@slates-integration/scale-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

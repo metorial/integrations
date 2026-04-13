@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-odoo",
+  "name": "@slates-integration/odoo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

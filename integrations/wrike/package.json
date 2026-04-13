@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wrike",
+  "name": "@slates-integration/wrike",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

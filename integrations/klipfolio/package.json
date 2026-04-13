@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-klipfolio",
+  "name": "@slates-integration/klipfolio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

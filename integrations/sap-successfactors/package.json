@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sap-successfactors",
+  "name": "@slates-integration/sap-successfactors",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-whautomate",
+  "name": "@slates-integration/whautomate",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

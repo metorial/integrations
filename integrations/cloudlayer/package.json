@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cloudlayer",
+  "name": "@slates-integration/cloudlayer",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

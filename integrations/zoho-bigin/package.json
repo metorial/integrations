@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-bigin",
+  "name": "@slates-integration/zoho-bigin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

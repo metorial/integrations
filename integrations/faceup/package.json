@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-faceup",
+  "name": "@slates-integration/faceup",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

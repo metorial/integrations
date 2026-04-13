@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-feathery",
+  "name": "@slates-integration/feathery",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

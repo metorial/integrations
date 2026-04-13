@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-openperplex",
+  "name": "@slates-integration/openperplex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

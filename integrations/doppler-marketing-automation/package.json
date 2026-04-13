@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-doppler-marketing-automation",
+  "name": "@slates-integration/doppler-marketing-automation",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

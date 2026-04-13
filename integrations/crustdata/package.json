@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-crustdata",
+  "name": "@slates-integration/crustdata",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

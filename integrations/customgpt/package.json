@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-customgpt",
+  "name": "@slates-integration/customgpt",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

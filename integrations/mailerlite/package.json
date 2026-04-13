@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailerlite",
+  "name": "@slates-integration/mailerlite",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

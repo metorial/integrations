@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mailsso",
+  "name": "@slates-integration/mailsso",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

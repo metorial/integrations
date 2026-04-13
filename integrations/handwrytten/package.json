@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-handwrytten",
+  "name": "@slates-integration/handwrytten",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

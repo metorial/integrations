@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-smtp2go",
+  "name": "@slates-integration/smtp2go",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

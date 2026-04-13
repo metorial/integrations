@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-later",
+  "name": "@slates-integration/later",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

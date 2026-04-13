@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bitbucket",
+  "name": "@slates-integration/bitbucket",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hunter",
+  "name": "@slates-integration/hunter",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

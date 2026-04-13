@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-fullstory",
+  "name": "@slates-integration/fullstory",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

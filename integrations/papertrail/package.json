@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-papertrail",
+  "name": "@slates-integration/papertrail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

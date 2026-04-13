@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-expofp",
+  "name": "@slates-integration/expofp",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

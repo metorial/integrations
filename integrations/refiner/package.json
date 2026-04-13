@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-refiner",
+  "name": "@slates-integration/refiner",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

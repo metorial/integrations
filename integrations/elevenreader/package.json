@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-elevenreader",
+  "name": "@slates-integration/elevenreader",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-wolfram-alpha-api",
+  "name": "@slates-integration/wolfram-alpha-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

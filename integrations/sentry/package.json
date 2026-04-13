@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-sentry",
+  "name": "@slates-integration/sentry",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

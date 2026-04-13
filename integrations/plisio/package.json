@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-plisio",
+  "name": "@slates-integration/plisio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

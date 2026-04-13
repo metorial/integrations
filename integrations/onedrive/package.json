@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-onedrive",
+  "name": "@slates-integration/onedrive",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

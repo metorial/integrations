@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hotspotsystem",
+  "name": "@slates-integration/hotspotsystem",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

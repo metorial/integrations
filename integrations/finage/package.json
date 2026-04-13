@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-finage",
+  "name": "@slates-integration/finage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

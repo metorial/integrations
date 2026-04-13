@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-talenthr",
+  "name": "@slates-integration/talenthr",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

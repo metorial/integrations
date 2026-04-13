@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cloudflare",
+  "name": "@slates-integration/cloudflare",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

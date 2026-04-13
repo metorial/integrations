@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-linkedin-ads",
+  "name": "@slates-integration/linkedin-ads",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

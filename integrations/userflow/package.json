@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-userflow",
+  "name": "@slates-integration/userflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

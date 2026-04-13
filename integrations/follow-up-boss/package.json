@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-follow-up-boss",
+  "name": "@slates-integration/follow-up-boss",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

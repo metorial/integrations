@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hyperise",
+  "name": "@slates-integration/hyperise",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

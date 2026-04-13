@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-workiom",
+  "name": "@slates-integration/workiom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

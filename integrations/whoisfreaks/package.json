@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-whoisfreaks",
+  "name": "@slates-integration/whoisfreaks",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

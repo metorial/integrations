@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-mx-technologies",
+  "name": "@slates-integration/mx-technologies",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

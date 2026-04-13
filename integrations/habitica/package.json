@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-habitica",
+  "name": "@slates-integration/habitica",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dovetail",
+  "name": "@slates-integration/dovetail",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

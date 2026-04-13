@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-figma",
+  "name": "@slates-integration/figma",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

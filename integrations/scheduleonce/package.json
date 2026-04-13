@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-scheduleonce",
+  "name": "@slates-integration/scheduleonce",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-datagma",
+  "name": "@slates-integration/datagma",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

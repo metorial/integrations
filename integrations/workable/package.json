@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-workable",
+  "name": "@slates-integration/workable",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

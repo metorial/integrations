@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-productlane",
+  "name": "@slates-integration/productlane",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

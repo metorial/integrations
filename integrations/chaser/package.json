@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-chaser",
+  "name": "@slates-integration/chaser",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

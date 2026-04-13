@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-digicert",
+  "name": "@slates-integration/digicert",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

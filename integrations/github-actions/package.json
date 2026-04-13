@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-github-actions",
+  "name": "@slates-integration/github-actions",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

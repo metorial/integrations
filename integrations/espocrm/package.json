@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-espocrm",
+  "name": "@slates-integration/espocrm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nutshell",
+  "name": "@slates-integration/nutshell",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-zoho-crm",
+  "name": "@slates-integration/zoho-crm",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

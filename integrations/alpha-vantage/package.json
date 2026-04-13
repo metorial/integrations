@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-alpha-vantage",
+  "name": "@slates-integration/alpha-vantage",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

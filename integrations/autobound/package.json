@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-autobound",
+  "name": "@slates-integration/autobound",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

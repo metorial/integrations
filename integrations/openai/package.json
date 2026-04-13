@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-openai",
+  "name": "@slates-integration/openai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

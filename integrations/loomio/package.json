@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-loomio",
+  "name": "@slates-integration/loomio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

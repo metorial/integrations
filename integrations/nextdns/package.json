@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-nextdns",
+  "name": "@slates-integration/nextdns",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

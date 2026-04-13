@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ragic",
+  "name": "@slates-integration/ragic",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

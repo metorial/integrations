@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-optimizely",
+  "name": "@slates-integration/optimizely",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

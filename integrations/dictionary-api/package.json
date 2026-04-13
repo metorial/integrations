@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dictionary-api",
+  "name": "@slates-integration/dictionary-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

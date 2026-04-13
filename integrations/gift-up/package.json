@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gift-up",
+  "name": "@slates-integration/gift-up",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

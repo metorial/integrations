@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-evenium",
+  "name": "@slates-integration/evenium",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-twitch",
+  "name": "@slates-integration/twitch",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

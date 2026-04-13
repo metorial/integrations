@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-freshsales",
+  "name": "@slates-integration/freshsales",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

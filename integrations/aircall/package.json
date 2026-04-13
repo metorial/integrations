@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aircall",
+  "name": "@slates-integration/aircall",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

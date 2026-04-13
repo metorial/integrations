@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-lemlist",
+  "name": "@slates-integration/lemlist",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

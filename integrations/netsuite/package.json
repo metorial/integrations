@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-netsuite",
+  "name": "@slates-integration/netsuite",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

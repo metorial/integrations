@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dropbox",
+  "name": "@slates-integration/dropbox",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

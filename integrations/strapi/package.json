@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-strapi",
+  "name": "@slates-integration/strapi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

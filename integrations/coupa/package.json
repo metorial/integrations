@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-coupa",
+  "name": "@slates-integration/coupa",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

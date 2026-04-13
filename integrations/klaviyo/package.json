@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-klaviyo",
+  "name": "@slates-integration/klaviyo",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-aivoov",
+  "name": "@slates-integration/aivoov",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

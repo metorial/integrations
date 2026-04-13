@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-parsioio",
+  "name": "@slates-integration/parsioio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

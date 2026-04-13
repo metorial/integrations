@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-appveyor",
+  "name": "@slates-integration/appveyor",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

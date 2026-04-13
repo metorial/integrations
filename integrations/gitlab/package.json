@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gitlab",
+  "name": "@slates-integration/gitlab",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

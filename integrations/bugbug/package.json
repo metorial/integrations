@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bugbug",
+  "name": "@slates-integration/bugbug",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

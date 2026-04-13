@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-finerworks",
+  "name": "@slates-integration/finerworks",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-hypeauditor",
+  "name": "@slates-integration/hypeauditor",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-backendless",
+  "name": "@slates-integration/backendless",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-groqcloud",
+  "name": "@slates-integration/groqcloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

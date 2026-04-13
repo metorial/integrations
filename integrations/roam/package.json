@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-roam",
+  "name": "@slates-integration/roam",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-intercom",
+  "name": "@slates-integration/intercom",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-la-growth-machine",
+  "name": "@slates-integration/la-growth-machine",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

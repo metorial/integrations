@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-tomba",
+  "name": "@slates-integration/tomba",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

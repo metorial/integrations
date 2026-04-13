@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-google-forms",
+  "name": "@slates-integration/google-forms",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-netlify",
+  "name": "@slates-integration/netlify",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

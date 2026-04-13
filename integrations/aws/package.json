@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-amazon-web-services",
+  "name": "@slates-integration/amazon-web-services",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-travis-ci",
+  "name": "@slates-integration/travis-ci",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

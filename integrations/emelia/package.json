@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-emelia",
+  "name": "@slates-integration/emelia",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

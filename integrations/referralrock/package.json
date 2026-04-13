@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-referralrock",
+  "name": "@slates-integration/referralrock",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

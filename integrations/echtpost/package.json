@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-echtpost",
+  "name": "@slates-integration/echtpost",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

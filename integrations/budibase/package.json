@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-budibase",
+  "name": "@slates-integration/budibase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rev-ai",
+  "name": "@slates-integration/rev-ai",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-apolloio",
+  "name": "@slates-integration/apolloio",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

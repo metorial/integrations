@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rocketadmin",
+  "name": "@slates-integration/rocketadmin",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

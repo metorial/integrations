@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dbt-cloud",
+  "name": "@slates-integration/dbt-cloud",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

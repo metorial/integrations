@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bolt-iot",
+  "name": "@slates-integration/bolt-iot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

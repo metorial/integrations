@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-workday",
+  "name": "@slates-integration/workday",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

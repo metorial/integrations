@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-deadline-funnel",
+  "name": "@slates-integration/deadline-funnel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

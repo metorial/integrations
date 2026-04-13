@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-search-api",
+  "name": "@slates-integration/search-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

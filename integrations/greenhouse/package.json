@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-greenhouse",
+  "name": "@slates-integration/greenhouse",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

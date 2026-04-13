@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-storerocket",
+  "name": "@slates-integration/storerocket",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

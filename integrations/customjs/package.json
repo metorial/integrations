@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-customjs",
+  "name": "@slates-integration/customjs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

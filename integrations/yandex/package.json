@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-yandex",
+  "name": "@slates-integration/yandex",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

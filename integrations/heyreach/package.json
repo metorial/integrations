@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-heyreach",
+  "name": "@slates-integration/heyreach",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

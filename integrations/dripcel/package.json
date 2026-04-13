@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-dripcel",
+  "name": "@slates-integration/dripcel",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

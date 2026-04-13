@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-cincopa",
+  "name": "@slates-integration/cincopa",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-blackboard",
+  "name": "@slates-integration/blackboard",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

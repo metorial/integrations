@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-gosquared",
+  "name": "@slates-integration/gosquared",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

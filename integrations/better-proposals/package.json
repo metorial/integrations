@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-better-proposals",
+  "name": "@slates-integration/better-proposals",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

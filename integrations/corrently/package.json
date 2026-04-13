@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-corrently",
+  "name": "@slates-integration/corrently",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

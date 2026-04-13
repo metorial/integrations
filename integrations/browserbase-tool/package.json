@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-browserbase",
+  "name": "@slates-integration/browserbase",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

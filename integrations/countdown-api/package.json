@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-countdown-api",
+  "name": "@slates-integration/countdown-api",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

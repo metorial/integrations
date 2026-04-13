@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-docmosis",
+  "name": "@slates-integration/docmosis",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

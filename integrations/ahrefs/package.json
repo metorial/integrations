@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-ahrefs",
+  "name": "@slates-integration/ahrefs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

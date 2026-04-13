@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-algodocs",
+  "name": "@slates-integration/algodocs",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

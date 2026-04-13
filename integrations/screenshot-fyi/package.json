@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-screenshotfyi",
+  "name": "@slates-integration/screenshotfyi",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

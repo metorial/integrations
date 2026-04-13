@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-bitquery",
+  "name": "@slates-integration/bitquery",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

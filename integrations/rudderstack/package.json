@@ -1,5 +1,5 @@
 {
-  "name": "@slates/integration-rudderstack",
+  "name": "@slates-integration/rudderstack",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
